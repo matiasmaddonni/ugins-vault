@@ -1,0 +1,46 @@
+## macOS
+.DS_Store
+
+## Xcode
+build/
+DerivedData/
+*.xcuserdatad
+*.xcuserstate
+*.xcscmblueprint
+*.xccheckout
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+## Xcode workspace user data
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+
+## Swift Package Manager
+.swiftpm/
+.build/
+Packages/
+Package.pins
+Package.resolved
+
+## CocoaPods
+Pods/
+
+## Carthage
+Carthage/Build/
+Carthage/Checkouts/
+
+## fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+
+## XcodeGen — keep project.yml, regenerate .xcodeproj locally (uncomment to ignore)
+# UginsVault.xcodeproj/
+
+## Claude Code — local-only settings stay out of git; shared rules/skills/agents/commands commit
+.claude/settings.local.json

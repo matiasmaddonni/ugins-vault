@@ -1,0 +1,120 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xcodebuild build *)",
+      "Bash(xcodebuild build-for-testing *)",
+      "Bash(xcodebuild test *)",
+      "Bash(xcodebuild clean *)",
+      "Bash(xcodebuild -showBuildSettings *)",
+      "Bash(xcodebuild -list *)",
+      "Bash(xcrun simctl *)",
+      "Bash(xcrun xcresulttool *)",
+      "Bash(xcrun xccov *)",
+      "Bash(swift build *)",
+      "Bash(swiftlint *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git status *)",
+      "Bash(git checkout *)",
+      "Bash(git branch *)",
+      "Bash(git stash *)",
+      "Bash(git fetch *)",
+      "Bash(git pull *)",
+      "Bash(git rebase *)",
+      "Bash(git mv *)",
+      "Bash(git rm *)",
+      "Bash(git rev-list *)",
+      "Bash(git rev-parse *)",
+      "Bash(git show *)",
+      "Bash(git restore *)",
+      "Bash(git merge-base *)",
+      "Bash(git ls-files *)",
+      "Bash(ls *)",
+      "Bash(cd *)",
+      "Bash(find *)",
+      "Bash(grep *)",
+      "Bash(rg *)",
+      "Bash(cat *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(wc *)",
+      "Bash(awk *)",
+      "Bash(sed -n *)",
+      "Bash(diff *)",
+      "Bash(test -f /tmp/integra-pr-ready-*)",
+      "Bash(touch /tmp/integra-pr-ready-*)",
+      "Bash(rm -f /tmp/integra-pr-ready-*)",
+      "Bash(mkdir *)",
+      "Bash(cp *)",
+      "Bash(mv *)",
+      "Bash(chmod *)",
+      "Bash(timeout *)",
+      "Bash(echo *)",
+      "Bash(python3 *)",
+      "Bash(open *.xcodeproj)",
+      "Bash(gh pr *)",
+      "Bash(gh issue *)",
+      "Bash(gh api *)",
+      "Skill(build)",
+      "Skill(test)",
+      "Skill(review)",
+      "Skill(feature-ui)",
+      "Skill(foundation)",
+      "Skill(pr-check)"
+    ],
+    "deny": [
+      "Bash(sudo *)",
+      "Bash(rm -rf /)*",
+      "Bash(git push --force *)",
+      "Bash(git reset --hard *)",
+      "Bash(git clean -f *)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/protect-files.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/pre-pr-check.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/swiftlint-fix.sh"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/notify.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
