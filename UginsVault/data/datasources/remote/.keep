@@ -1,0 +1,2 @@
+# Reserved for remote data sources (Scryfall, marketplace integrations).
+# Move ScryfallRemoteDataSource.swift and friends in here as features land.

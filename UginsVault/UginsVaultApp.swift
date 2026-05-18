@@ -2,20 +2,22 @@
 //  UginsVaultApp.swift
 //  UginsVault
 //
-//  App entry. Owns a single AppState; mounts the RootView phase router.
+//  App entry. Builds the dependency graph at launch and mounts `RootView`.
 //
 
 import SwiftUI
 
 @main
 struct UginsVaultApp: App {
-    @State private var appState = AppState()
+
+    private let container = DependencyContainer.shared
 
     var body: some Scene {
         WindowGroup {
-            RootView()
-                .environment(appState)
-                .preferredColorScheme(appState.theme.colorScheme)
+            RootView(
+                viewModel: container.makeRootViewModel(),
+                container: container
+            )
         }
     }
 }
