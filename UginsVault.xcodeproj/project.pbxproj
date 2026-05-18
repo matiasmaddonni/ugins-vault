@@ -7,21 +7,74 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		30F05C0C468CA1D747B94007 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9446D01953FDD82CEA7DDA4A /* AppState.swift */; };
+		33831C5A255A81E9B55C7954 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E37464BE1ED64D64ACFFF9A7 /* HomeView.swift */; };
+		702560D7718D99CBB95E4E7C /* AppPhase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04DA9A175859E3B1459DBBDF /* AppPhase.swift */; };
 		7AA0AAAA642CF0E4CD47FBEC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C500078D3638AF3DDBAA10C9 /* Assets.xcassets */; };
-		A4D681CE53D89AAE8D29DC99 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C2C76D4886F5EACB56E07F /* ContentView.swift */; };
+		867478D978ECFE86705A576F /* UginMark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14739328DE391172257F59C1 /* UginMark.swift */; };
+		9290029B65AC32DF596FB923 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D7444F4BBD4C183F6F22C63 /* LoginView.swift */; };
+		A5ECDFB3A7A89C4379A8EE12 /* Typography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26DE42627E899D22212EF2A1 /* Typography.swift */; };
+		C669CA9318964FC2F1A9266C /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AA1CB2264B8C40311FE078B /* RootView.swift */; };
 		D905C5A85CA477FFC94E50AA /* UginsVaultApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D098E49288FB68FF7F84D241 /* UginsVaultApp.swift */; };
 		E66361098ED43FBBEF3F85A2 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9BA8273B66057AE761446B48 /* Preview Assets.xcassets */; };
+		EADAADF52FFCD0ECC8B85C4B /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4161DA4779863679F498747E /* AuthService.swift */; };
+		F264440F1980CFAD0F130764 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4014D484C179398D3EFA4F93 /* SplashView.swift */; };
+		FA3AE873ED486E54AEE2AA01 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E6E479472F2F6BBC21197F /* Theme.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		04DA9A175859E3B1459DBBDF /* AppPhase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPhase.swift; sourceTree = "<group>"; };
+		14739328DE391172257F59C1 /* UginMark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UginMark.swift; sourceTree = "<group>"; };
+		1D7444F4BBD4C183F6F22C63 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		26DE42627E899D22212EF2A1 /* Typography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Typography.swift; sourceTree = "<group>"; };
 		3DE1358AD226C96D9BA1B04E /* UginsVault.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = UginsVault.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4014D484C179398D3EFA4F93 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
+		4161DA4779863679F498747E /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
+		68E6E479472F2F6BBC21197F /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		8AA1CB2264B8C40311FE078B /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		9446D01953FDD82CEA7DDA4A /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		9BA8273B66057AE761446B48 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		C500078D3638AF3DDBAA10C9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D098E49288FB68FF7F84D241 /* UginsVaultApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UginsVaultApp.swift; sourceTree = "<group>"; };
-		F5C2C76D4886F5EACB56E07F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		E37464BE1ED64D64ACFFF9A7 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
+		22F4FB00367C63DE096CCDB4 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				04DA9A175859E3B1459DBBDF /* AppPhase.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		3740B19F8A4452F8C40966FA /* State */ = {
+			isa = PBXGroup;
+			children = (
+				9446D01953FDD82CEA7DDA4A /* AppState.swift */,
+			);
+			path = State;
+			sourceTree = "<group>";
+		};
+		654C5ED134979B9FFDBABCBA /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				4161DA4779863679F498747E /* AuthService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		655D6186892A5605D6ABFEE9 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				E37464BE1ED64D64ACFFF9A7 /* HomeView.swift */,
+				1D7444F4BBD4C183F6F22C63 /* LoginView.swift */,
+				8AA1CB2264B8C40311FE078B /* RootView.swift */,
+				4014D484C179398D3EFA4F93 /* SplashView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 		655FD441A86D0044CBFDFCEC = {
 			isa = PBXGroup;
 			children = (
@@ -34,9 +87,13 @@
 			isa = PBXGroup;
 			children = (
 				C500078D3638AF3DDBAA10C9 /* Assets.xcassets */,
-				F5C2C76D4886F5EACB56E07F /* ContentView.swift */,
 				D098E49288FB68FF7F84D241 /* UginsVaultApp.swift */,
+				BB31B412B9A5469A14B6E80A /* Design */,
+				22F4FB00367C63DE096CCDB4 /* Models */,
 				7DACF2AC277EFDABE6DC640A /* Preview Content */,
+				654C5ED134979B9FFDBABCBA /* Services */,
+				3740B19F8A4452F8C40966FA /* State */,
+				655D6186892A5605D6ABFEE9 /* Views */,
 			);
 			path = UginsVault;
 			sourceTree = "<group>";
@@ -55,6 +112,16 @@
 				3DE1358AD226C96D9BA1B04E /* UginsVault.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		BB31B412B9A5469A14B6E80A /* Design */ = {
+			isa = PBXGroup;
+			children = (
+				68E6E479472F2F6BBC21197F /* Theme.swift */,
+				26DE42627E899D22212EF2A1 /* Typography.swift */,
+				14739328DE391172257F59C1 /* UginMark.swift */,
+			);
+			path = Design;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -125,7 +192,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A4D681CE53D89AAE8D29DC99 /* ContentView.swift in Sources */,
+				702560D7718D99CBB95E4E7C /* AppPhase.swift in Sources */,
+				30F05C0C468CA1D747B94007 /* AppState.swift in Sources */,
+				EADAADF52FFCD0ECC8B85C4B /* AuthService.swift in Sources */,
+				33831C5A255A81E9B55C7954 /* HomeView.swift in Sources */,
+				9290029B65AC32DF596FB923 /* LoginView.swift in Sources */,
+				C669CA9318964FC2F1A9266C /* RootView.swift in Sources */,
+				F264440F1980CFAD0F130764 /* SplashView.swift in Sources */,
+				FA3AE873ED486E54AEE2AA01 /* Theme.swift in Sources */,
+				A5ECDFB3A7A89C4379A8EE12 /* Typography.swift in Sources */,
+				867478D978ECFE86705A576F /* UginMark.swift in Sources */,
 				D905C5A85CA477FFC94E50AA /* UginsVaultApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -142,6 +218,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"UginsVault/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "Unlock your vault with Face ID.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -168,6 +245,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"UginsVault/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "Unlock your vault with Face ID.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
