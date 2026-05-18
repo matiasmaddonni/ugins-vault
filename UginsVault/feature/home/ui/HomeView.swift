@@ -20,18 +20,25 @@ public struct HomeView: View {
         ZStack(alignment: .bottom) {
             Color.uv.bg.ignoresSafeArea()
 
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    header
-                    searchBar
-                    emptyState
+            VStack(spacing: 0) {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 16) {
+                        header
+                        searchBar
+                        emptyState
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.top, 8)
+                    .padding(.bottom, 24)
                 }
-                .padding(.horizontal, 16)
-                .padding(.top, 8)
-                .padding(.bottom, 120) // tab bar clearance
-            }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-            tabBar
+                tabBarPill
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+            fabButton
+                .padding(.bottom, 50)
         }
         .preferredColorScheme(viewModel.theme.colorScheme)
     }
@@ -158,50 +165,49 @@ public struct HomeView: View {
 
     // MARK: - Tab bar (skeleton — real component lands later)
 
-    private var tabBar: some View {
-        ZStack(alignment: .top) {
-            HStack(spacing: 0) {
-                tabItem(icon: "rectangle.portrait.fill", label: "Collection", selected: true)
-                tabItem(icon: "square.stack.fill",       label: "Stacks",     selected: false)
-                Color.clear.frame(width: 62)
-                tabItem(icon: "chart.bar.fill",          label: "Dashboard",  selected: false)
-                tabItem(icon: "gearshape.fill",          label: "Settings",   selected: false)
-            }
-            .padding(.horizontal, 6)
-            .padding(.top, 10)
-            .padding(.bottom, 28)
-            .background(
-                RoundedRectangle(cornerRadius: UVRadius.xl)
-                    .fill(Color.uv.panel.opacity(0.85))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: UVRadius.xl)
-                            .strokeBorder(Color.uv.stroke, lineWidth: 1)
-                    )
-                    .shadow(color: .black.opacity(0.25), radius: 16, y: -4)
-            )
-            .padding(.horizontal, 12)
-            .padding(.bottom, 12)
-
-            Button { /* TODO: open Add Card sheet */ } label: {
-                Image(systemName: "plus")
-                    .font(.system(size: 26, weight: .semibold))
-                    .foregroundStyle(Color(hex: 0x1A1410))
-                    .frame(width: 58, height: 58)
-                    .background(
-                        Circle()
-                            .fill(LinearGradient(
-                                colors: [Color.uv.goldHi, Color.uv.goldLo],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            ))
-                    )
-                    .overlay(Circle().strokeBorder(.white.opacity(0.08), lineWidth: 1))
-                    .shadow(color: Color.uv.gold.opacity(0.45), radius: 12, y: 6)
-            }
-            .accessibilityLabel("Add card")
-            .offset(y: -4)
+    private var tabBarPill: some View {
+        HStack(spacing: 0) {
+            tabItem(icon: "rectangle.portrait.fill", label: "Collection", selected: true)
+            tabItem(icon: "square.stack.fill",       label: "Stacks",     selected: false)
+            Color.clear.frame(width: 62, height: 1)
+            tabItem(icon: "chart.bar.fill",          label: "Dashboard",  selected: false)
+            tabItem(icon: "gearshape.fill",          label: "Settings",   selected: false)
         }
-        .frame(maxWidth: .infinity)
+        .fixedSize(horizontal: false, vertical: true)
+        .padding(.horizontal, 6)
+        .padding(.top, 10)
+        .padding(.bottom, 14)
+        .background(
+            RoundedRectangle(cornerRadius: UVRadius.xl)
+                .fill(Color.uv.panel.opacity(0.85))
+                .overlay(
+                    RoundedRectangle(cornerRadius: UVRadius.xl)
+                        .strokeBorder(Color.uv.stroke, lineWidth: 1)
+                )
+                .shadow(color: .black.opacity(0.25), radius: 16, y: -4)
+        )
+        .padding(.horizontal, 12)
+        .padding(.bottom, 12)
+    }
+
+    private var fabButton: some View {
+        Button { /* TODO: open Add Card sheet */ } label: {
+            Image(systemName: "plus")
+                .font(.system(size: 26, weight: .semibold))
+                .foregroundStyle(Color(hex: 0x1A1410))
+                .frame(width: 58, height: 58)
+                .background(
+                    Circle()
+                        .fill(LinearGradient(
+                            colors: [Color.uv.goldHi, Color.uv.goldLo],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        ))
+                )
+                .overlay(Circle().strokeBorder(.white.opacity(0.08), lineWidth: 1))
+                .shadow(color: Color.uv.gold.opacity(0.45), radius: 12, y: 6)
+        }
+        .accessibilityLabel("Add card")
     }
 
     private func tabItem(icon: String, label: String, selected: Bool) -> some View {
