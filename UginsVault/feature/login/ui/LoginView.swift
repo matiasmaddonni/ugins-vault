@@ -167,3 +167,10 @@ public struct LoginView: View {
         }
     }
 }
+
+#Preview {
+    LoginView(
+        viewModel: DependencyContainer.shared.makeLoginViewModel(onAuthenticated: {})
+    )
+    .preferredColorScheme(.dark)
+}

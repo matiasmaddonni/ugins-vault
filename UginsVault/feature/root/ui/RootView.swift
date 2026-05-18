@@ -52,3 +52,19 @@ public struct RootView: View {
         .animation(.easeInOut(duration: 0.25), value: viewModel.phase)
     }
 }
+
+#Preview("Dark") {
+    RootView(
+        viewModel: DependencyContainer.shared.makeRootViewModel(),
+        container: .shared
+    )
+    .preferredColorScheme(.dark)
+}
+
+#Preview("Light") {
+    RootView(
+        viewModel: DependencyContainer.shared.makeRootViewModel(),
+        container: .shared
+    )
+    .preferredColorScheme(.light)
+}

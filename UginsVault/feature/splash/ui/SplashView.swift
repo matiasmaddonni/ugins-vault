@@ -64,3 +64,10 @@ public struct SplashView: View {
         .ignoresSafeArea()
     }
 }
+
+#Preview {
+    SplashView(
+        viewModel: DependencyContainer.shared.makeSplashViewModel(onAdvance: { _ in })
+    )
+    .preferredColorScheme(.dark)
+}

@@ -130,3 +130,14 @@ public struct UginAppIcon: View {
         .accessibilityLabel("Ugin's Vault")
     }
 }
+
+#Preview {
+    VStack(spacing: 32) {
+        UginAppIcon(size: 144)
+        UginMark(size: 96)
+    }
+    .padding(40)
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .background(Color.uv.bg)
+    .preferredColorScheme(.dark)
+}

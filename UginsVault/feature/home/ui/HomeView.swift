@@ -219,3 +219,8 @@ public struct HomeView: View {
         .buttonStyle(.plain)
     }
 }
+
+#Preview {
+    HomeView(viewModel: DependencyContainer.shared.makeHomeViewModel())
+        .preferredColorScheme(.dark)
+}
