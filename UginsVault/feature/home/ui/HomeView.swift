@@ -38,7 +38,7 @@ public struct HomeView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 
             fabButton
-                .padding(.bottom, 50)
+                .padding(.bottom, 35)
         }
         .preferredColorScheme(viewModel.theme.colorScheme)
     }
