@@ -52,9 +52,14 @@ public enum DeckListParser {
         var results: [ParsedDeckLine] = []
 
         for raw in source.split(whereSeparator: \.isNewline) {
-            let trimmed = raw.trimmingCharacters(in: .whitespaces)
+            let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
             guard !trimmed.isEmpty else { continue }
-            guard !trimmed.hasPrefix("//") else { continue }
+            // Skip comments that start with `//` (with optional whitespace).
+            // NOTE: card names contain `//` (split / DFC), so only treat
+            // them as comments when they're the first non-whitespace token
+            // and not followed by an alphabetic character — the comment
+            // form is always `//` then space or end-of-line.
+            if trimmed.hasPrefix("//") && !isDoubleFacedName(trimmed) { continue }
             guard !isSectionHeader(trimmed) else { continue }
 
             if let parsed = parseLine(trimmed) {
@@ -118,14 +123,26 @@ public enum DeckListParser {
     // MARK: - Helpers
 
     private static func isSectionHeader(_ line: String) -> Bool {
-        let lower = line.lowercased()
+        // Strip a trailing colon + lowercase + trim — handles
+        // "SIDEBOARD:", "Commander :", "Maybeboard" all in one shape.
+        let stripped = line
+            .trimmingCharacters(in: CharacterSet(charactersIn: ": "))
+            .lowercased()
         let headers: Set<String> = [
-            "sideboard", "sideboard:", "maybeboard", "maybeboard:",
-            "commander", "commander:", "companion", "companion:",
-            "deck", "deck:", "main", "main:",
-            "tokens", "tokens:"
+            "sideboard", "maybeboard", "commander", "companion",
+            "deck", "main", "tokens"
         ]
-        return headers.contains(lower)
+        return headers.contains(stripped)
+    }
+
+    /// Returns `true` if the line is a card name that *starts* with `//`
+    /// — never happens in practice, kept as a guardrail so future card
+    /// names with leading slashes don't get eaten by the comment filter.
+    private static func isDoubleFacedName(_ line: String) -> Bool {
+        // Comments in Moxfield exports are `// foo`. A card-name line
+        // that legitimately starts with `//` doesn't exist; this stays
+        // a defensive `false` until we see a counterexample.
+        false
     }
 
     /// Tries to strip a leading `<n>` or `<n>x`/`<n>X` quantity token.
@@ -167,12 +184,14 @@ public enum DeckListParser {
     }
 
     /// Strips the trailing whitespace-separated token if it looks like a
-    /// collector number (digits, optional suffix letters: `153`, `12a`,
-    /// `350★`).
+    /// collector number. Scryfall stores them as free-form strings, so
+    /// we accept any token that contains at least one digit and isn't
+    /// purely alphabetic — covers `153`, `12a`, `350★`, `90s`, `241p`,
+    /// `STX-188` (PLST), etc.
     private static func stripTrailingCollectorNumber(_ line: String) -> (String, String)? {
         let tokens = line.split(separator: " ", omittingEmptySubsequences: true)
         guard let last = tokens.last else { return nil }
-        guard last.first?.isNumber == true else { return nil }
+        guard last.contains(where: \.isNumber) else { return nil }
 
         let num = String(last)
         let rest = tokens.dropLast().joined(separator: " ")

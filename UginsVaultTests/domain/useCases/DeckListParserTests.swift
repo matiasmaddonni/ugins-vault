@@ -68,4 +68,40 @@ struct DeckListParserTests {
         #expect(out[0].quantity == 1)
         #expect(out[0].name == "Lightning Bolt")
     }
+
+    @Test("SIDEBOARD: header (uppercase + colon) is treated as a section break")
+    func uppercaseSideboardHeader() {
+        let out = DeckListParser.parse("""
+        4 Lightning Bolt
+
+        SIDEBOARD:
+        1 Counterspell
+        """)
+        #expect(out.count == 2)
+        #expect(out[0].name == "Lightning Bolt")
+        #expect(out[1].name == "Counterspell")
+    }
+
+    @Test("Promo-suffixed collector numbers (`90s`, `241p`, `STX-188`) still parse")
+    func parsesAlphanumericCollectorNumbers() {
+        let out = DeckListParser.parse("""
+        1 Agadeem's Awakening (PZNR) 90s
+        1 Castle Locthwain (PELD) 241p
+        1 Fracture (PLST) STX-188
+        """)
+        #expect(out.count == 3)
+        #expect(out[0].collectorNumber == "90s")
+        #expect(out[0].setCode == "pznr")
+        #expect(out[1].collectorNumber == "241p")
+        #expect(out[2].collectorNumber == "STX-188")
+        #expect(out[2].setCode == "plst")
+    }
+
+    @Test("DFC names with ` / ` separator parse intact (importer normalises later)")
+    func parsesDoubleFacedNames() {
+        let out = DeckListParser.parse("1 Fell the Profane / Fell Mire (MH3) 244")
+        #expect(out.count == 1)
+        #expect(out[0].name == "Fell the Profane / Fell Mire")
+        #expect(out[0].setCode == "mh3")
+    }
 }

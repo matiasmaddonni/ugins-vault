@@ -94,26 +94,61 @@ public final class ImportDeckListUseCase {
         if let local = try await localLookup(line: line) {
             return local
         }
-        let scryfall = try await scryfallClient.card(
-            named: line.name,
-            set: line.setCode,
-            fuzzy: false
-        )
-        guard let card = Card(from: scryfall) else {
-            throw ImportDeckListError.scryfallMappingFailed(name: line.name)
+
+        // Try strictest → loosest until something resolves. We honour the
+        // requested set first, then drop it (Moxfield exports use promo
+        // set codes Scryfall doesn't recognise as searchable sets, e.g.
+        // PZNR / PELD / PCLB), and finally fall back to a fuzzy match
+        // (handles small typos + double-faced corner cases).
+        let normalizedName = normalizeName(line.name)
+
+        if let set = line.setCode,
+           let card = await tryFetch(name: normalizedName, set: set, fuzzy: false) {
+            return card
         }
-        return card
+        if let card = await tryFetch(name: normalizedName, set: nil, fuzzy: false) {
+            return card
+        }
+        if let card = await tryFetch(name: normalizedName, set: nil, fuzzy: true) {
+            return card
+        }
+
+        throw ImportDeckListError.scryfallMappingFailed(name: line.name)
+    }
+
+    private func tryFetch(name: String, set: String?, fuzzy: Bool) async -> Card? {
+        do {
+            let dto = try await scryfallClient.card(named: name, set: set, fuzzy: fuzzy)
+            return Card(from: dto)
+        } catch {
+            return nil
+        }
+    }
+
+    /// Moxfield exports use a single ` / ` separator for split / DFC
+    /// cards (e.g. "Agadeem's Awakening / Agadeem, the Undercrypt").
+    /// Scryfall stores them with ` // ` — normalise so exact lookups
+    /// don't 404.
+    private func normalizeName(_ name: String) -> String {
+        var out = name
+        if out.contains(" / "), !out.contains(" // ") {
+            out = out.replacingOccurrences(of: " / ", with: " // ")
+        }
+        return out
     }
 
     private func localLookup(line: ParsedDeckLine) async throws -> Card? {
-        let query = CardQuery(text: line.name, offset: 0, limit: 25)
+        let normalizedName = normalizeName(line.name)
+        let query = CardQuery(text: normalizedName, offset: 0, limit: 25)
         let candidates = try await cardRepository.refresh(query)
-        let lowerName = line.name.lowercased()
+        let lowerName = normalizedName.lowercased()
         let exactMatches = candidates.filter { $0.name.lowercased() == lowerName }
 
-        if let setCode = line.setCode?.lowercased(),
-           let bySet = exactMatches.first(where: { $0.setCode.lowercased() == setCode }) {
-            return bySet
+        // When the import line pins a set, only honour the local match
+        // if the set matches — otherwise punt to Scryfall so we pull the
+        // right printing instead of silently substituting.
+        if let setCode = line.setCode?.lowercased() {
+            return exactMatches.first { $0.setCode.lowercased() == setCode }
         }
         return exactMatches.first
     }
