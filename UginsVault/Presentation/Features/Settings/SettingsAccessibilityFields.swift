@@ -51,6 +51,12 @@ public enum SettingsAccessibilityFields {
 
     public static let faceIDLockToggle   = "btn_settings_face_id_lock"
 
+    // MARK: - Data group
+
+    public static let catalogueSizeRow   = "lbl_settings_catalogue_size"
+    public static let resetCatalogueRow  = "btn_settings_reset_catalogue"
+    public static let resetConfirmButton = "btn_settings_reset_confirm"
+
     // MARK: - About group
 
     public static let versionRow         = "lbl_settings_version"

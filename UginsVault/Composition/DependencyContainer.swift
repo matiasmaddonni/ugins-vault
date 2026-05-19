@@ -126,6 +126,13 @@ public final class DependencyContainer {
         SeedCatalogueUseCase(source: cardCatalogueSource, repository: cardRepository)
     }
 
+    public func makeResetCatalogueUseCase() -> ResetCatalogueUseCase {
+        ResetCatalogueUseCase(
+            cardRepository: cardRepository,
+            seedCatalogue: makeSeedCatalogueUseCase()
+        )
+    }
+
     // MARK: - ViewModel factories
 
     @MainActor public func makeRootViewModel() -> RootViewModel {
@@ -149,6 +156,17 @@ public final class DependencyContainer {
         )
     }
 
+    @MainActor public func makeCardDetailViewModel(
+        card: Card,
+        displayCurrency: Currency
+    ) -> CardDetailViewModel {
+        CardDetailViewModel(
+            card: card,
+            displayCurrency: displayCurrency,
+            client: scryfallClient
+        )
+    }
+
     @MainActor public func makeCollectionViewModel() -> CollectionViewModel {
         CollectionViewModel(
             sessionRepository: sessionRepository,
@@ -161,6 +179,7 @@ public final class DependencyContainer {
         SettingsViewModel(
             sessionRepository:           sessionRepository,
             userProfileRepository:       userProfileRepository,
+            cardRepository:              cardRepository,
             getThemeUseCase:             makeGetThemeUseCase(),
             setThemeUseCase:             makeSetThemeUseCase(),
             getPreferredLanguageUseCase: makeGetPreferredLanguageUseCase(),
@@ -172,7 +191,8 @@ public final class DependencyContainer {
             getFaceIDLockUseCase:        makeGetFaceIDLockUseCase(),
             setFaceIDLockUseCase:        makeSetFaceIDLockUseCase(),
             getUserProfileUseCase:       makeGetUserProfileUseCase(),
-            updateUserProfileUseCase:    makeUpdateUserProfileUseCase()
+            updateUserProfileUseCase:    makeUpdateUserProfileUseCase(),
+            resetCatalogueUseCase:       makeResetCatalogueUseCase()
         )
     }
 }

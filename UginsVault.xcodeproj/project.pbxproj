@@ -31,6 +31,7 @@
 		3373136A53DCB0F7E9CCB19C /* UserProfileUseCasesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C4E3587E66EFD5E5ABF1CC3 /* UserProfileUseCasesTests.swift */; };
 		35252800F3BCEB5AA933CE7F /* AuthenticateUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40FC1F90EF3FACB6EF3311C7 /* AuthenticateUseCaseTests.swift */; };
 		38AD971B1D895C67A16915ED /* CollectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C0C9775E611D214E9197A6F /* CollectionViewModel.swift */; };
+		38B9284459F27CA24409B1B7 /* ResetCatalogueUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526F026B36B77C9F533ADCA4 /* ResetCatalogueUseCase.swift */; };
 		3BD831E2486CF58B18A2EB02 /* CurrencyFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E53902A1BA13EF9708B53E04 /* CurrencyFormatter.swift */; };
 		3C8812351F051559B367FB6D /* SetFaceIDLockUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FE09B07A90CA1A2D7AE6ABC /* SetFaceIDLockUseCase.swift */; };
 		3CFB72238673332DF7A1E7B9 /* ScryfallBulkData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C09D4DCC82D719D39D6E543 /* ScryfallBulkData.swift */; };
@@ -91,6 +92,7 @@
 		A4EBA8D695D608D82ED663D2 /* SplashViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 371EC3A6828D765DA2192949 /* SplashViewModel.swift */; };
 		A652F8F9541F59BBEF06CBE0 /* Spacing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150CEC6C2661103903F892A1 /* Spacing.swift */; };
 		A681B8B2E131810D14C9528A /* UserDefaultsSessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFCFB3DA46448E4815631CF1 /* UserDefaultsSessionStorage.swift */; };
+		A9C4A7FB4185F66EF433BBC4 /* CardDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11C12FFF2E0D5762DB75C78E /* CardDetailViewModel.swift */; };
 		AE2B93CB5FE5B1481934FB35 /* MockBiometricsDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B7498C9D88299DA4D83BC46 /* MockBiometricsDataSource.swift */; };
 		AE2C074E8A91FC496A8E8872 /* UginsVaultApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97BB29F0E8DFB1CE7D2F5912 /* UginsVaultApp.swift */; };
 		AE6379F8F565BD5867A79F2A /* CurrencyFormatterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FED931C6408DC0C8EF4C393 /* CurrencyFormatterTests.swift */; };
@@ -151,6 +153,7 @@
 		0A3B286D185C14A9700C6FAE /* CardDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardDetailView.swift; sourceTree = "<group>"; };
 		0C09D4DCC82D719D39D6E543 /* ScryfallBulkData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScryfallBulkData.swift; sourceTree = "<group>"; };
 		0FFAA967F2B33EF2EE166088 /* ManaColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManaColor.swift; sourceTree = "<group>"; };
+		11C12FFF2E0D5762DB75C78E /* CardDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardDetailViewModel.swift; sourceTree = "<group>"; };
 		12D8BD42984578A11CFB42AD /* ProfileHeroCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileHeroCard.swift; sourceTree = "<group>"; };
 		14DF077B66CA312B002ACC12 /* CardMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardMapper.swift; sourceTree = "<group>"; };
 		150CEC6C2661103903F892A1 /* Spacing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Spacing.swift; sourceTree = "<group>"; };
@@ -178,6 +181,7 @@
 		473CC7CA6C563BEDC2F0E115 /* AcknowledgementsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcknowledgementsSheet.swift; sourceTree = "<group>"; };
 		4E2205B1E5B1E5B52FF41741 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		516CAD5965C1D04A5DC02B7E /* SettingsGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsGroup.swift; sourceTree = "<group>"; };
+		526F026B36B77C9F533ADCA4 /* ResetCatalogueUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetCatalogueUseCase.swift; sourceTree = "<group>"; };
 		538121236CB36B30D4CAC2B6 /* UVRadius.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UVRadius.swift; sourceTree = "<group>"; };
 		561406F4D85343AE2D7569A7 /* MockAuthRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAuthRepository.swift; sourceTree = "<group>"; };
 		573BCA1AC5BFAE9E4BC99792 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -375,6 +379,7 @@
 				BF6E960DA8979FDCDC3427CC /* GetReduceMotionUseCase.swift */,
 				C444ADD62422AFB6CD9E6680 /* GetThemeUseCase.swift */,
 				DE550385B2AD48345EDADCE1 /* GetUserProfileUseCase.swift */,
+				526F026B36B77C9F533ADCA4 /* ResetCatalogueUseCase.swift */,
 				30D4D65BDA3DFD4130DD4196 /* SeedCatalogueUseCase.swift */,
 				9BD4E0E03568CE8E259A1C41 /* SetCurrencyUseCase.swift */,
 				5FE09B07A90CA1A2D7AE6ABC /* SetFaceIDLockUseCase.swift */,
@@ -556,6 +561,7 @@
 			isa = PBXGroup;
 			children = (
 				0A3B286D185C14A9700C6FAE /* CardDetailView.swift */,
+				11C12FFF2E0D5762DB75C78E /* CardDetailViewModel.swift */,
 			);
 			path = CardDetail;
 			sourceTree = "<group>";
@@ -948,6 +954,7 @@
 				925084683708396D7B13FC4A /* Card.swift in Sources */,
 				4426403C8C9641F568C8E333 /* CardCatalogueSource.swift in Sources */,
 				9438152015621AB1F710D2DC /* CardDetailView.swift in Sources */,
+				A9C4A7FB4185F66EF433BBC4 /* CardDetailViewModel.swift in Sources */,
 				EA943967DEE5A1BE883D3B20 /* CardFilterSheet.swift in Sources */,
 				524054B3A6BE2A904B13136E /* CardImages.swift in Sources */,
 				0DA018FBD27D6610E6C8ED7A /* CardMapper.swift in Sources */,
@@ -983,6 +990,7 @@
 				F9CA93A1C8D6B1DFAB6352FD /* ManaColor.swift in Sources */,
 				0A1DAAB06DB744FFFA3ECD54 /* ProfileHeroCard.swift in Sources */,
 				4A44E003D186CBFAC6FCF980 /* Rarity.swift in Sources */,
+				38B9284459F27CA24409B1B7 /* ResetCatalogueUseCase.swift in Sources */,
 				BD1B1EB7C0E4AF57D3D080A3 /* RootView.swift in Sources */,
 				81D75306AADC3E03A96E2D72 /* RootViewModel.swift in Sources */,
 				3CFB72238673332DF7A1E7B9 /* ScryfallBulkData.swift in Sources */,

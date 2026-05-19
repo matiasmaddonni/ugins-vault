@@ -27,7 +27,12 @@ public struct CollectionView: View {
                 .toolbar { toolbar }
                 .task { await viewModel.onAppear() }
                 .navigationDestination(for: Card.self) { card in
-                    CardDetailView(card: card, displayCurrency: viewModel.currency)
+                    CardDetailView(
+                        viewModel: DependencyContainer.shared.makeCardDetailViewModel(
+                            card: card,
+                            displayCurrency: viewModel.currency
+                        )
+                    )
                 }
                 .sheet(isPresented: $isPresentingFilter) {
                     CardFilterSheet(
@@ -212,6 +217,7 @@ public struct CollectionView: View {
             .padding(.top, Spacing.sm)
             .padding(.bottom, Spacing.xl)
         }
+        .refreshable { await viewModel.pullToRefresh() }
     }
 
     private var cardRows: some View {

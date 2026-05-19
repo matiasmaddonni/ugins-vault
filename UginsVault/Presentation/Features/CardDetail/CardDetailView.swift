@@ -3,7 +3,9 @@
 //  UginsVault — Presentation: CardDetail
 //
 //  Single-card screen. Hero image + name + type line + oracle text +
-//  prices block. Pushed onto the Collection navigation stack on row tap.
+//  prices block + a horizontal strip of every other printing that shares
+//  this card's oracle id. Pushed onto the Collection navigation stack
+//  on row tap.
 //
 
 import SwiftUI
@@ -11,12 +13,10 @@ import Kingfisher
 
 public struct CardDetailView: View {
 
-    private let card: Card
-    private let displayCurrency: Currency
+    @State private var viewModel: CardDetailViewModel
 
-    public init(card: Card, displayCurrency: Currency) {
-        self.card = card
-        self.displayCurrency = displayCurrency
+    public init(viewModel: CardDetailViewModel) {
+        _viewModel = State(initialValue: viewModel)
     }
 
     public var body: some View {
@@ -26,14 +26,19 @@ public struct CardDetailView: View {
                 header
                 oracleBlock
                 pricesBlock
+                otherPrintingsBlock
             }
             .padding(.horizontal, Spacing.screenEdge)
             .padding(.vertical, Spacing.lg)
         }
         .background(Color.uv.bg.ignoresSafeArea())
-        .navigationTitle(card.name)
+        .navigationTitle(viewModel.card.name)
         .navigationBarTitleDisplayMode(.inline)
+        .task { await viewModel.loadOtherPrintings() }
     }
+
+    private var card: Card { viewModel.card }
+    private var displayCurrency: Currency { viewModel.displayCurrency }
 
     // MARK: - Hero
 
@@ -192,5 +197,107 @@ public struct CardDetailView: View {
             rows.append(.init(label: "Nonfoil", value: "—"))
         }
         return rows
+    }
+
+    // MARK: - Other printings
+
+    @ViewBuilder
+    private var otherPrintingsBlock: some View {
+        switch viewModel.status {
+        case .idle, .loading:
+            otherPrintingsHeader(showsSpinner: viewModel.status == .loading)
+        case .failed:
+            VStack(alignment: .leading, spacing: Spacing.sm) {
+                otherPrintingsHeader(showsSpinner: false)
+                Text("Couldn't load other printings.")
+                    .font(.uv.body(12))
+                    .foregroundStyle(Color.uv.muted)
+            }
+        case .loaded where !viewModel.otherPrintings.isEmpty:
+            VStack(alignment: .leading, spacing: Spacing.sm) {
+                Text("Other printings")
+                    .uvSectionLabel()
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: Spacing.md) {
+                        ForEach(viewModel.otherPrintings) { printing in
+                            Button {
+                                viewModel.switchTo(printing)
+                            } label: {
+                                OtherPrintingChip(card: printing)
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityIdentifier("btn_card_detail_other_\(printing.setCode)_\(printing.collectorNumber)")
+                        }
+                    }
+                    .padding(.horizontal, Spacing.xs)
+                }
+            }
+        case .loaded:
+            EmptyView()
+        }
+    }
+
+    private func otherPrintingsHeader(showsSpinner: Bool) -> some View {
+        HStack(spacing: Spacing.sm) {
+            Text("Other printings")
+                .uvSectionLabel()
+            if showsSpinner {
+                ProgressView()
+                    .controlSize(.small)
+                    .tint(Color.uv.gold)
+            }
+        }
+    }
+}
+
+// MARK: - OtherPrintingChip
+
+private struct OtherPrintingChip: View {
+
+    let card: Card
+
+    var body: some View {
+        VStack(spacing: Spacing.xs) {
+            thumbnail
+
+            VStack(spacing: 2) {
+                Text(card.setCode.uppercased())
+                    .font(.uv.mono(11, weight: .semibold))
+                    .foregroundStyle(Color.uv.gold)
+                Text("#\(card.collectorNumber)")
+                    .font(.uv.mono(10))
+                    .foregroundStyle(Color.uv.muted)
+            }
+        }
+        .frame(width: 72)
+    }
+
+    private var thumbnail: some View {
+        Group {
+            if let url = card.images.thumbnail {
+                KFImage(url)
+                    .placeholder { placeholder }
+                    .fade(duration: 0.15)
+                    .resizable()
+                    .scaledToFill()
+            } else {
+                placeholder
+            }
+        }
+        .frame(width: 64, height: 90)
+        .clipShape(RoundedRectangle(cornerRadius: UVRadius.sm))
+        .overlay(
+            RoundedRectangle(cornerRadius: UVRadius.sm)
+                .strokeBorder(Color.uv.stroke, lineWidth: 1)
+        )
+    }
+
+    private var placeholder: some View {
+        ZStack {
+            Color.uv.panel
+            Image(systemName: "rectangle.portrait")
+                .font(.system(size: 12, weight: .regular))
+                .foregroundStyle(Color.uv.muted2)
+        }
     }
 }

@@ -15,6 +15,7 @@ public struct SettingsView: View {
     @State private var isEditingProfile: Bool = false
     @State private var isPresentingAcknowledgements: Bool = false
     @State private var presentedSheet: ActiveSheet?
+    @State private var isConfirmingReset: Bool = false
 
     private enum ActiveSheet: Identifiable {
         case language
@@ -43,6 +44,7 @@ public struct SettingsView: View {
 
                     displayGroup
                     privacyGroup
+                    dataGroup
                     aboutGroup
                 }
                 .padding(.horizontal, Spacing.screenEdge)
@@ -52,6 +54,21 @@ public struct SettingsView: View {
             .background(Color.uv.bg.ignoresSafeArea())
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.large)
+            .task { await viewModel.onAppear() }
+            .confirmationDialog(
+                "Reset catalogue?",
+                isPresented: $isConfirmingReset,
+                titleVisibility: .visible
+            ) {
+                Button("Reset catalogue", role: .destructive) {
+                    Task { await viewModel.resetCatalogueNow() }
+                }
+                .accessibilityIdentifier(SettingsAccessibilityFields.resetConfirmButton)
+
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("Wipes every card stored locally and re-downloads the seed set from Scryfall. Your preferences are not affected.")
+            }
             .sheet(isPresented: $isEditingProfile) {
                 EditProfileSheet(profile: viewModel.profile) { updated in
                     viewModel.updateProfile(updated)
@@ -191,6 +208,53 @@ public struct SettingsView: View {
             .padding(.horizontal, Spacing.rowHorizontal)
             .padding(.vertical, Spacing.rowVertical)
         }
+    }
+
+    // MARK: - Data
+
+    private var dataGroup: some View {
+        SettingsGroup("Data") {
+            SettingsRow(
+                icon: "rectangle.stack",
+                title: "Catalogue size"
+            ) {
+                Text(catalogueSizeLabel)
+                    .font(.uv.mono(13, weight: .medium))
+                    .foregroundStyle(Color.uv.muted)
+            }
+            .accessibilityIdentifier(SettingsAccessibilityFields.catalogueSizeRow)
+
+            SettingsRow(
+                icon: "arrow.triangle.2.circlepath",
+                title: "Reset catalogue",
+                subtitle: "Wipe local cards + re-download the seed set",
+                isDestructive: true,
+                action: { isConfirmingReset = true }
+            ) {
+                if viewModel.isResetting {
+                    if case .resetting(let saved) = viewModel.dataStatus {
+                        Text("\(saved)")
+                            .font(.uv.mono(13, weight: .medium))
+                            .foregroundStyle(Color.uv.muted)
+                    } else {
+                        ProgressView().tint(Color.uv.gold)
+                    }
+                } else {
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(Color.uv.muted)
+                }
+            }
+            .accessibilityIdentifier(SettingsAccessibilityFields.resetCatalogueRow)
+            .disabled(viewModel.isResetting)
+        }
+    }
+
+    private var catalogueSizeLabel: String {
+        if viewModel.catalogueCount == 1 {
+            return "1 card"
+        }
+        return "\(viewModel.catalogueCount) cards"
     }
 
     // MARK: - About

@@ -155,6 +155,19 @@ public final class CollectionViewModel {
         }
     }
 
+    /// Drives the swipe-down refresh control on the Collection list.
+    /// Re-runs the current query against the local catalogue and refreshes
+    /// the cached set-code list — does NOT re-seed from Scryfall (use
+    /// `reseed()` for a full reset).
+    public func pullToRefresh() async {
+        do {
+            try await refreshFirstPage()
+            availableSetCodes = try await cardRepository.availableSetCodes()
+        } catch {
+            status = .error(message: error.localizedDescription)
+        }
+    }
+
     public func setSort(_ sort: CardSortOption) {
         self.sort = sort
         Task { await search() }
