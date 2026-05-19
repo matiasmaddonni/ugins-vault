@@ -100,26 +100,23 @@ public struct StackRow: View {
     }
 
     // MARK: - Trailing block
+    //
+    // Note: no manual chevron — `NavigationLink` inside the `List` adds
+    // its own disclosure indicator. Rendering a second one was a bug.
 
     private var trailing: some View {
-        HStack(spacing: Spacing.sm) {
-            VStack(alignment: .trailing, spacing: Spacing.xs - 2) {
-                Text("\(cardCount)")
-                    .font(.uv.mono(13, weight: .semibold))
-                    .foregroundStyle(Color.uv.text)
-                    .accessibilityIdentifier(StacksAccessibilityFields.rowCardCount(at: index))
+        VStack(alignment: .trailing, spacing: Spacing.xs - 2) {
+            Text("\(cardCount)")
+                .font(.uv.mono(13, weight: .semibold))
+                .foregroundStyle(Color.uv.text)
+                .accessibilityIdentifier(StacksAccessibilityFields.rowCardCount(at: index))
 
-                if let displayValue {
-                    Text(displayValue)
-                        .font(.uv.mono(11))
-                        .foregroundStyle(Color.uv.gold)
-                        .accessibilityIdentifier(StacksAccessibilityFields.rowValue(at: index))
-                }
+            if let displayValue {
+                Text(displayValue)
+                    .font(.uv.mono(11))
+                    .foregroundStyle(Color.uv.gold)
+                    .accessibilityIdentifier(StacksAccessibilityFields.rowValue(at: index))
             }
-
-            Image(systemName: "chevron.right")
-                .font(.system(size: Layout.smallIcon - 4, weight: .semibold))
-                .foregroundStyle(Color.uv.muted2)
         }
     }
 }
