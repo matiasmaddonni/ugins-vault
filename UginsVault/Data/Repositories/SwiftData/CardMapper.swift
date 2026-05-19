@@ -46,7 +46,9 @@ extension Card {
                 eur: model.priceEUR,
                 eurFoil: model.priceEURFoil,
                 tix: model.priceTix
-            )
+            ),
+            legalities: Card.parseLegalities(model.legalitiesJSON),
+            isReserved: model.isReserved
         )
     }
 
@@ -59,6 +61,35 @@ extension Card {
         guard !raw.isEmpty else { return [.nonfoil] }
         let parsed = Set(raw.split(separator: ",").compactMap { Finish(rawValue: String($0)) })
         return parsed.isEmpty ? [.nonfoil] : parsed
+    }
+
+    static func parseLegalities(_ json: String) -> [Format: Legality] {
+        guard !json.isEmpty,
+              let data = json.data(using: .utf8),
+              let raw = try? JSONDecoder().decode([String: String].self, from: data)
+        else { return [:] }
+
+        var result: [Format: Legality] = [:]
+        for (key, value) in raw {
+            guard
+                let format = Format(rawValue: key),
+                let legality = Legality(rawValue: value)
+            else { continue }
+            result[format] = legality
+        }
+        return result
+    }
+
+    static func encodeLegalities(_ legalities: [Format: Legality]) -> String {
+        guard !legalities.isEmpty else { return "" }
+        let raw: [String: String] = Dictionary(uniqueKeysWithValues:
+            legalities.map { ($0.key.rawValue, $0.value.rawValue) }
+        )
+        guard
+            let data = try? JSONEncoder().encode(raw),
+            let json = String(data: data, encoding: .utf8)
+        else { return "" }
+        return json
     }
 }
 
@@ -94,7 +125,9 @@ extension SwiftDataCard {
             priceUSDEtched: card.prices.usdEtched,
             priceEUR: card.prices.eur,
             priceEURFoil: card.prices.eurFoil,
-            priceTix: card.prices.tix
+            priceTix: card.prices.tix,
+            legalitiesJSON: Card.encodeLegalities(card.legalities),
+            isReserved: card.isReserved
         )
     }
 
@@ -129,5 +162,7 @@ extension SwiftDataCard {
         priceEUR         = card.prices.eur
         priceEURFoil     = card.prices.eurFoil
         priceTix         = card.prices.tix
+        legalitiesJSON   = Card.encodeLegalities(card.legalities)
+        isReserved       = card.isReserved
     }
 }

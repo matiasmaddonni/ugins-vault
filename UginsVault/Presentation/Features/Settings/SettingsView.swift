@@ -56,7 +56,7 @@ public struct SettingsView: View {
             .navigationBarTitleDisplayMode(.large)
             .task { await viewModel.onAppear() }
             .confirmationDialog(
-                "Reset catalogue?",
+                "Reset the catalogue?",
                 isPresented: $isConfirmingReset,
                 titleVisibility: .visible
             ) {

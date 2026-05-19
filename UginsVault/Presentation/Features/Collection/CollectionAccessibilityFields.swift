@@ -33,4 +33,8 @@ public enum CollectionAccessibilityFields {
     public static let emptyStateTitle    = "lbl_collection_empty_title"
     public static let emptyAddCardButton = "btn_collection_empty_add_card"
     public static let emptyImportCSVButton = "btn_collection_empty_import_csv"
+
+    // MARK: - Undo toast
+
+    public static let undoToast          = "view_collection_undo_toast"
 }

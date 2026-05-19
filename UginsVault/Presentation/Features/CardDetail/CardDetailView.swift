@@ -26,6 +26,7 @@ public struct CardDetailView: View {
                 header
                 oracleBlock
                 pricesBlock
+                legalitiesBlock
                 otherPrintingsBlock
             }
             .padding(.horizontal, Spacing.screenEdge)
@@ -107,7 +108,31 @@ public struct CardDetailView: View {
                         .foregroundStyle(Color.uv.gold)
                 }
             }
+
+            if card.isReserved {
+                reservedListBadge
+                    .padding(.top, Spacing.xs)
+            }
         }
+    }
+
+    private var reservedListBadge: some View {
+        HStack(spacing: Spacing.xs) {
+            Image(systemName: "lock.shield.fill")
+                .font(.system(size: 11, weight: .semibold))
+            Text("Reserved List")
+                .font(.uv.body(11, weight: .semibold))
+        }
+        .foregroundStyle(Color.uv.gold)
+        .padding(.horizontal, Spacing.sm + 2)
+        .padding(.vertical, Spacing.xs + 2)
+        .background(
+            Capsule()
+                .fill(Color.uv.gold.opacity(0.12))
+                .overlay(
+                    Capsule().strokeBorder(Color.uv.gold.opacity(0.5), lineWidth: 1)
+                )
+        )
     }
 
     // MARK: - Oracle text
@@ -197,6 +222,81 @@ public struct CardDetailView: View {
             rows.append(.init(label: "Nonfoil", value: "—"))
         }
         return rows
+    }
+
+    // MARK: - Legalities
+
+    @ViewBuilder
+    private var legalitiesBlock: some View {
+        if !card.legalities.isEmpty {
+            VStack(alignment: .leading, spacing: Spacing.sm) {
+                Text("Legalities")
+                    .uvSectionLabel()
+
+                VStack(spacing: 0) {
+                    let rows = Format.highlighted.compactMap { format -> (Format, Legality)? in
+                        guard let legality = card.legalities[format] else { return nil }
+                        return (format, legality)
+                    }
+                    ForEach(Array(rows.enumerated()), id: \.offset) { index, pair in
+                        HStack {
+                            Text(pair.0.displayName)
+                                .font(.uv.body(14, weight: .medium))
+                                .foregroundStyle(Color.uv.text)
+
+                            Spacer()
+
+                            legalityBadge(pair.1)
+                        }
+                        .padding(.horizontal, Spacing.rowHorizontal)
+                        .padding(.vertical, Spacing.rowVertical)
+
+                        if index != rows.count - 1 {
+                            Rectangle()
+                                .fill(Color.uv.stroke.opacity(0.6))
+                                .frame(height: Layout.hairline)
+                        }
+                    }
+                }
+                .background(
+                    RoundedRectangle(cornerRadius: UVRadius.md)
+                        .fill(Color.uv.panel)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: UVRadius.md)
+                                .strokeBorder(Color.uv.stroke, lineWidth: 1)
+                        )
+                )
+            }
+        }
+    }
+
+    private func legalityBadge(_ legality: Legality) -> some View {
+        Text(legality.displayName)
+            .font(.uv.mono(11, weight: .semibold))
+            .foregroundStyle(legalityForeground(legality))
+            .padding(.horizontal, Spacing.sm + 2)
+            .padding(.vertical, Spacing.xs / 2 + 2)
+            .background(
+                Capsule().fill(legalityBackground(legality))
+            )
+    }
+
+    private func legalityForeground(_ legality: Legality) -> Color {
+        switch legality {
+        case .legal:      return Color.uv.up
+        case .restricted: return Color.uv.warn
+        case .banned:     return Color.uv.down
+        case .notLegal:   return Color.uv.muted
+        }
+    }
+
+    private func legalityBackground(_ legality: Legality) -> Color {
+        switch legality {
+        case .legal:      return Color.uv.up.opacity(0.15)
+        case .restricted: return Color.uv.warn.opacity(0.15)
+        case .banned:     return Color.uv.down.opacity(0.15)
+        case .notLegal:   return Color.uv.panelHi.opacity(0.6)
+        }
     }
 
     // MARK: - Other printings

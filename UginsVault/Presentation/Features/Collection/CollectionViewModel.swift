@@ -182,17 +182,60 @@ public final class CollectionViewModel {
         applyFilter(.empty)
     }
 
+    // MARK: - Undo state
+
+    public private(set) var recentlyRemoved: Card?
+
+    @ObservationIgnored private var undoTimer: Task<Void, Never>?
+
     /// Removes a single card from the local catalogue (driven by the
     /// row's trailing swipe action). Bumps the in-memory list + the
-    /// matching-count label.
+    /// matching-count label and stashes the removed card so the user
+    /// can undo within 5 seconds.
     public func removeCard(id: UUID) async {
+        guard let card = cards.first(where: { $0.id == id }) else { return }
         do {
             try await cardRepository.delete(id: id)
             cards.removeAll { $0.id == id }
             matchingCount = try await cardRepository.count(matching: currentQuery)
             totalCount = try await cardRepository.totalCount()
+            scheduleUndo(for: card)
         } catch {
             status = .error(message: error.localizedDescription)
+        }
+    }
+
+    /// Re-inserts the most recently removed card. No-op when the undo
+    /// window has expired.
+    public func undoRemoveCard() async {
+        guard let card = recentlyRemoved else { return }
+        recentlyRemoved = nil
+        undoTimer?.cancel()
+        undoTimer = nil
+        do {
+            try await cardRepository.save([card])
+            try await refreshFirstPage()
+        } catch {
+            status = .error(message: error.localizedDescription)
+        }
+    }
+
+    /// Drops the pending undo (called when the toast times out or is
+    /// dismissed).
+    public func dismissUndo() {
+        recentlyRemoved = nil
+        undoTimer?.cancel()
+        undoTimer = nil
+    }
+
+    private func scheduleUndo(for card: Card) {
+        recentlyRemoved = card
+        undoTimer?.cancel()
+        undoTimer = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(5))
+            guard !Task.isCancelled else { return }
+            self?.recentlyRemoved = nil
+            self?.undoTimer = nil
         }
     }
 

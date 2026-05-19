@@ -52,8 +52,23 @@ extension Card {
                 eur:       dto.prices?.eur.flatMap { Decimal(string: $0) },
                 eurFoil:   dto.prices?.eurFoil.flatMap { Decimal(string: $0) },
                 tix:       dto.prices?.tix.flatMap { Decimal(string: $0) }
-            )
+            ),
+            legalities: Self.parseLegalities(dto.legalities),
+            isReserved: dto.reserved ?? false
         )
+    }
+
+    static func parseLegalities(_ raw: [String: String]?) -> [Format: Legality] {
+        guard let raw else { return [:] }
+        var result: [Format: Legality] = [:]
+        for (key, value) in raw {
+            guard
+                let format = Format(rawValue: key),
+                let legality = Legality(rawValue: value)
+            else { continue }
+            result[format] = legality
+        }
+        return result
     }
 
     static func parseReleaseDate(_ raw: String) -> Date? {

@@ -900,6 +900,144 @@
       "localizations" : {
         "es" : { "stringUnit" : { "state" : "translated", "value" : "Probá otro nombre o limpiá el filtro." } }
       }
+    },
+    "Remove" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Quitar" } }
+      }
+    },
+    "Copy name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Copiar nombre" } }
+      }
+    },
+    "Remove from catalogue" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Quitar de la colección" } }
+      }
+    },
+    "Removed %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "%@ eliminada" } }
+      }
+    },
+    "Undo" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Deshacer" } }
+      }
+    },
+    "Dismiss" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Cerrar" } }
+      }
+    },
+    "Data" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Datos" } }
+      }
+    },
+    "Catalogue size" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Tamaño de la colección" } }
+      }
+    },
+    "Reset catalogue" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Reiniciar colección" } }
+      }
+    },
+    "Wipe local cards + re-download the seed set" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Borra las cartas locales y vuelve a descargar el set inicial" } }
+      }
+    },
+    "Reset the catalogue?" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¿Reiniciar la colección?" } }
+      }
+    },
+    "Wipes every card stored locally and re-downloads the seed set from Scryfall. Your preferences are not affected." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Borra todas las cartas guardadas localmente y vuelve a descargar el set inicial desde Scryfall. Tus preferencias no se ven afectadas." } }
+      }
+    },
+    "1 card" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "1 carta" } }
+      }
+    },
+    "Other printings" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Otras impresiones" } }
+      }
+    },
+    "Couldn't load other printings." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "No se pudieron cargar otras impresiones." } }
+      }
+    },
+    "Legalities" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Legalidades" } }
+      }
+    },
+    "Legal" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Legal" } }
+      }
+    },
+    "Not legal" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "No legal" } }
+      }
+    },
+    "Restricted" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Restringido" } }
+      }
+    },
+    "Banned" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Prohibido" } }
+      }
+    },
+    "Reserved List" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Lista Reservada" } }
+      }
+    },
+    "Standard" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Estándar" } }
+      }
+    },
+    "Modern" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Moderno" } }
+      }
     }
   },
   "version" : "1.1"

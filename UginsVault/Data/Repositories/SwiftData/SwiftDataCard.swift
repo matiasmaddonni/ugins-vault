@@ -60,6 +60,15 @@ public final class SwiftDataCard {
     public var priceEURFoil:   Decimal?
     public var priceTix:       Decimal?
 
+    // MARK: - Legalities + reserved list
+
+    /// JSON-encoded `[String: String]` mapping `Format.rawValue` to
+    /// `Legality.rawValue`. Empty string when no legalities are stored.
+    /// Default supplied at property level so SwiftData lightweight
+    /// migration can fill the column for pre-existing rows.
+    public var legalitiesJSON: String = ""
+    public var isReserved: Bool = false
+
     // MARK: - Init
 
     public init(
@@ -90,7 +99,9 @@ public final class SwiftDataCard {
         priceUSDEtched: Decimal? = nil,
         priceEUR: Decimal? = nil,
         priceEURFoil: Decimal? = nil,
-        priceTix: Decimal? = nil
+        priceTix: Decimal? = nil,
+        legalitiesJSON: String = "",
+        isReserved: Bool = false
     ) {
         self.id = id
         self.oracleID = oracleID
@@ -120,5 +131,7 @@ public final class SwiftDataCard {
         self.priceEUR = priceEUR
         self.priceEURFoil = priceEURFoil
         self.priceTix = priceTix
+        self.legalitiesJSON = legalitiesJSON
+        self.isReserved = isReserved
     }
 }

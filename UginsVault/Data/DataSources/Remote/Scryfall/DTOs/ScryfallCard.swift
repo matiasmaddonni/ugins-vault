@@ -40,11 +40,13 @@ public struct ScryfallCard: Decodable, Sendable, Identifiable {
     public let rarity: String
     public let releasedAt: String?      // ISO-8601 yyyy-MM-dd
 
-    // MARK: - Finishes + images + prices
+    // MARK: - Finishes + images + prices + legalities
 
     public let finishes: [String]?
     public let imageURIs: ImageURIs?
     public let prices: Prices?
+    public let legalities: [String: String]?
+    public let reserved: Bool?
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -65,6 +67,8 @@ public struct ScryfallCard: Decodable, Sendable, Identifiable {
         case finishes
         case imageURIs        = "image_uris"
         case prices
+        case legalities
+        case reserved
     }
 
     // MARK: - Nested

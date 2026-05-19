@@ -41,8 +41,22 @@ public struct CollectionView: View {
                         onApply: { viewModel.applyFilter($0) }
                     )
                 }
+                .overlay(alignment: .bottom) { undoOverlay }
+                .animation(.spring(response: 0.35, dampingFraction: 0.85), value: viewModel.recentlyRemoved?.id)
         }
         .accessibilityIdentifier(CollectionAccessibilityFields.screen)
+    }
+
+    @ViewBuilder
+    private var undoOverlay: some View {
+        if let removed = viewModel.recentlyRemoved {
+            UndoToast(
+                message: "Removed \(removed.name)",
+                onUndo: { Task { await viewModel.undoRemoveCard() } },
+                onDismiss: { viewModel.dismissUndo() }
+            )
+            .accessibilityIdentifier(CollectionAccessibilityFields.undoToast)
+        }
     }
 
     @ToolbarContentBuilder

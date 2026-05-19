@@ -45,6 +45,11 @@ public struct Card: Identifiable, Hashable, Codable, Sendable {
     public let images: CardImages
     public let prices: CardPrices
 
+    // MARK: - Legalities
+
+    public let legalities: [Format: Legality]
+    public let isReserved: Bool
+
     public init(
         id: UUID,
         oracleID: UUID,
@@ -63,7 +68,9 @@ public struct Card: Identifiable, Hashable, Codable, Sendable {
         releasedAt: Date? = nil,
         finishes: Set<Finish> = [.nonfoil],
         images: CardImages = CardImages(),
-        prices: CardPrices = .zero
+        prices: CardPrices = .zero,
+        legalities: [Format: Legality] = [:],
+        isReserved: Bool = false
     ) {
         self.id = id
         self.oracleID = oracleID
@@ -83,5 +90,7 @@ public struct Card: Identifiable, Hashable, Codable, Sendable {
         self.finishes = finishes
         self.images = images
         self.prices = prices
+        self.legalities = legalities
+        self.isReserved = isReserved
     }
 }
