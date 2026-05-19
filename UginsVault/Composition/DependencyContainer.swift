@@ -47,7 +47,11 @@ public final class DependencyContainer {
         }
 
         do {
-            return try ModelContainer(for: SwiftDataCard.self)
+            return try ModelContainer(
+                for: SwiftDataCard.self,
+                SwiftDataStack.self,
+                SwiftDataCollectionItem.self
+            )
         } catch {
             // On-disk store failed to open (most often a lightweight
             // migration failure after a schema bump). Fall back to a
@@ -60,13 +64,20 @@ public final class DependencyContainer {
     private static func makeInMemoryContainer() -> ModelContainer {
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
         do {
-            return try ModelContainer(for: SwiftDataCard.self, configurations: config)
+            return try ModelContainer(
+                for: SwiftDataCard.self,
+                SwiftDataStack.self,
+                SwiftDataCollectionItem.self,
+                configurations: config
+            )
         } catch {
             fatalError("Failed to construct in-memory ModelContainer: \(error)")
         }
     }
 
     public lazy var cardRepository: CardRepository = SwiftDataCardRepository(modelContainer: modelContainer)
+    public lazy var stackRepository: StackRepository = SwiftDataStackRepository(modelContainer: modelContainer)
+    public lazy var collectionItemRepository: CollectionItemRepository = SwiftDataCollectionItemRepository(modelContainer: modelContainer)
 
     public lazy var cardCatalogueSource: CardCatalogueSource = ScryfallCardCatalogueSource(client: scryfallClient)
 
