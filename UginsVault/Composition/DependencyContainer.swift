@@ -266,7 +266,9 @@ public final class DependencyContainer {
     @MainActor public func makeDashboardViewModel() -> DashboardViewModel {
         DashboardViewModel(
             repository: dashboardRepository,
-            sessionRepository: sessionRepository
+            sessionRepository: sessionRepository,
+            syncPrices: makeSyncPricesUseCase(),
+            reachability: networkReachability
         )
     }
 

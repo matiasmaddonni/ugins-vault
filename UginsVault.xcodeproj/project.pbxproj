@@ -67,6 +67,7 @@
 		4A44E003D186CBFAC6FCF980 /* Rarity.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9371A7835FAC820999AAAD3 /* Rarity.swift */; };
 		4CC2E8D20CC584A14984E674 /* UVTypography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1EAF33F9FA817C0BA176C4 /* UVTypography.swift */; };
 		4D48C4803105E63691A1EFB3 /* SkeletonBlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48E4D2C458A5C01AD7912626 /* SkeletonBlock.swift */; };
+		4E9B785E1FCB1A896D1D1012 /* SettingsPriceSyncRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72D9D8A3C23DA8436E6708EA /* SettingsPriceSyncRow.swift */; };
 		508E0014DF0E9D2E05EA3F47 /* UVColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C33F74A36AF89DA5A2AD6AA /* UVColors.swift */; };
 		524054B3A6BE2A904B13136E /* CardImages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 992C5BC04B97F7EEE386EEE2 /* CardImages.swift */; };
 		54944E23AACB90264E5ECF37 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573BCA1AC5BFAE9E4BC99792 /* SettingsView.swift */; };
@@ -219,6 +220,7 @@
 		F9CA93A1C8D6B1DFAB6352FD /* ManaColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FFAA967F2B33EF2EE166088 /* ManaColor.swift */; };
 		FA3CE1CA42A08054E36829E9 /* CollectionItemMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F1BBDC1C16F6A79CB8F9DD9 /* CollectionItemMapper.swift */; };
 		FAB4CE119594808D52046890 /* MoveCollectionItemUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7D5FCA00BF74C67BD6A1A78 /* MoveCollectionItemUseCaseTests.swift */; };
+		FAD645A2D85CBE224E157CE9 /* PriceSyncScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF75D78431EA915749D60AF5 /* PriceSyncScheduler.swift */; };
 		FB18D5F603A9CF2E109E2312 /* SyncPricesUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F232815F82C3E5A5B19825C /* SyncPricesUseCase.swift */; };
 		FB74264F88367ACA6144A5EE /* ImportResultToast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7728567904942E129C06795B /* ImportResultToast.swift */; };
 		FD14524C781F56BAAB971238 /* AppPhase.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8D8A6C250B91C27F4E42ECA /* AppPhase.swift */; };
@@ -283,7 +285,7 @@
 		38735681315AE0A16F465BAA /* MTGJSONPriceParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTGJSONPriceParser.swift; sourceTree = "<group>"; };
 		3BE42A3FD09B2DDB72EF4D91 /* CardPrices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardPrices.swift; sourceTree = "<group>"; };
 		3DB3029F9071983EFAB8BD33 /* LoginAccessibilityFields.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginAccessibilityFields.swift; sourceTree = "<group>"; };
-		3DE1358AD226C96D9BA1B04E /* UginsVault.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UginsVault.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3DE1358AD226C96D9BA1B04E /* UginsVault.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = UginsVault.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		40CC2A6205A8581BDAACAE65 /* PriceSyncViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceSyncViewModelTests.swift; sourceTree = "<group>"; };
 		40FC1F90EF3FACB6EF3311C7 /* AuthenticateUseCaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticateUseCaseTests.swift; sourceTree = "<group>"; };
 		41211929DF0F9F6B9C41B173 /* ScryfallError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScryfallError.swift; sourceTree = "<group>"; };
@@ -320,6 +322,7 @@
 		7140589A3B2F92B6620CD235 /* LocalAuthRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAuthRepository.swift; sourceTree = "<group>"; };
 		71B545E5C8EA05663D305883 /* MoveCollectionItemUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveCollectionItemUseCase.swift; sourceTree = "<group>"; };
 		72AE9E6A207C4CD4540489C9 /* DependencyContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DependencyContainer.swift; sourceTree = "<group>"; };
+		72D9D8A3C23DA8436E6708EA /* SettingsPriceSyncRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPriceSyncRow.swift; sourceTree = "<group>"; };
 		746935D973403B4EDAB525A1 /* StackKindBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackKindBadge.swift; sourceTree = "<group>"; };
 		753CE2FED9572B8636E8CEB0 /* CardCatalogueSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardCatalogueSource.swift; sourceTree = "<group>"; };
 		7607EA2A3CC32886537A41C2 /* SwiftDataCollectionItemRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataCollectionItemRepositoryTests.swift; sourceTree = "<group>"; };
@@ -450,6 +453,7 @@
 		FB22203AF39BD9D6A6A8E4E6 /* ImportDeckListSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportDeckListSheet.swift; sourceTree = "<group>"; };
 		FB982D74795859C3B47E4106 /* WishlistTeaser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishlistTeaser.swift; sourceTree = "<group>"; };
 		FC84CF07D8BDD2AAF3FAA351 /* MockCardCatalogueSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCardCatalogueSource.swift; sourceTree = "<group>"; };
+		FF75D78431EA915749D60AF5 /* PriceSyncScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceSyncScheduler.swift; sourceTree = "<group>"; };
 		FFCD2F4D0D0F3B216E4F4C50 /* GetCurrencyUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetCurrencyUseCase.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -754,6 +758,7 @@
 		707423539226F93C7D912538 /* App */ = {
 			isa = PBXGroup;
 			children = (
+				FF75D78431EA915749D60AF5 /* PriceSyncScheduler.swift */,
 				97BB29F0E8DFB1CE7D2F5912 /* UginsVaultApp.swift */,
 			);
 			path = App;
@@ -912,6 +917,7 @@
 			isa = PBXGroup;
 			children = (
 				12D8BD42984578A11CFB42AD /* ProfileHeroCard.swift */,
+				72D9D8A3C23DA8436E6708EA /* SettingsPriceSyncRow.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -1240,6 +1246,16 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 2650;
+				TargetAttributes = {
+					7FC924EAF831D559B0531C5F = {
+						DevelopmentTeam = 9HTVU364QA;
+						ProvisioningStyle = Automatic;
+					};
+					E10A3DE764F00D6274A73DC1 = {
+						DevelopmentTeam = 9HTVU364QA;
+						ProvisioningStyle = Automatic;
+					};
+				};
 			};
 			buildConfigurationList = CD9CF7814AD5ECC49AA46A29 /* Build configuration list for PBXProject "UginsVault" */;
 			developmentRegion = en;
@@ -1418,6 +1434,7 @@
 				E4F75F56DB57D9DC5DA79290 /* PriceSnapshotMapper.swift in Sources */,
 				805ED46895559DE3E063431B /* PriceSource.swift in Sources */,
 				0D4ED5B34BCCE157ABD47338 /* PriceSyncAccessibilityFields.swift in Sources */,
+				FAD645A2D85CBE224E157CE9 /* PriceSyncScheduler.swift in Sources */,
 				7AB87EAE223814983A369CBF /* PriceSyncView.swift in Sources */,
 				DC92293AD584384EB1B3A144 /* PriceSyncViewModel.swift in Sources */,
 				0A1DAAB06DB744FFFA3ECD54 /* ProfileHeroCard.swift in Sources */,
@@ -1447,6 +1464,7 @@
 				EE65054D4FAC7685AC742AAD /* SetThemeUseCase.swift in Sources */,
 				BA252F32E3A800E29F3116DC /* SettingsAccessibilityFields.swift in Sources */,
 				9ED5618A694DA416D2A8FCDA /* SettingsGroup.swift in Sources */,
+				4E9B785E1FCB1A896D1D1012 /* SettingsPriceSyncRow.swift in Sources */,
 				5D477902216A216F1A93A027 /* SettingsRow.swift in Sources */,
 				54944E23AACB90264E5ECF37 /* SettingsView.swift in Sources */,
 				BB38EF94D2521EC6B683EFE9 /* SettingsViewModel.swift in Sources */,
@@ -1522,12 +1540,13 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_ASSET_PATHS = "\"UginsVault/Preview Content\"";
-				DEVELOPMENT_TEAM = 9HTVU364QA;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_BGTaskSchedulerPermittedIdentifiers = com.matiasmaddonni.uginsvault.priceSync;
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "Unlock your vault with Face ID.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UIBackgroundModes = "fetch processing";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -1550,12 +1569,13 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_ASSET_PATHS = "\"UginsVault/Preview Content\"";
-				DEVELOPMENT_TEAM = 9HTVU364QA;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_BGTaskSchedulerPermittedIdentifiers = com.matiasmaddonni.uginsvault.priceSync;
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "Unlock your vault with Face ID.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UIBackgroundModes = "fetch processing";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -1604,9 +1624,11 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 9HTVU364QA;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -1671,9 +1693,11 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 9HTVU364QA;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;

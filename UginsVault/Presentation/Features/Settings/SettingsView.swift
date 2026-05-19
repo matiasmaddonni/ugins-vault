@@ -224,6 +224,11 @@ public struct SettingsView: View {
             }
             .accessibilityIdentifier(SettingsAccessibilityFields.catalogueSizeRow)
 
+            SettingsPriceSyncRow(
+                priceRepository: DependencyContainer.shared.priceRepository,
+                makeSyncViewModel: { DependencyContainer.shared.makePriceSyncViewModel() }
+            )
+
             SettingsRow(
                 icon: "arrow.triangle.2.circlepath",
                 title: "Reset catalogue",

@@ -998,6 +998,17 @@
         }
       }
     },
+    "Last synced %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sincronizado %@"
+          }
+        }
+      }
+    },
     "Legal": {
       "extractionState": "manual",
       "localizations": {
@@ -1182,6 +1193,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Nombre (A–Z)"
+          }
+        }
+      }
+    },
+    "Never synced": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sin sincronizar"
           }
         }
       }
@@ -1537,6 +1559,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Reducir movimiento"
+          }
+        }
+      }
+    },
+    "Refresh prices": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actualizar precios"
           }
         }
       }

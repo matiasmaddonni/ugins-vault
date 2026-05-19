@@ -34,15 +34,21 @@ public final class DashboardViewModel {
 
     @ObservationIgnored private let repository: DashboardRepository
     @ObservationIgnored private let sessionRepository: SessionRepository
+    @ObservationIgnored private let syncPrices: SyncPricesUseCase?
+    @ObservationIgnored private let reachability: NetworkReachability?
 
     // MARK: - Init
 
     public init(
         repository: DashboardRepository,
-        sessionRepository: SessionRepository
+        sessionRepository: SessionRepository,
+        syncPrices: SyncPricesUseCase? = nil,
+        reachability: NetworkReachability? = nil
     ) {
         self.repository = repository
         self.sessionRepository = sessionRepository
+        self.syncPrices = syncPrices
+        self.reachability = reachability
         self.currency = sessionRepository.currency
     }
 
@@ -73,8 +79,15 @@ public final class DashboardViewModel {
         }
     }
 
-    /// Pull-to-refresh hook. Re-fetches the snapshot.
+    /// Pull-to-refresh hook. Fires a price sync (silently, gated on
+    /// Wi-Fi) and then re-fetches the snapshot. The sync runs
+    /// fire-and-forget — Dashboard never blocks on it because the
+    /// snapshot consumes locally-persisted price data, not the
+    /// remote response.
     public func refresh() async {
+        if let syncPrices, reachability?.isOnWiFi == true {
+            try? await syncPrices.execute(progress: nil)
+        }
         do {
             let result = try await repository.fetch()
             self.snapshot = result
