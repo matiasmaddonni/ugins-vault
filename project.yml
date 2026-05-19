@@ -6,6 +6,10 @@ options:
   createIntermediateGroups: true
   developmentLanguage: en
   xcodeVersion: "2650"
+packages:
+  Kingfisher:
+    url: https://github.com/onevcat/Kingfisher
+    from: "8.0.0"
 settings:
   base:
     SWIFT_VERSION: "6.0"
@@ -42,6 +46,8 @@ targets:
       - path: UginsVault
         excludes:
           - "**/.keep"
+    dependencies:
+      - package: Kingfisher
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.matiasmaddonni.uginsvault

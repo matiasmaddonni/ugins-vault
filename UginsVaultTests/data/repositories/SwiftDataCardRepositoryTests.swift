@@ -55,7 +55,7 @@ struct SwiftDataCardRepositoryTests {
         let bolt = makeBolt()
 
         try await repo.save([bolt])
-        let loaded = try await repo.refresh(query: "")
+        let loaded = try await repo.refresh(.recent)
 
         #expect(try await repo.totalCount() == 1)
         #expect(loaded.first?.name == "Lightning Bolt")
@@ -93,7 +93,7 @@ struct SwiftDataCardRepositoryTests {
             makeBolt(name: "Counterspell")
         ])
 
-        let bolts = try await repo.refresh(query: "lightning")
+        let bolts = try await repo.refresh(CardQuery(text: "lightning"))
 
         #expect(bolts.count == 2)
         #expect(bolts.allSatisfy { $0.name.lowercased().contains("lightning") })
@@ -109,6 +109,170 @@ struct SwiftDataCardRepositoryTests {
 
         #expect(try await repo.totalCount() == 0)
         #expect(repo.cards.isEmpty)
+    }
+
+    // MARK: - Sort + filter + pagination
+
+    @Test("Sort by name returns ascending")
+    func sortByName() async throws {
+        let repo = try makeRepository()
+        try await repo.save([
+            makeBolt(name: "Counterspell"),
+            makeBolt(name: "Ancestral Recall"),
+            makeBolt(name: "Brainstorm")
+        ])
+
+        let loaded = try await repo.refresh(CardQuery(sort: .nameAscending))
+
+        #expect(loaded.map(\.name) == ["Ancestral Recall", "Brainstorm", "Counterspell"])
+    }
+
+    @Test("Sort by price descending puts highest first, nil last")
+    func sortByPrice() async throws {
+        let repo = try makeRepository()
+        try await repo.save([
+            cardWithPrice(name: "Mid", usd: Decimal(string: "5.00")),
+            cardWithPrice(name: "High", usd: Decimal(string: "20.00")),
+            cardWithPrice(name: "None", usd: nil)
+        ])
+
+        let loaded = try await repo.refresh(CardQuery(sort: .priceDescending))
+
+        #expect(loaded.first?.name == "High")
+        #expect(loaded.last?.name == "None")
+    }
+
+    @Test("Filter by rarity restricts results")
+    func filterByRarity() async throws {
+        let repo = try makeRepository()
+        try await repo.save([
+            cardWithRarity(name: "C", rarity: .common),
+            cardWithRarity(name: "M", rarity: .mythic),
+            cardWithRarity(name: "R", rarity: .rare)
+        ])
+
+        let loaded = try await repo.refresh(
+            CardQuery(filter: CardFilter(rarities: [.mythic, .rare]))
+        )
+
+        #expect(loaded.count == 2)
+        #expect(loaded.allSatisfy { [.mythic, .rare].contains($0.rarity) })
+    }
+
+    @Test("Filter by colour requires all selected colours")
+    func filterByColor() async throws {
+        let repo = try makeRepository()
+        try await repo.save([
+            cardWithColors(name: "Mono Red", colors: [.red]),
+            cardWithColors(name: "Boros", colors: [.red, .white]),
+            cardWithColors(name: "Mono Blue", colors: [.blue])
+        ])
+
+        let loaded = try await repo.refresh(
+            CardQuery(filter: CardFilter(colors: [.red]))
+        )
+
+        #expect(loaded.count == 2)
+        #expect(loaded.map(\.name).sorted() == ["Boros", "Mono Red"])
+    }
+
+    @Test("Pagination respects offset + limit")
+    func paginationOffsetLimit() async throws {
+        let repo = try makeRepository()
+        try await repo.save((0..<10).map { makeBolt(name: String(format: "Card %02d", $0)) })
+
+        let firstPage = try await repo.refresh(CardQuery(offset: 0, limit: 4))
+        let secondPage = try await repo.refresh(CardQuery(offset: 4, limit: 4))
+
+        #expect(firstPage.count == 4)
+        #expect(secondPage.count == 4)
+        #expect(firstPage.first?.name == "Card 00")
+        #expect(secondPage.first?.name == "Card 04")
+    }
+
+    @Test("count(matching:) reports the unpaginated total")
+    func countMatching() async throws {
+        let repo = try makeRepository()
+        try await repo.save([
+            cardWithRarity(name: "A", rarity: .common),
+            cardWithRarity(name: "B", rarity: .common),
+            cardWithRarity(name: "C", rarity: .rare)
+        ])
+
+        let commons = try await repo.count(matching: CardQuery(filter: CardFilter(rarities: [.common])))
+        let all = try await repo.count(matching: .recent)
+
+        #expect(commons == 2)
+        #expect(all == 3)
+    }
+
+    @Test("availableSetCodes returns unique sorted set codes")
+    func availableSetCodes() async throws {
+        let repo = try makeRepository()
+        try await repo.save([
+            cardWithSet(name: "A", set: "lea"),
+            cardWithSet(name: "B", set: "lea"),
+            cardWithSet(name: "C", set: "ice"),
+            cardWithSet(name: "D", set: "fdn")
+        ])
+
+        let codes = try await repo.availableSetCodes()
+
+        #expect(codes == ["fdn", "ice", "lea"])
+    }
+
+    // MARK: - Helpers continued
+
+    private func cardWithPrice(name: String, usd: Decimal?) -> Card {
+        Card(
+            id: UUID(),
+            oracleID: UUID(),
+            name: name,
+            typeLine: "Instant",
+            setCode: "tst",
+            setName: "Test",
+            collectorNumber: "1",
+            prices: CardPrices(usd: usd)
+        )
+    }
+
+    private func cardWithRarity(name: String, rarity: Rarity) -> Card {
+        Card(
+            id: UUID(),
+            oracleID: UUID(),
+            name: name,
+            typeLine: "Instant",
+            rarity: rarity,
+            setCode: "tst",
+            setName: "Test",
+            collectorNumber: "1"
+        )
+    }
+
+    private func cardWithColors(name: String, colors: Set<ManaColor>) -> Card {
+        Card(
+            id: UUID(),
+            oracleID: UUID(),
+            name: name,
+            typeLine: "Instant",
+            colors: colors,
+            colorIdentity: colors,
+            setCode: "tst",
+            setName: "Test",
+            collectorNumber: "1"
+        )
+    }
+
+    private func cardWithSet(name: String, set: String) -> Card {
+        Card(
+            id: UUID(),
+            oracleID: UUID(),
+            name: name,
+            typeLine: "Instant",
+            setCode: set,
+            setName: set.uppercased(),
+            collectorNumber: "1"
+        )
     }
 
     @Test("Mapper round-trips colours, finishes, prices, and images")

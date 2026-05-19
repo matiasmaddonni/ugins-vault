@@ -57,6 +57,7 @@
 		64A68ABAA1B1C1E18E64AF16 /* LoginViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97C174B1FAFA2DC33BB4EA56 /* LoginViewModelTests.swift */; };
 		65A0704C53BDC1ED1B508B0F /* FaceIDLockUseCasesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 808E807AB6AD0A579D3B0CFB /* FaceIDLockUseCasesTests.swift */; };
 		65BFEEA87CC395A21F7AF854 /* AcknowledgementsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473CC7CA6C563BEDC2F0E115 /* AcknowledgementsSheet.swift */; };
+		65DE8790EC72AC018CAE7BE5 /* CardQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC6DEB0A1155CB665B9D4B88 /* CardQuery.swift */; };
 		65F3E9A368B884718AC1BFF3 /* UserProfileRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69ED47A041532F48D41D9C0E /* UserProfileRepository.swift */; };
 		6935D76A69433A31DC46B1C6 /* UginMark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32845AB67AEC9F17C0A38241 /* UginMark.swift */; };
 		69F44C3C71EEC50E0F049DEC /* MainTabAccessibilityFields.swift in Sources */ = {isa = PBXBuildFile; fileRef = E602F754B22532E67BC8531B /* MainTabAccessibilityFields.swift */; };
@@ -110,6 +111,7 @@
 		CE7E45DD605E0986C926CE31 /* Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB87CECE5698FE5A267E3919 /* Layout.swift */; };
 		D06DF6CDEABC44F2ED89D96C /* SwiftDataCardRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5CAF902F7401F1573386F6 /* SwiftDataCardRepositoryTests.swift */; };
 		D1F319CFEA55136043A75435 /* AdvanceFromSplashUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B919F0DA26D2A0D0C095D3A /* AdvanceFromSplashUseCaseTests.swift */; };
+		D349F6C3E27C8A8A67857FAA /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = F94C126CFFD087B2FC8A11C3 /* Kingfisher */; };
 		DB2583067962632F2E7F44EE /* MockURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57AA7C00F9C9814A8240307E /* MockURLProtocol.swift */; };
 		DD6FDAADD6085CFE408DA0D3 /* UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09F4AA64B7BACDA38D2A315E /* UserProfile.swift */; };
 		DEA29B9D77E1D02AB6F55772 /* UserDefaultsSessionRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3C7C2C422CCFA85708E2CF /* UserDefaultsSessionRepository.swift */; };
@@ -120,6 +122,7 @@
 		E3DE5C9A192192D1BC19F7F3 /* LanguageUseCasesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0A5A2E99C9C42EC7627DD31 /* LanguageUseCasesTests.swift */; };
 		E66361098ED43FBBEF3F85A2 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9BA8273B66057AE761446B48 /* Preview Assets.xcassets */; };
 		E84A6E9C8F3EC879B5AF0FF8 /* Language.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85272FCAA471C72BBB964733 /* Language.swift */; };
+		EA943967DEE5A1BE883D3B20 /* CardFilterSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 877627050C8289323DA9995E /* CardFilterSheet.swift */; };
 		EE65054D4FAC7685AC742AAD /* SetThemeUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5F01692FF1817D513068F08 /* SetThemeUseCase.swift */; };
 		EF42556E520A7260A5A13C29 /* MockCardCatalogueSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC84CF07D8BDD2AAF3FAA351 /* MockCardCatalogueSource.swift */; };
 		EFF31107C01F2A4DEF93219F /* ScryfallClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83648424B1B7782AB25BA533 /* ScryfallClient.swift */; };
@@ -198,6 +201,7 @@
 		83648424B1B7782AB25BA533 /* ScryfallClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScryfallClient.swift; sourceTree = "<group>"; };
 		85272FCAA471C72BBB964733 /* Language.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Language.swift; sourceTree = "<group>"; };
 		86692ED694F927ABA0C5FACF /* UserDefaultsUserProfileRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsUserProfileRepositoryTests.swift; sourceTree = "<group>"; };
+		877627050C8289323DA9995E /* CardFilterSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardFilterSheet.swift; sourceTree = "<group>"; };
 		8788701DB5F657CF83D04174 /* SwiftDataCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataCard.swift; sourceTree = "<group>"; };
 		888928878B0A6FC470CC1E59 /* GetCurrentPhaseUseCaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetCurrentPhaseUseCaseTests.swift; sourceTree = "<group>"; };
 		88DA8541904E3720D012D375 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
@@ -235,6 +239,7 @@
 		C85847DB0B39B77E5902CA34 /* AuthenticateUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticateUseCase.swift; sourceTree = "<group>"; };
 		C8D8A6C250B91C27F4E42ECA /* AppPhase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPhase.swift; sourceTree = "<group>"; };
 		CA5CAF902F7401F1573386F6 /* SwiftDataCardRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataCardRepositoryTests.swift; sourceTree = "<group>"; };
+		CC6DEB0A1155CB665B9D4B88 /* CardQuery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardQuery.swift; sourceTree = "<group>"; };
 		CEC9AF64407073430308F16A /* ScryfallCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScryfallCard.swift; sourceTree = "<group>"; };
 		CFCFB3DA46448E4815631CF1 /* UserDefaultsSessionStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsSessionStorage.swift; sourceTree = "<group>"; };
 		D06AE670C378E1558B650CB0 /* AuthRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthRepository.swift; sourceTree = "<group>"; };
@@ -261,6 +266,17 @@
 		FC84CF07D8BDD2AAF3FAA351 /* MockCardCatalogueSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCardCatalogueSource.swift; sourceTree = "<group>"; };
 		FFCD2F4D0D0F3B216E4F4C50 /* GetCurrencyUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetCurrencyUseCase.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		85248711B9A8ACB5C7B6F5FD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D349F6C3E27C8A8A67857FAA /* Kingfisher in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		01E065ED76C8EFF235E9F2A4 /* login */ = {
@@ -615,6 +631,14 @@
 			path = Presentation;
 			sourceTree = "<group>";
 		};
+		B0DB788258C5872CB89366E8 /* Sheets */ = {
+			isa = PBXGroup;
+			children = (
+				877627050C8289323DA9995E /* CardFilterSheet.swift */,
+			);
+			path = Sheets;
+			sourceTree = "<group>";
+		};
 		B0F7FD1A91899922F260D026 /* Scryfall */ = {
 			isa = PBXGroup;
 			children = (
@@ -677,6 +701,7 @@
 				9D872D01B4D2B4B99BF5B617 /* CollectionView.swift */,
 				1C0C9775E611D214E9197A6F /* CollectionViewModel.swift */,
 				56387075FAA7BC6F48B82971 /* Components */,
+				B0DB788258C5872CB89366E8 /* Sheets */,
 			);
 			path = Collection;
 			sourceTree = "<group>";
@@ -728,6 +753,7 @@
 				022058C6088F42791AD45A1E /* Card.swift */,
 				992C5BC04B97F7EEE386EEE2 /* CardImages.swift */,
 				3BE42A3FD09B2DDB72EF4D91 /* CardPrices.swift */,
+				CC6DEB0A1155CB665B9D4B88 /* CardQuery.swift */,
 				AC0BCC75A0EFD4759095C557 /* Currency.swift */,
 				A180F4A02779F5EDFFD7B4E8 /* Finish.swift */,
 				85272FCAA471C72BBB964733 /* Language.swift */,
@@ -809,6 +835,7 @@
 			buildPhases = (
 				DF4E8CFEC42BE8026AA30916 /* Sources */,
 				5CB589B0F087037A05210C60 /* Resources */,
+				85248711B9A8ACB5C7B6F5FD /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -816,6 +843,7 @@
 			);
 			name = UginsVault;
 			packageProductDependencies = (
+				F94C126CFFD087B2FC8A11C3 /* Kingfisher */,
 			);
 			productName = UginsVault;
 			productReference = 3DE1358AD226C96D9BA1B04E /* UginsVault.app */;
@@ -842,6 +870,9 @@
 			);
 			mainGroup = 655FD441A86D0044CBFDFCEC;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				E95F6249E55D4D5CC6B0DFC2 /* XCRemoteSwiftPackageReference "Kingfisher" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 8F9B43A660757B1E99EE6915 /* Products */;
 			projectDirPath = "";
@@ -917,9 +948,11 @@
 				925084683708396D7B13FC4A /* Card.swift in Sources */,
 				4426403C8C9641F568C8E333 /* CardCatalogueSource.swift in Sources */,
 				9438152015621AB1F710D2DC /* CardDetailView.swift in Sources */,
+				EA943967DEE5A1BE883D3B20 /* CardFilterSheet.swift in Sources */,
 				524054B3A6BE2A904B13136E /* CardImages.swift in Sources */,
 				0DA018FBD27D6610E6C8ED7A /* CardMapper.swift in Sources */,
 				1DBC7F37E43F30DC64688FBC /* CardPrices.swift in Sources */,
+				65DE8790EC72AC018CAE7BE5 /* CardQuery.swift in Sources */,
 				5B99488830E0067F0DAF5237 /* CardRepository.swift in Sources */,
 				C66E047F0AAAE576812D5C8A /* CardRowView.swift in Sources */,
 				A0A310EC367552D814D1AE3B /* CollectionAccessibilityFields.swift in Sources */,
@@ -1254,6 +1287,25 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		E95F6249E55D4D5CC6B0DFC2 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F94C126CFFD087B2FC8A11C3 /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E95F6249E55D4D5CC6B0DFC2 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = C1F05409326D849BD7ADF9BB /* Project object */;
 }

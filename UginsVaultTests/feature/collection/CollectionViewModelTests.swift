@@ -64,7 +64,7 @@ struct CollectionViewModelTests {
     func defaultsAreEmpty() throws {
         let (sut, _, _, _) = try makeSUT()
         #expect(sut.cards.isEmpty)
-        #expect(sut.cardCount == 0)
+        #expect(sut.matchingCount == 0)
         #expect(sut.searchQuery == "")
         #expect(sut.status == .idle)
     }
@@ -77,7 +77,7 @@ struct CollectionViewModelTests {
         await sut.loadOrSeed()
 
         #expect(sut.cards.count == 2)
-        #expect(sut.cardCount == 2)
+        #expect(sut.matchingCount == 2)
         #expect(source.fetchCallCount == 0)
         #expect(sut.status == .idle)
     }
@@ -95,7 +95,7 @@ struct CollectionViewModelTests {
         #expect(source.fetchCallCount == 1)
         #expect(source.lastQuery == "set:test")
         #expect(sut.cards.count == 2)
-        #expect(sut.cardCount == 2)
+        #expect(sut.matchingCount == 2)
         #expect(sut.status == .idle)
     }
 
@@ -139,5 +139,69 @@ struct CollectionViewModelTests {
         await sut.loadOrSeed()
 
         #expect(sut.totalValueUSD == Decimal(string: "3.00"))
+    }
+
+    @Test("setSort updates sort + reruns the search")
+    func setSortReorders() async throws {
+        let (sut, repo, _, _) = try makeSUT()
+        try await repo.save([
+            makeCard(name: "Counterspell"),
+            makeCard(name: "Ancestral Recall")
+        ])
+        await sut.loadOrSeed()
+
+        sut.setSort(.nameAscending)
+        try await Task.sleep(for: .milliseconds(50))
+
+        #expect(sut.sort == .nameAscending)
+        #expect(sut.cards.first?.name == "Ancestral Recall")
+    }
+
+    @Test("applyFilter narrows the result set + advertises hasActiveFilter")
+    func applyFilterNarrows() async throws {
+        let (sut, repo, _, _) = try makeSUT()
+        try await repo.save([
+            makeCard(name: "A"),
+            makeCard(name: "B"),
+            makeCard(name: "C")
+        ])
+        await sut.loadOrSeed()
+
+        sut.applyFilter(CardFilter(sets: ["fdn"]))
+        try await Task.sleep(for: .milliseconds(50))
+
+        #expect(sut.hasActiveFilter == true)
+        #expect(sut.cards.count == 3)
+    }
+
+    @Test("loadMoreIfNeeded appends the next page until hasMore is false")
+    func paginationLoadsMore() async throws {
+        let session = MockSessionRepository()
+        let repo = try makeRepo()
+        let cards = (0..<10).map { makeCard(name: String(format: "Card %02d", $0)) }
+        try await repo.save(cards)
+
+        let useCase = SeedCatalogueUseCase(
+            source: MockCardCatalogueSource(),
+            repository: repo
+        )
+        let sut = CollectionViewModel(
+            sessionRepository: session,
+            cardRepository: repo,
+            seedCatalogue: useCase,
+            seedQuery: "set:test",
+            pageSize: 4
+        )
+
+        await sut.loadOrSeed()
+        #expect(sut.cards.count == 4)
+        #expect(sut.hasMore == true)
+
+        await sut.loadMoreIfNeeded()
+        #expect(sut.cards.count == 8)
+
+        await sut.loadMoreIfNeeded()
+        #expect(sut.cards.count == 10)
+        #expect(sut.hasMore == false)
     }
 }

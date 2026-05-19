@@ -15,7 +15,7 @@ public protocol CardRepository: AnyObject, Observable {
 
     // MARK: - Observable state
 
-    /// Most recent slice of cards loaded into memory. Bumped by `refresh()`.
+    /// Most recent slice of cards loaded into memory. Bumped by `refresh(_:)`.
     /// Views observe this property to re-render.
     var cards: [Card] { get }
 
@@ -25,16 +25,25 @@ public protocol CardRepository: AnyObject, Observable {
 
     // MARK: - Reads
 
-    /// Total number of rows in the catalogue.
+    /// Total number of rows in the catalogue (unfiltered).
     func totalCount() async throws -> Int
 
-    /// Loads cards matching the query. Empty / whitespace query → recent.
-    /// Implementations may cap the result count (default ~200 for v0.2).
+    /// Total number of rows matching the supplied `query` (text + filter,
+    /// ignoring offset/limit). Drives "n of N" labels + pagination stop.
+    func count(matching query: CardQuery) async throws -> Int
+
+    /// Loads cards matching the query, replaces the in-memory `cards`
+    /// slice, and returns it. With a non-zero `offset`, callers are
+    /// responsible for appending instead of replacing.
     @discardableResult
-    func refresh(query: String) async throws -> [Card]
+    func refresh(_ query: CardQuery) async throws -> [Card]
 
     /// Looks up a single card by Scryfall printing id.
     func card(id: UUID) async throws -> Card?
+
+    /// Distinct lowercase set codes currently in the catalogue. Used by
+    /// the filter sheet to populate its picker.
+    func availableSetCodes() async throws -> [String]
 
     // MARK: - Writes
 

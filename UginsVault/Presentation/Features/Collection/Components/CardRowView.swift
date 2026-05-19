@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct CardRowView: View {
 
@@ -48,20 +49,11 @@ struct CardRowView: View {
     private var thumbnail: some View {
         Group {
             if let url = card.images.thumbnail {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .empty:
-                        thumbnailPlaceholder
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .scaledToFill()
-                    case .failure:
-                        thumbnailPlaceholder
-                    @unknown default:
-                        thumbnailPlaceholder
-                    }
-                }
+                KFImage(url)
+                    .placeholder { thumbnailPlaceholder }
+                    .fade(duration: 0.15)
+                    .resizable()
+                    .scaledToFill()
             } else {
                 thumbnailPlaceholder
             }

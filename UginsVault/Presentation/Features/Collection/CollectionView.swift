@@ -3,8 +3,8 @@
 //  UginsVault — Presentation: Collection
 //
 //  The Collection tab. Header (title + count + total value), search,
-//  card list. On empty catalogue, kicks the seed flow automatically;
-//  while seeding, renders a status panel.
+//  card list with sort + filter + pagination. On empty catalogue,
+//  kicks the seed flow automatically.
 //
 
 import SwiftUI
@@ -12,6 +12,7 @@ import SwiftUI
 public struct CollectionView: View {
 
     @State private var viewModel: CollectionViewModel
+    @State private var isPresentingFilter: Bool = false
 
     public init(viewModel: CollectionViewModel) {
         _viewModel = State(initialValue: viewModel)
@@ -28,12 +29,27 @@ public struct CollectionView: View {
                 .navigationDestination(for: Card.self) { card in
                     CardDetailView(card: card, displayCurrency: viewModel.currency)
                 }
+                .sheet(isPresented: $isPresentingFilter) {
+                    CardFilterSheet(
+                        initialFilter: viewModel.filter,
+                        availableSetCodes: viewModel.availableSetCodes,
+                        onApply: { viewModel.applyFilter($0) }
+                    )
+                }
         }
         .accessibilityIdentifier(CollectionAccessibilityFields.screen)
     }
 
     @ToolbarContentBuilder
     private var toolbar: some ToolbarContent {
+        ToolbarItem(placement: .topBarLeading) {
+            sortMenu
+        }
+
+        ToolbarItem(placement: .topBarTrailing) {
+            filterButton
+        }
+
         ToolbarItem(placement: .topBarTrailing) {
             Button {
                 // TODO: open Add Card sheet
@@ -45,6 +61,41 @@ public struct CollectionView: View {
             .accessibilityLabel("Add card")
             .accessibilityIdentifier(CollectionAccessibilityFields.addCardToolbar)
         }
+    }
+
+    private var sortMenu: some View {
+        Menu {
+            Picker("Sort", selection: sortBinding) {
+                ForEach(CardSortOption.allCases) { option in
+                    Text(option.displayName).tag(option)
+                }
+            }
+        } label: {
+            Image(systemName: "arrow.up.arrow.down")
+                .font(.system(size: 17, weight: .semibold))
+                .foregroundStyle(Color.uv.gold)
+        }
+        .accessibilityLabel("Sort")
+    }
+
+    private var filterButton: some View {
+        Button {
+            isPresentingFilter = true
+        } label: {
+            ZStack(alignment: .topTrailing) {
+                Image(systemName: "line.3.horizontal.decrease.circle")
+                    .font(.system(size: 17, weight: .semibold))
+                    .foregroundStyle(Color.uv.gold)
+
+                if viewModel.hasActiveFilter {
+                    Circle()
+                        .fill(Color.uv.gold)
+                        .frame(width: 8, height: 8)
+                        .offset(x: 4, y: -2)
+                }
+            }
+        }
+        .accessibilityLabel("Filters")
     }
 
     @ViewBuilder
@@ -59,7 +110,7 @@ public struct CollectionView: View {
         case .loading where viewModel.cards.isEmpty:
             loadingPanel
 
-        case .idle, .loading:
+        case .idle, .loading, .loadingMore:
             cardList
         }
     }
@@ -139,24 +190,21 @@ public struct CollectionView: View {
 
     private var cardList: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: Spacing.lg) {
+            LazyVStack(alignment: .leading, spacing: Spacing.lg, pinnedViews: []) {
                 header
                 searchBar(query: bindingForQuery)
+                activeFilterStrip
 
                 if viewModel.cards.isEmpty {
                     emptyResults
                 } else {
-                    ForEach(viewModel.cards) { card in
-                        NavigationLink(value: card) {
-                            CardRowView(card: card, displayCurrency: viewModel.currency)
-                                .contentShape(Rectangle())
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityIdentifier("cell_collection_card_\(card.setCode)_\(card.collectorNumber)")
-
-                        Rectangle()
-                            .fill(Color.uv.stroke.opacity(0.4))
-                            .frame(height: Layout.hairline)
+                    cardRows
+                    if case .loadingMore = viewModel.status {
+                        loadMoreSpinner
+                    } else if viewModel.hasMore {
+                        Color.clear
+                            .frame(height: 1)
+                            .task { await viewModel.loadMoreIfNeeded() }
                     }
                 }
             }
@@ -164,6 +212,31 @@ public struct CollectionView: View {
             .padding(.top, Spacing.sm)
             .padding(.bottom, Spacing.xl)
         }
+    }
+
+    private var cardRows: some View {
+        ForEach(viewModel.cards) { card in
+            NavigationLink(value: card) {
+                CardRowView(card: card, displayCurrency: viewModel.currency)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("cell_collection_card_\(card.setCode)_\(card.collectorNumber)")
+
+            Rectangle()
+                .fill(Color.uv.stroke.opacity(0.4))
+                .frame(height: Layout.hairline)
+        }
+    }
+
+    private var loadMoreSpinner: some View {
+        HStack {
+            Spacer()
+            ProgressView()
+                .tint(Color.uv.gold)
+            Spacer()
+        }
+        .padding(.vertical, Spacing.lg)
     }
 
     // MARK: - Header
@@ -177,7 +250,7 @@ public struct CollectionView: View {
                 .accessibilityIdentifier(CollectionAccessibilityFields.title)
 
             HStack(spacing: Spacing.sm) {
-                Text("\(viewModel.cardCount) cards")
+                Text("\(viewModel.matchingCount) cards")
                     .font(.uv.mono(12))
                     .foregroundStyle(Color.uv.muted)
                     .accessibilityIdentifier(CollectionAccessibilityFields.cardCountLabel)
@@ -194,6 +267,56 @@ public struct CollectionView: View {
         }
     }
 
+    // MARK: - Active filter strip
+
+    @ViewBuilder
+    private var activeFilterStrip: some View {
+        if viewModel.hasActiveFilter {
+            HStack(spacing: Spacing.sm) {
+                Image(systemName: "line.3.horizontal.decrease")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(Color.uv.gold)
+
+                Text(filterSummary)
+                    .font(.uv.body(12, weight: .medium))
+                    .foregroundStyle(Color.uv.text)
+                    .lineLimit(1)
+
+                Spacer()
+
+                Button("Clear") {
+                    viewModel.clearFilter()
+                }
+                .font(.uv.body(12, weight: .semibold))
+                .foregroundStyle(Color.uv.gold)
+            }
+            .padding(.horizontal, Spacing.rowHorizontal)
+            .padding(.vertical, Spacing.sm)
+            .background(
+                RoundedRectangle(cornerRadius: UVRadius.md)
+                    .fill(Color.uv.gold.opacity(0.08))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: UVRadius.md)
+                            .strokeBorder(Color.uv.gold.opacity(0.35), lineWidth: 1)
+                    )
+            )
+        }
+    }
+
+    private var filterSummary: String {
+        var parts: [String] = []
+        if !viewModel.filter.sets.isEmpty {
+            parts.append("Sets: \(viewModel.filter.sets.map { $0.uppercased() }.sorted().joined(separator: ", "))")
+        }
+        if !viewModel.filter.colors.isEmpty {
+            parts.append("Colours: \(viewModel.filter.colors.map(\.displayName).sorted().joined(separator: ", "))")
+        }
+        if !viewModel.filter.rarities.isEmpty {
+            parts.append("Rarity: \(viewModel.filter.rarities.map { $0.rawValue.capitalized }.sorted().joined(separator: ", "))")
+        }
+        return parts.joined(separator: " · ")
+    }
+
     // MARK: - Search
 
     private var bindingForQuery: Binding<String> {
@@ -203,6 +326,13 @@ public struct CollectionView: View {
                 viewModel.searchQuery = newValue
                 Task { await viewModel.search() }
             }
+        )
+    }
+
+    private var sortBinding: Binding<CardSortOption> {
+        Binding(
+            get: { viewModel.sort },
+            set: { viewModel.setSort($0) }
         )
     }
 
@@ -242,7 +372,7 @@ public struct CollectionView: View {
                     .font(.uv.display(18, weight: .semibold))
                     .foregroundStyle(Color.uv.text)
 
-                Text("Try a different name or clear the search.")
+                Text("Try a different name or clear the filter.")
                     .font(.uv.body(13))
                     .foregroundStyle(Color.uv.muted)
                     .multilineTextAlignment(.center)
