@@ -4,17 +4,19 @@
 //
 
 import Foundation
+import Observation
 @testable import UginsVault
 
-final class MockAuthRepository: AuthRepositoryProtocol, @unchecked Sendable {
+@Observable
+final class MockAuthRepository: AuthRepository, @unchecked Sendable {
 
     // Stubs
-    var stubbedIsBiometryAvailable: Bool = true
-    var stubbedAuthenticateOutcome: AuthOutcome = .success
+    @ObservationIgnored var stubbedIsBiometryAvailable: Bool = true
+    @ObservationIgnored var stubbedAuthenticateOutcome: AuthOutcome = .success
 
     // Spies
-    private(set) var authenticateCallCount: Int = 0
-    private(set) var lastReason: String?
+    @ObservationIgnored private(set) var authenticateCallCount: Int = 0
+    @ObservationIgnored private(set) var lastReason: String?
 
     var isBiometryAvailable: Bool { stubbedIsBiometryAvailable }
 

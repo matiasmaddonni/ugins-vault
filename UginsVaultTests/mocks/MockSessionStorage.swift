@@ -6,7 +6,7 @@
 import Foundation
 @testable import UginsVault
 
-final class MockSessionStorage: SessionStorageDataSourceProtocol, @unchecked Sendable {
+final class MockSessionStorage: SessionStorageDataSource, @unchecked Sendable {
 
     private var store: [String: String] = [:]
 

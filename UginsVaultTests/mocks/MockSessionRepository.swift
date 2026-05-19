@@ -4,20 +4,22 @@
 //
 
 import Foundation
+import Observation
 @testable import UginsVault
 
-final class MockSessionRepository: SessionRepositoryProtocol, @unchecked Sendable {
+@Observable
+final class MockSessionRepository: SessionRepository, @unchecked Sendable {
 
     // Stubs
-    var stubbedPhase: AppPhase = .splash
-    var stubbedTheme: AppTheme = .dark
-    var stubbedCurrency: Currency = .usd
+    @ObservationIgnored var stubbedPhase: AppPhase = .splash
+    @ObservationIgnored var stubbedTheme: AppTheme = .dark
+    @ObservationIgnored var stubbedCurrency: Currency = .usd
 
     // Spies
-    private(set) var savedPhase: AppPhase?
-    private(set) var savedTheme: AppTheme?
-    private(set) var savedCurrency: Currency?
-    private(set) var savePhaseCallCount: Int = 0
+    @ObservationIgnored private(set) var savedPhase: AppPhase?
+    @ObservationIgnored private(set) var savedTheme: AppTheme?
+    @ObservationIgnored private(set) var savedCurrency: Currency?
+    @ObservationIgnored private(set) var savePhaseCallCount: Int = 0
 
     func loadPhase() -> AppPhase { stubbedPhase }
     func savePhase(_ phase: AppPhase) {

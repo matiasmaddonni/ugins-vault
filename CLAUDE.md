@@ -8,10 +8,10 @@ iOS 26 mobile app built with **Swift + SwiftUI** following **Clean Architecture*
 
 ## Stack
 
-- **Swift / SwiftUI** — Declarative UI with Liquid Glass (iOS 26)
-- **Combine** — Reactive state
-- **Swift Concurrency** — async/await
-- **Swift Data** — Local persistence
+- **Swift 6 / SwiftUI** — Declarative UI with Liquid Glass (iOS 26)
+- **`@Observable` macro + `@State`** — Reactive state (no Combine, no `ObservableObject`)
+- **Swift Concurrency** — async/await throughout
+- **SwiftData** — Local persistence (catalogue + collection)
 
 ## Architecture
 
@@ -25,13 +25,14 @@ Domain (Use Cases — pure Swift, no external dependencies)
 Data (Repositories + Data Sources: Remote / Local)
 ```
 
-- **ViewModels**: `@Published`, `@MainActor`, in `UginsVault/feature/<feature>/viewmodel/`
-- **Views**: SwiftUI, in `UginsVault/feature/<feature>/ui/`
-- **Use Cases**: Business logic, no frameworks, in `UginsVault/domain/useCases/`
-- **Repository Protocols**: in `UginsVault/domain/repositoryProtocol/`
-- **Repositories**: Implementations in `UginsVault/data/repositories/`
-- **Data Sources**: Protocols in `UginsVault/data/datasources/protocols/`, implementations in `remote/` and `local/`
-- **DI**: Singleton container with factory methods in `UginsVault/di/DependencyContainer.swift`
+- **ViewModels**: `@Observable` + `@MainActor` final classes, co-located with the view at `UginsVault/Presentation/Features/<Feature>/<Feature>ViewModel.swift`
+- **Views**: SwiftUI views adopt the VM via `@State private var viewModel`. For two-way bindings use `@Bindable var viewModel = viewModel` inside `body`. Location: `UginsVault/Presentation/Features/<Feature>/<Feature>View.swift`
+- **Use Cases**: Business logic, no frameworks, in `UginsVault/Domain/UseCases/`
+- **Repository Protocols**: `Observable`-conforming protocols in `UginsVault/Domain/Repositories/` (e.g. `AuthRepository`, `SessionRepository`)
+- **Repositories**: `@Observable` concrete implementations in `UginsVault/Data/Repositories/` with descriptive prefixes (e.g. `LocalAuthRepository`, `UserDefaultsSessionRepository`, future `SwiftDataCardRepository`)
+- **Data Sources**: Optional infrastructure helpers under `UginsVault/Data/DataSources/{Protocols,Local,Remote}/` when a repository needs swappable platform integration (LAContext, UserDefaults, URLSession, etc.)
+- **DI / Composition**: Singleton container with factory methods in `UginsVault/Composition/DependencyContainer.swift`. Only file that imports across all three layers.
+- **Design system**: Theme + typography in `UginsVault/Presentation/Theme/`, reusable visual primitives in `UginsVault/Presentation/DesignSystem/`, formatters / cross-feature helpers in `UginsVault/Presentation/Shared/`.
 
 ## Xcode Project
 
@@ -96,7 +97,7 @@ Rules are automatically loaded based on the context of the file being edited. Th
 |---|---|---|
 | `architecture.md` | `UginsVault/**/*.swift` | Clean Architecture, layer separation, DI |
 | `swift-conventions.md` | `**/*.swift` | Naming, MARK, DocC, async/await, guard |
-| `ui-design.md` | `UginsVault/feature/*/ui/**`, `UginsVault/ui/**` | Liquid Glass, design tokens, colors, accessibility |
+| `ui-design.md` | `UginsVault/Presentation/**` | Liquid Glass, design tokens, colors, accessibility |
 | `testing.md` | `UginsVaultTests/**/*.swift` | Swift Testing, mocks, coverage ≥ 90%, per-layer strategy |
 | `git-workflow.md` | Always | Branches, commits, pre-commit, pre-PR |
 
@@ -116,9 +117,10 @@ Configured in `.claude/settings.json`:
 ## Notes for Claude
 
 - Respect layer separation: never import UI frameworks in Domain
-- Prefer `async/await` over callbacks or Combine unless the context requires it
+- New code uses `@Observable` + `@State`. Do not introduce `ObservableObject`, `@Published`, or `Combine` for VM state.
+- Prefer `async/await` over callbacks or Combine unless a continuous reactive stream is genuinely needed
 - Every new feature must include unit tests in all 3 layers (use `/foundation` for Domain+Data, `/feature-ui` for Presentation)
-- Repositories must always be defined as a protocol first
+- Repositories must always be defined as a protocol in `Domain/Repositories/` first; concrete impls live in `Data/Repositories/` with a descriptive prefix
 - **Build after major changes**: use `/build` automatically (without asking permission) after each significant change
 - **Pre-commit check**: use `/test` before each commit to verify that coverage remains ≥ 90% in affected classes. If coverage dropped, add missing tests before committing
 - **Pre-PR check**: use `/pr-check` before creating a Pull Request

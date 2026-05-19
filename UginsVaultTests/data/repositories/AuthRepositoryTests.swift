@@ -13,7 +13,7 @@ struct AuthRepositoryTests {
     func forwardsAvailability() {
         let ds = MockBiometricsDataSource()
         ds.stubbedIsAvailable = false
-        let sut = AuthRepository(biometrics: ds)
+        let sut = LocalAuthRepository(biometrics: ds)
 
         #expect(sut.isBiometryAvailable == false)
     }
@@ -22,7 +22,7 @@ struct AuthRepositoryTests {
     func forwardsAuthenticate() async {
         let ds = MockBiometricsDataSource()
         ds.stubbedOutcome = .userCancelled
-        let sut = AuthRepository(biometrics: ds)
+        let sut = LocalAuthRepository(biometrics: ds)
 
         let outcome = await sut.authenticate(reason: "test")
 

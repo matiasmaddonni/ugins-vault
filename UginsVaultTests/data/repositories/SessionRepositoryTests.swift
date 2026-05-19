@@ -12,7 +12,7 @@ struct SessionRepositoryTests {
     @Test("loadPhase defaults to .splash when storage is empty")
     func defaultPhase() {
         let storage = MockSessionStorage()
-        let sut = SessionRepository(storage: storage)
+        let sut = UserDefaultsSessionRepository(storage: storage)
 
         #expect(sut.loadPhase() == .splash)
     }
@@ -20,7 +20,7 @@ struct SessionRepositoryTests {
     @Test("savePhase + loadPhase round-trips the value")
     func phaseRoundTrip() {
         let storage = MockSessionStorage()
-        let sut = SessionRepository(storage: storage)
+        let sut = UserDefaultsSessionRepository(storage: storage)
 
         sut.savePhase(.home)
 
@@ -30,7 +30,7 @@ struct SessionRepositoryTests {
     @Test("loadTheme defaults to .dark when storage is empty")
     func defaultTheme() {
         let storage = MockSessionStorage()
-        let sut = SessionRepository(storage: storage)
+        let sut = UserDefaultsSessionRepository(storage: storage)
 
         #expect(sut.loadTheme() == .dark)
     }
@@ -38,7 +38,7 @@ struct SessionRepositoryTests {
     @Test("saveTheme + loadTheme round-trips the value")
     func themeRoundTrip() {
         let storage = MockSessionStorage()
-        let sut = SessionRepository(storage: storage)
+        let sut = UserDefaultsSessionRepository(storage: storage)
 
         sut.saveTheme(.light)
 
@@ -48,7 +48,7 @@ struct SessionRepositoryTests {
     @Test("loadCurrency defaults to .usd when storage is empty")
     func defaultCurrency() {
         let storage = MockSessionStorage()
-        let sut = SessionRepository(storage: storage)
+        let sut = UserDefaultsSessionRepository(storage: storage)
 
         #expect(sut.loadCurrency() == .usd)
     }
@@ -56,7 +56,7 @@ struct SessionRepositoryTests {
     @Test("saveCurrency + loadCurrency round-trips the value")
     func currencyRoundTrip() {
         let storage = MockSessionStorage()
-        let sut = SessionRepository(storage: storage)
+        let sut = UserDefaultsSessionRepository(storage: storage)
 
         sut.saveCurrency(.ars)
 
@@ -69,7 +69,7 @@ struct SessionRepositoryTests {
         storage.set("not-a-real-phase", forKey: "uv.session.phase")
         storage.set("???",                forKey: "uv.session.theme")
         storage.set("XYZ",                forKey: "uv.session.currency")
-        let sut = SessionRepository(storage: storage)
+        let sut = UserDefaultsSessionRepository(storage: storage)
 
         #expect(sut.loadPhase() == .splash)
         #expect(sut.loadTheme() == .dark)

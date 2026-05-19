@@ -6,7 +6,7 @@
 import Foundation
 @testable import UginsVault
 
-final class MockBiometricsDataSource: BiometricsDataSourceProtocol, @unchecked Sendable {
+final class MockBiometricsDataSource: BiometricsDataSource, @unchecked Sendable {
 
     var stubbedIsAvailable: Bool = true
     var stubbedOutcome: AuthOutcome = .success
