@@ -149,15 +149,16 @@ struct StackDetailViewModelTests {
         #expect(sut.currency == .ars)
     }
 
-    @Test("formattedTotalValue stub renders in session currency")
+    @Test("formattedTotalValue renders in session currency")
     func formattedTotalValueRespectsCurrency() throws {
         let stack = makeDeck()
         let (sut, _, session) = try makeSUT(stack: stack)
         session.currency = .usd
-        // No real value join in v0.3 — should render zero in the
-        // active currency without crashing.
+        // With no hydrated cards, totalValue stays zero — should still
+        // render in the active currency without crashing.
         let formatted = sut.formattedTotalValue
         #expect(!formatted.isEmpty)
+        #expect(sut.totalValue == .zero)
     }
 
     @Test("deleteStack wipes the stack + every CollectionItem it owned and flips didDelete")

@@ -49,6 +49,15 @@ public struct StackDetailView: View {
                     }
                 )
             }
+            .sheet(isPresented: $viewModel.isPresentingCommanderPicker) {
+                CommanderPickerSheet(
+                    items: viewModel.pickerCandidates,
+                    cardsByID: viewModel.cardsByID,
+                    currentCommanderCardID: viewModel.stack.commanderCardID,
+                    onPick: { id in await viewModel.setCommander(cardID: id) },
+                    onClear: { await viewModel.clearCommander() }
+                )
+            }
             .confirmationDialog(
                 "Delete \(viewModel.stack.name)?",
                 isPresented: $viewModel.isPresentingDeleteConfirm,
@@ -85,6 +94,19 @@ public struct StackDetailView: View {
 
         ToolbarItem(placement: .topBarTrailing) {
             Menu {
+                if viewModel.stack.kind == .deck {
+                    Button {
+                        viewModel.presentCommanderPicker()
+                    } label: {
+                        Label(
+                            viewModel.stack.commanderCardID == nil
+                                ? "Pick commander"
+                                : "Change commander",
+                            systemImage: "crown.fill"
+                        )
+                    }
+                    .disabled(viewModel.items.isEmpty)
+                }
                 Button(role: .destructive) {
                     viewModel.presentDeleteConfirm()
                 } label: {

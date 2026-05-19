@@ -48,6 +48,10 @@ public final class StackDetailViewModel {
     public var isPresentingDeleteConfirm: Bool = false
     public private(set) var didDelete: Bool = false
 
+    // MARK: - Commander picker
+
+    public var isPresentingCommanderPicker: Bool = false
+
     // MARK: - Dependencies
 
     @ObservationIgnored private let itemRepository: CollectionItemRepository
@@ -144,11 +148,20 @@ public final class StackDetailViewModel {
         .joined(separator: "\n")
     }
 
+    /// Sum of USD prices × quantity across every item in the stack
+    /// whose joined `Card` has a usable price. Items without a hydrated
+    /// Card or without prices simply don't contribute.
+    public var totalValue: Decimal {
+        items.reduce(.zero) { running, item in
+            guard let card = cardsByID[item.cardID],
+                  let price = card.prices.usdPrice(for: item.finish)
+            else { return running }
+            return running + (price * Decimal(item.quantity))
+        }
+    }
+
     public var formattedTotalValue: String {
-        // v0.3 stub — see `StacksListViewModel.totalValue` note. Real
-        // value join lands when CollectionItem rows learn to read
-        // Card.prices.
-        CurrencyFormatter.format(.zero, currency: currency)
+        CurrencyFormatter.format(totalValue, currency: currency)
     }
 
     /// Kind-aware action labels rendered in `StackActionBar`.
@@ -296,6 +309,14 @@ public final class StackDetailViewModel {
 
     // MARK: - Commander
 
+    public func presentCommanderPicker() {
+        isPresentingCommanderPicker = true
+    }
+
+    public func dismissCommanderPicker() {
+        isPresentingCommanderPicker = false
+    }
+
     /// Pins the printing identified by `cardID` as this deck's
     /// commander. Persists via `StackRepository` + bumps the local
     /// `stack` copy so the hero card re-renders.
@@ -309,8 +330,33 @@ public final class StackDetailViewModel {
         do {
             try await stackRepository.save(updated)
             self.stack = updated
+            dismissCommanderPicker()
         } catch {
             status = .error(message: error.localizedDescription)
+        }
+    }
+
+    /// Clears the commander pointer (back to the generic cover).
+    public func clearCommander() async {
+        guard let stackRepository else { return }
+        var updated = stack
+        updated.commanderCardID = nil
+        updated.commander = nil
+        do {
+            try await stackRepository.save(updated)
+            self.stack = updated
+            dismissCommanderPicker()
+        } catch {
+            status = .error(message: error.localizedDescription)
+        }
+    }
+
+    /// Items sorted by name (when joined) for the commander-picker UI.
+    public var pickerCandidates: [CollectionItem] {
+        items.sorted { lhs, rhs in
+            let lname = cardsByID[lhs.cardID]?.name ?? ""
+            let rname = cardsByID[rhs.cardID]?.name ?? ""
+            return lname.localizedCaseInsensitiveCompare(rname) == .orderedAscending
         }
     }
 

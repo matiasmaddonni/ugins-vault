@@ -382,13 +382,24 @@
         }
       }
     },
+    "Change commander": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cambiar comandante"
+          }
+        }
+      }
+    },
     "Clear": {
       "extractionState": "manual",
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Limpiar"
+            "value": "Quitar"
           }
         }
       }
@@ -1198,6 +1209,17 @@
         }
       }
     },
+    "Pick commander": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elegir comandante"
+          }
+        }
+      }
+    },
     "Planeswalker · since %@": {
       "extractionState": "manual",
       "localizations": {
@@ -1518,6 +1540,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Escaneando…"
+          }
+        }
+      }
+    },
+    "Search cards…": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buscar cartas…"
           }
         }
       }

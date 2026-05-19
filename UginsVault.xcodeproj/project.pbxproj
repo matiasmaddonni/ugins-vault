@@ -32,6 +32,7 @@
 		23A96D674167308D114B9AD5 /* DependencyContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72AE9E6A207C4CD4540489C9 /* DependencyContainer.swift */; };
 		24E354CDE20531B5BC486B5E /* StackKind.swift in Sources */ = {isa = PBXBuildFile; fileRef = E931B3C32620BC2283C542F6 /* StackKind.swift */; };
 		251486FC06A0047780C3A738 /* CollectionItemRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43946B9848FF020E0F43C4C4 /* CollectionItemRepository.swift */; };
+		29238E3E0094A896D5202302 /* CommanderPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC3E8D4D7202E13997766005 /* CommanderPickerSheet.swift */; };
 		2948646C1824D2B5CCD402AD /* LocalBiometricsDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D4D51577D76521BEB56A268 /* LocalBiometricsDataSource.swift */; };
 		2C1FCC2B55F672AD0318D4BA /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29FE62A06758BFD04C2FFBE1 /* SplashView.swift */; };
 		30D744219D96F9401D182A80 /* MockSessionRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB67F41E9C8D32886C0CFDC5 /* MockSessionRepository.swift */; };
@@ -349,6 +350,7 @@
 		E8516481E2E452207F8C2666 /* StacksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StacksView.swift; sourceTree = "<group>"; };
 		E931B3C32620BC2283C542F6 /* StackKind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackKind.swift; sourceTree = "<group>"; };
 		E9371A7835FAC820999AAAD3 /* Rarity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rarity.swift; sourceTree = "<group>"; };
+		EC3E8D4D7202E13997766005 /* CommanderPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommanderPickerSheet.swift; sourceTree = "<group>"; };
 		EC85113313DC87A6A0D60E6F /* CardRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardRowView.swift; sourceTree = "<group>"; };
 		F0A5A2E99C9C42EC7627DD31 /* LanguageUseCasesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageUseCasesTests.swift; sourceTree = "<group>"; };
 		F2B660A0F407A3A654352596 /* UVChip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UVChip.swift; sourceTree = "<group>"; };
@@ -606,6 +608,7 @@
 		709C3109167FDEE437C8DB2E /* Stacks */ = {
 			isa = PBXGroup;
 			children = (
+				EC3E8D4D7202E13997766005 /* CommanderPickerSheet.swift */,
 				A90FDB23E4B11607C2E06A08 /* CreateStackSheet.swift */,
 				FB22203AF39BD9D6A6A8E4E6 /* ImportDeckListSheet.swift */,
 				42F89FD1F65CFC7D256CB20C /* StackDetailAccessibilityFields.swift */,
@@ -1129,6 +1132,7 @@
 				16FDE3E30CD1527C2BDE6B9E /* CollectionItemThumbnail.swift in Sources */,
 				E32D4DB95201F20C280C9954 /* CollectionView.swift in Sources */,
 				38AD971B1D895C67A16915ED /* CollectionViewModel.swift in Sources */,
+				29238E3E0094A896D5202302 /* CommanderPickerSheet.swift in Sources */,
 				B08ECC294D7966F5FB9248EE /* CreateStackSheet.swift in Sources */,
 				12F1A7FB6D1B2F2A0B02AEE1 /* Currency.swift in Sources */,
 				3BD831E2486CF58B18A2EB02 /* CurrencyFormatter.swift in Sources */,
