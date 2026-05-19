@@ -105,6 +105,10 @@ public enum Layout {
     /// Cover size on `StackHeroCard`.
     public static let stackHeroCoverSize: CGFloat = 108
 
+    /// SF Symbol point size for the basic-icon fallback inside
+    /// `StackHeroCard` when no image is available.
+    public static let stackHeroIconSize: CGFloat = 44
+
     /// Width of each kind-aware action tile inside `StackActionBar`.
     public static let stackActionWidth: CGFloat = 88
 

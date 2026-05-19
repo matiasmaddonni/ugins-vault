@@ -56,6 +56,11 @@ public struct StackHeroCard: View {
     }
 
     // MARK: - Cover
+    //
+    // Rule: when an image is available (commander art for deck stacks,
+    // can grow to user-uploaded later), render it. Otherwise fall back
+    // to a clean tinted panel with the stack's kind glyph — never the
+    // coloured deck-fan, which only makes sense on the list row.
 
     @ViewBuilder
     private var cover: some View {
@@ -70,8 +75,23 @@ public struct StackHeroCard: View {
                         .strokeBorder(Color.uv.stroke, lineWidth: Layout.hairline)
                 )
         } else {
-            StackCover(stack: stack, size: Layout.stackHeroCoverSize)
+            basicIconCover
         }
+    }
+
+    private var basicIconCover: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: UVRadius.md)
+                .fill(Color.uv.panelLo)
+                .overlay(
+                    RoundedRectangle(cornerRadius: UVRadius.md)
+                        .strokeBorder(Color.uv.stroke, lineWidth: Layout.hairline)
+                )
+            Image(systemName: stack.kind.iconName)
+                .font(.system(size: Layout.stackHeroIconSize, weight: .medium))
+                .foregroundStyle(stack.kind.accentColor)
+        }
+        .frame(width: Layout.stackHeroCoverSize, height: Layout.stackHeroCoverSize)
     }
 
     // MARK: - Title block
