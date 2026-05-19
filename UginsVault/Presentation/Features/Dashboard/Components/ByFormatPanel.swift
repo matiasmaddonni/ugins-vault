@@ -29,10 +29,11 @@ public struct ByFormatPanel: View {
                         Text("Total")
                             .uvSectionLabel()
                         Text(CurrencyFormatter.format(total, currency: currency))
-                            .font(.uv.display(18, weight: .bold))
+                            .font(.uv.display(15, weight: .bold))
                             .foregroundStyle(Color.uv.text)
                             .lineLimit(1)
-                            .minimumScaleFactor(0.7)
+                            .minimumScaleFactor(0.55)
+                            .frame(maxWidth: Layout.dashboardDonutSize - Layout.dashboardDonutThickness * 2 - Spacing.sm)
                     }
                 }
                 legend

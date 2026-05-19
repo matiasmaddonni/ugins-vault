@@ -95,6 +95,8 @@ public struct TotalValueTile: View {
                     .font(.system(size: 10, weight: .semibold))
                 Text(String(format: "%@%.1f%%", isUp ? "+" : "", weekDeltaPct))
                     .font(.uv.mono(10.5, weight: .semibold))
+                    .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: false)
             }
             .foregroundStyle(tone)
             .padding(.horizontal, Spacing.sm)
@@ -103,13 +105,18 @@ public struct TotalValueTile: View {
                 Capsule()
                     .fill(tone.opacity(0.18))
             )
+            .fixedSize(horizontal: true, vertical: false)
 
             Text(signedMoney)
                 .font(.uv.mono(10.5))
                 .foregroundStyle(tone)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
             Text("· this week")
                 .font(.uv.mono(10.5))
                 .foregroundStyle(Color.uv.muted)
+                .lineLimit(1)
+                .fixedSize(horizontal: true, vertical: false)
         }
         .accessibilityIdentifier(DashboardAccessibilityFields.totalDeltaLabel)
     }

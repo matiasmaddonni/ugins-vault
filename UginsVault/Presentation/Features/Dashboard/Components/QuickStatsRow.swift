@@ -26,13 +26,13 @@ public struct QuickStatsRow: View {
                 key: "total",
                 label: "Total",
                 value: thousands(stats.totalCards),
-                sublabel: "cards"
+                sublabel: "in collection"
             )
             QuickStatCard(
                 key: "unique",
                 label: "Unique",
                 value: thousands(stats.uniqueCards),
-                sublabel: "cards"
+                sublabel: "printings"
             )
             QuickStatCard(
                 key: "foils",

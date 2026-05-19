@@ -393,17 +393,6 @@
         }
       }
     },
-    "cards": {
-      "extractionState": "manual",
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "cartas"
-          }
-        }
-      }
-    },
     "Catalogue size": {
       "extractionState": "manual",
       "localizations": {
@@ -943,6 +932,17 @@
         }
       }
     },
+    "in collection": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "en la colección"
+          }
+        }
+      }
+    },
     "Kind": {
       "extractionState": "manual",
       "localizations": {
@@ -1382,6 +1382,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Imprimir fundas"
+          }
+        }
+      }
+    },
+    "printings": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "impresiones"
           }
         }
       }

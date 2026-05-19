@@ -83,7 +83,8 @@ public struct DashboardView: View {
                 QuickStatsRow(stats: snapshot.stats, currency: viewModel.currency)
             }
             .padding(.horizontal, Layout.dashboardSidePadding)
-            .padding(.vertical, Spacing.md)
+            .padding(.top, Spacing.md)
+            .padding(.bottom, Spacing.tabBarClearance + Spacing.xl)
         }
     }
 
