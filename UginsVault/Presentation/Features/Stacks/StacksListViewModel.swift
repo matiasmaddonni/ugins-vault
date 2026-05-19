@@ -46,6 +46,11 @@ public final class StacksListViewModel {
     /// Map of `Stack.id` → total card count (summed quantity).
     public private(set) var cardCounts: [UUID: Int] = [:]
 
+    /// Up-to-three preview cards per stack id. Powers the fan
+    /// thumbnail on `StackRow`. When the stack has a `commanderCardID`
+    /// the array contains only that one card.
+    public private(set) var previewCards: [UUID: [Card]] = [:]
+
     public private(set) var status: Status = .idle
 
     public var filter: Filter = .all {
@@ -63,17 +68,20 @@ public final class StacksListViewModel {
     @ObservationIgnored private let stackRepository: StackRepository
     @ObservationIgnored private let itemRepository: CollectionItemRepository
     @ObservationIgnored private let sessionRepository: SessionRepository
+    @ObservationIgnored private let cardRepository: CardRepository?
 
     // MARK: - Init
 
     public init(
         stackRepository: StackRepository,
         itemRepository: CollectionItemRepository,
-        sessionRepository: SessionRepository
+        sessionRepository: SessionRepository,
+        cardRepository: CardRepository? = nil
     ) {
         self.stackRepository = stackRepository
         self.itemRepository = itemRepository
         self.sessionRepository = sessionRepository
+        self.cardRepository = cardRepository
     }
 
     // MARK: - Derived
@@ -121,16 +129,54 @@ public final class StacksListViewModel {
             // sizes we expect locally.
             let items = try await itemRepository.allItems()
             var counts: [UUID: Int] = [:]
+            var itemsByStack: [UUID: [CollectionItem]] = [:]
             for item in items {
                 counts[item.stackID, default: 0] += item.quantity
+                itemsByStack[item.stackID, default: []].append(item)
             }
             self.cardCounts = counts
+            await hydratePreviewCards(stacks: stacks, itemsByStack: itemsByStack)
 
             recomputeVisible()
             self.status = .idle
         } catch {
             self.status = .error(message: error.localizedDescription)
         }
+    }
+
+    /// Up to 3 cards per stack: commander-only when pinned, otherwise
+    /// the first 3 items (whichever printings happen to sort first).
+    private func hydratePreviewCards(
+        stacks: [Stack],
+        itemsByStack: [UUID: [CollectionItem]]
+    ) async {
+        guard let cardRepository else {
+            previewCards = [:]
+            return
+        }
+        var map: [UUID: [Card]] = [:]
+        for stack in stacks {
+            if let commanderID = stack.commanderCardID,
+               let card = try? await cardRepository.card(id: commanderID) {
+                map[stack.id] = [card]
+                continue
+            }
+            let pool = itemsByStack[stack.id]?.prefix(3) ?? []
+            var hydrated: [Card] = []
+            for item in pool {
+                if let card = try? await cardRepository.card(id: item.cardID) {
+                    hydrated.append(card)
+                }
+            }
+            if !hydrated.isEmpty {
+                map[stack.id] = hydrated
+            }
+        }
+        previewCards = map
+    }
+
+    public func previewCards(for stack: Stack) -> [Card] {
+        previewCards[stack.id] ?? []
     }
 
     // MARK: - Filter

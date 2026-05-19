@@ -231,7 +231,8 @@ public final class DependencyContainer {
         StacksListViewModel(
             stackRepository: stackRepository,
             itemRepository: collectionItemRepository,
-            sessionRepository: sessionRepository
+            sessionRepository: sessionRepository,
+            cardRepository: cardRepository
         )
     }
 

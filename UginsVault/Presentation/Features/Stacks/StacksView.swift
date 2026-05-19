@@ -222,6 +222,7 @@ public struct StacksView: View {
                         stack: stack,
                         cardCount: viewModel.cardCount(for: stack),
                         displayValue: viewModel.displayValue(for: stack),
+                        previewCards: viewModel.previewCards(for: stack),
                         index: index
                     )
                 }

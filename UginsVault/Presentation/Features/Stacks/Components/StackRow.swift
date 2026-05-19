@@ -17,23 +17,26 @@ public struct StackRow: View {
     public let stack: Stack
     public let cardCount: Int
     public let displayValue: String?
+    public let previewCards: [Card]
     public let index: Int
 
     public init(
         stack: Stack,
         cardCount: Int,
         displayValue: String? = nil,
+        previewCards: [Card] = [],
         index: Int
     ) {
         self.stack = stack
         self.cardCount = cardCount
         self.displayValue = displayValue
+        self.previewCards = previewCards
         self.index = index
     }
 
     public var body: some View {
         HStack(spacing: Spacing.md) {
-            StackCover(stack: stack)
+            StackCover(stack: stack, previewCards: previewCards)
                 .accessibilityIdentifier(StacksAccessibilityFields.rowCover(at: index))
 
             VStack(alignment: .leading, spacing: Spacing.xs) {

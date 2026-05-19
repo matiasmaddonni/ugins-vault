@@ -2,27 +2,33 @@
 //  StackCover.swift
 //  UginsVault — Presentation: Stacks
 //
-//  Square thumbnail rendered on the leading edge of a `StackRow`. Two
-//  visual modes:
+//  Square thumbnail rendered on the leading edge of a `StackRow`. Modes,
+//  in priority order:
 //
-//   • Deck — three rotated "card leaves" fanned behind each other,
-//     tinted by the deck's `colors`. Evokes a sleeved deck on the table.
-//   • Non-deck (binder / loan / sale / showcase / inbox) — single rounded
-//     panel with the kind's SF Symbol glyph inset, kind-tinted.
-//
-//  Pure presentation — no SwiftData reads.
+//   1. Single commander card → that one card's art, square-cropped.
+//   2. 1–3 hydrated `previewCards` → fan of mini card thumbnails.
+//   3. Deck with no card data → coloured "card leaves" fan tinted by
+//      `stack.colors` (legacy mode).
+//   4. Non-deck (binder / loan / sale / showcase / inbox) → kind glyph.
 //
 
 import SwiftUI
+import Kingfisher
 
 public struct StackCover: View {
 
     public let stack: Stack
     public let size: CGFloat
+    public let previewCards: [Card]
 
-    public init(stack: Stack, size: CGFloat = Layout.stackCoverSize) {
+    public init(
+        stack: Stack,
+        size: CGFloat = Layout.stackCoverSize,
+        previewCards: [Card] = []
+    ) {
         self.stack = stack
         self.size = size
+        self.previewCards = previewCards
     }
 
     public var body: some View {
@@ -34,13 +40,74 @@ public struct StackCover: View {
                         .strokeBorder(Color.uv.stroke, lineWidth: Layout.hairline)
                 )
 
-            if stack.kind == .deck {
+            if let single = singleCommanderArt {
+                KFImage(single)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: size, height: size)
+                    .clipShape(RoundedRectangle(cornerRadius: UVRadius.md))
+            } else if !previewCards.isEmpty {
+                cardFan
+            } else if stack.kind == .deck {
                 deckFan
             } else {
                 glyph
             }
         }
         .frame(width: size, height: size)
+        .clipShape(RoundedRectangle(cornerRadius: UVRadius.md))
+    }
+
+    private var singleCommanderArt: URL? {
+        guard stack.commanderCardID != nil,
+              previewCards.count == 1,
+              let card = previewCards.first
+        else { return nil }
+        return card.images.artCrop ?? card.images.normal ?? card.images.large
+    }
+
+    // MARK: - Card fan (real thumbnails)
+
+    private var cardFan: some View {
+        let cards = Array(previewCards.prefix(3))
+        return ZStack {
+            ForEach(Array(cards.enumerated()), id: \.element.id) { index, card in
+                cardLeaf(card: card, index: index, count: cards.count)
+            }
+        }
+    }
+
+    private func cardLeaf(card: Card, index: Int, count: Int) -> some View {
+        let rotations: [Double] = count == 1 ? [0] :
+                                  count == 2 ? [-10, 10] :
+                                               [-14, 0, 14]
+        let offsets: [CGFloat] = count == 1 ? [0] :
+                                 count == 2 ? [-Layout.stackFanOffset, Layout.stackFanOffset] :
+                                              [-Layout.stackFanOffset, 0, Layout.stackFanOffset]
+        let opacities: [Double] = count == 1 ? [1.0] :
+                                  count == 2 ? [0.85, 1.0] :
+                                               [0.55, 0.85, 1.0]
+
+        let url = card.images.normal ?? card.images.large ?? card.images.small
+
+        return Group {
+            if let url {
+                KFImage(url)
+                    .resizable()
+                    .scaledToFill()
+            } else {
+                Color.uv.panel
+            }
+        }
+        .frame(width: Layout.stackFanCardWidth, height: Layout.stackFanCardHeight)
+        .clipShape(RoundedRectangle(cornerRadius: UVRadius.sm))
+        .overlay(
+            RoundedRectangle(cornerRadius: UVRadius.sm)
+                .strokeBorder(Color.uv.strokeHi.opacity(0.7), lineWidth: Layout.hairline)
+        )
+        .rotationEffect(.degrees(rotations[index]))
+        .offset(x: offsets[index])
+        .opacity(opacities[index])
     }
 
     // MARK: - Deck fan
