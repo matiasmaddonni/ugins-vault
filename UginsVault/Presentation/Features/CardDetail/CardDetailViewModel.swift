@@ -36,6 +36,7 @@ public final class CardDetailViewModel {
     @ObservationIgnored private let client: any ScryfallClientProtocol
     @ObservationIgnored private let stackRepository: StackRepository?
     @ObservationIgnored private let addCardToStack: AddCardToStackUseCase?
+    @ObservationIgnored private let cardRepository: CardRepository?
 
     // MARK: - Init
 
@@ -44,13 +45,45 @@ public final class CardDetailViewModel {
         displayCurrency: Currency,
         client: any ScryfallClientProtocol,
         stackRepository: StackRepository? = nil,
-        addCardToStack: AddCardToStackUseCase? = nil
+        addCardToStack: AddCardToStackUseCase? = nil,
+        cardRepository: CardRepository? = nil
     ) {
         self.card = card
         self.displayCurrency = displayCurrency
         self.client = client
         self.stackRepository = stackRepository
         self.addCardToStack = addCardToStack
+        self.cardRepository = cardRepository
+    }
+
+    // MARK: - Stale-data backfill
+
+    /// If the displayed card lacks every image URL (a row that pre-dates
+    /// the DFC `card_faces` mapper fix), refetch it from Scryfall by id,
+    /// persist the refreshed row, and swap it in so the hero image
+    /// stops being a placeholder.
+    public func refreshCardIfStale() async {
+        guard !hasAnyImage(card) else { return }
+        do {
+            let dto = try await client.card(id: card.id)
+            guard let refreshed = Card(from: dto) else { return }
+            try? await cardRepository?.save([refreshed])
+            self.card = refreshed
+        } catch {
+            // Silent — placeholder image is acceptable fallback.
+        }
+    }
+
+    private func hasAnyImage(_ card: Card) -> Bool {
+        let urls = [
+            card.images.small,
+            card.images.normal,
+            card.images.large,
+            card.images.png,
+            card.images.artCrop,
+            card.images.borderCrop
+        ]
+        return urls.contains(where: { $0 != nil })
     }
 
     // MARK: - Intents

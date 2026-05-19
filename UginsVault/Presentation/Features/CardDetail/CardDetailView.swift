@@ -37,6 +37,7 @@ public struct CardDetailView: View {
         .navigationTitle(viewModel.card.name)
         .navigationBarTitleDisplayMode(.inline)
         .task {
+            await viewModel.refreshCardIfStale()
             await viewModel.loadOtherPrintings()
             await viewModel.loadAvailableStacks()
         }

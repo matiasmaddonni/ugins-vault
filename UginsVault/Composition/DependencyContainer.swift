@@ -196,7 +196,8 @@ public final class DependencyContainer {
             displayCurrency: displayCurrency,
             client: scryfallClient,
             stackRepository: stackRepository,
-            addCardToStack: makeAddCardToStackUseCase()
+            addCardToStack: makeAddCardToStackUseCase(),
+            cardRepository: cardRepository
         )
     }
 
@@ -241,7 +242,8 @@ public final class DependencyContainer {
             sessionRepository: sessionRepository,
             cardRepository: cardRepository,
             stackRepository: stackRepository,
-            importDeckList: makeImportDeckListUseCase()
+            importDeckList: makeImportDeckListUseCase(),
+            scryfallClient: scryfallClient
         )
     }
 

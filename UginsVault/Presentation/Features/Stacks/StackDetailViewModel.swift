@@ -55,6 +55,7 @@ public final class StackDetailViewModel {
     @ObservationIgnored private let stackRepository: StackRepository?
     @ObservationIgnored private let sessionRepository: SessionRepository
     @ObservationIgnored private let importDeckList: ImportDeckListUseCase?
+    @ObservationIgnored private let scryfallClient: (any ScryfallClientProtocol)?
 
     // MARK: - Init
 
@@ -64,7 +65,8 @@ public final class StackDetailViewModel {
         sessionRepository: SessionRepository,
         cardRepository: CardRepository? = nil,
         stackRepository: StackRepository? = nil,
-        importDeckList: ImportDeckListUseCase? = nil
+        importDeckList: ImportDeckListUseCase? = nil,
+        scryfallClient: (any ScryfallClientProtocol)? = nil
     ) {
         self.stack = stack
         self.itemRepository = itemRepository
@@ -72,6 +74,7 @@ public final class StackDetailViewModel {
         self.stackRepository = stackRepository
         self.sessionRepository = sessionRepository
         self.importDeckList = importDeckList
+        self.scryfallClient = scryfallClient
     }
 
     // MARK: - Card lookup
@@ -178,11 +181,41 @@ public final class StackDetailViewModel {
         guard let cardRepository else { return }
         var map: [UUID: Card] = [:]
         for item in items where map[item.cardID] == nil {
-            if let card = try? await cardRepository.card(id: item.cardID) {
-                map[item.cardID] = card
+            guard let local = try? await cardRepository.card(id: item.cardID) else { continue }
+
+            // Backfill: rows imported before the DFC mapper fix have no
+            // image URLs. Re-fetch + persist so thumbnails appear next
+            // refresh.
+            if !hasAnyImage(local), let refreshed = await refreshFromScryfall(id: local.id) {
+                try? await cardRepository.save([refreshed])
+                map[item.cardID] = refreshed
+            } else {
+                map[item.cardID] = local
             }
         }
         cardsByID = map
+    }
+
+    private func refreshFromScryfall(id: UUID) async -> Card? {
+        guard let scryfallClient else { return nil }
+        do {
+            let dto = try await scryfallClient.card(id: id)
+            return Card(from: dto)
+        } catch {
+            return nil
+        }
+    }
+
+    private func hasAnyImage(_ card: Card) -> Bool {
+        let urls = [
+            card.images.small,
+            card.images.normal,
+            card.images.large,
+            card.images.png,
+            card.images.artCrop,
+            card.images.borderCrop
+        ]
+        return urls.contains(where: { $0 != nil })
     }
 
     // MARK: - Import

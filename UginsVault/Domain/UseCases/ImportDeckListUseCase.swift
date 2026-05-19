@@ -143,10 +143,30 @@ public final class ImportDeckListUseCase {
         // import loop. Pin to set when the line specifies one so we
         // never substitute a wrong printing.
         let normalizedName = normalizeName(line.name)
-        return try await cardRepository.findOne(
+        guard let local = try await cardRepository.findOne(
             name: normalizedName,
             setCode: line.setCode
-        )
+        ) else { return nil }
+
+        // Treat rows imported before the DFC-mapper fix (no image URLs
+        // at all) as stale — force a Scryfall refresh so the new
+        // `card_faces[0].image_uris` fallback can populate them.
+        if !hasAnyImage(local) {
+            return nil
+        }
+        return local
+    }
+
+    private func hasAnyImage(_ card: Card) -> Bool {
+        let urls = [
+            card.images.small,
+            card.images.normal,
+            card.images.large,
+            card.images.png,
+            card.images.artCrop,
+            card.images.borderCrop
+        ]
+        return urls.contains(where: { $0 != nil })
     }
 }
 
