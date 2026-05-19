@@ -171,6 +171,68 @@ struct StacksListViewModelTests {
         #expect(usdFormatted.contains("0"))
     }
 
+    @Test("createStack persists a deck with format+colours and refreshes the list")
+    func createStackDeckPersists() async throws {
+        let (sut, stackRepo, _, _) = try makeSUT()
+        await sut.createStack(
+            name: "Burn",
+            kind: .deck,
+            format: .modern,
+            colors: [.red],
+            commander: nil,
+            person: nil
+        )
+
+        let stored = try await stackRepo.refresh()
+        #expect(stored.count == 1)
+        #expect(stored.first?.name == "Burn")
+        #expect(stored.first?.kind == .deck)
+        #expect(stored.first?.format == .modern)
+        #expect(stored.first?.colors == [.red])
+        #expect(sut.allStacks.count == 1)
+        #expect(sut.isPresentingCreate == false)
+    }
+
+    @Test("createStack rejects an empty name")
+    func createStackRejectsEmptyName() async throws {
+        let (sut, stackRepo, _, _) = try makeSUT()
+        await sut.createStack(name: "   ", kind: .deck)
+        let stored = try await stackRepo.refresh()
+        #expect(stored.isEmpty)
+        #expect(sut.allStacks.isEmpty)
+    }
+
+    @Test("createStack assigns the next sortOrder after existing rows")
+    func createStackBumpsSortOrder() async throws {
+        let (sut, stackRepo, _, _) = try makeSUT()
+        try await stackRepo.save(makeStack(name: "A", kind: .deck, sortOrder: 3))
+        await sut.refresh()
+
+        await sut.createStack(name: "B", kind: .binder)
+
+        let stored = try await stackRepo.refresh()
+        let new = stored.first { $0.name == "B" }
+        #expect(new?.sortOrder == 4)
+    }
+
+    @Test("createStack clears deck-only fields when kind != .deck")
+    func createStackDropsDeckFieldsForOtherKinds() async throws {
+        let (sut, stackRepo, _, _) = try makeSUT()
+
+        await sut.createStack(
+            name: "Trades",
+            kind: .binder,
+            format: .modern,
+            colors: [.red, .blue],
+            commander: "Should be dropped"
+        )
+
+        let stored = try await stackRepo.refresh().first { $0.name == "Trades" }
+        #expect(stored?.format == nil)
+        #expect(stored?.colors.isEmpty == true)
+        #expect(stored?.commander == nil)
+    }
+
     @Test("Filter chipLabel returns the right plural per kind")
     func filterChipLabels() {
         #expect(StacksListViewModel.Filter.all.chipLabel == "All")

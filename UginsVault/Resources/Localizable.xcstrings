@@ -385,6 +385,17 @@
         }
       }
     },
+    "Colors": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Colores"
+          }
+        }
+      }
+    },
     "Colours": {
       "extractionState": "manual",
       "localizations": {
@@ -392,6 +403,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Colores"
+          }
+        }
+      }
+    },
+    "Commander (optional)": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Comandante (opcional)"
           }
         }
       }
@@ -700,6 +722,17 @@
         }
       }
     },
+    "Format": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Formato"
+          }
+        }
+      }
+    },
     "Iconography": {
       "extractionState": "manual",
       "localizations": {
@@ -718,6 +751,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Importar CSV"
+          }
+        }
+      }
+    },
+    "Kind": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tipo"
           }
         }
       }
@@ -755,6 +799,17 @@
         }
       }
     },
+    "Lent to (optional)": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prestada a (opcional)"
+          }
+        }
+      }
+    },
     "Light": {
       "extractionState": "manual",
       "localizations": {
@@ -785,6 +840,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Cargando…"
+          }
+        }
+      }
+    },
+    "Loan": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Préstamo"
           }
         }
       }
@@ -1439,6 +1505,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mini gráficos, subidas, bajadas y valor por formato llegan aquí en la v0.6."
+          }
+        }
+      }
+    },
+    "Stack": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pila"
+          }
+        }
+      }
+    },
+    "Stack name": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nombre de la pila"
           }
         }
       }

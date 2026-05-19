@@ -21,6 +21,8 @@ public struct StacksView: View {
     }
 
     public var body: some View {
+        @Bindable var viewModel = viewModel
+
         NavigationStack {
             content
                 .background(Color.uv.bg.ignoresSafeArea())
@@ -33,6 +35,18 @@ public struct StacksView: View {
                         viewModel: DependencyContainer.shared.makeStackDetailViewModel(stack: stack)
                     )
                 }
+                .sheet(isPresented: $viewModel.isPresentingCreate) {
+                    CreateStackSheet { name, kind, format, colors, commander, person in
+                        await viewModel.createStack(
+                            name: name,
+                            kind: kind,
+                            format: format,
+                            colors: colors,
+                            commander: commander,
+                            person: person
+                        )
+                    }
+                }
         }
         .accessibilityIdentifier(StacksAccessibilityFields.screen)
     }
@@ -43,7 +57,7 @@ public struct StacksView: View {
     private var toolbar: some ToolbarContent {
         ToolbarItem(placement: .topBarTrailing) {
             Button {
-                // TODO: present Create Stack sheet (Phase 3+ scope).
+                viewModel.presentCreate()
             } label: {
                 Image(systemName: "plus")
                     .font(.system(size: Layout.mediumIcon - 1, weight: .semibold))
@@ -229,7 +243,7 @@ public struct StacksView: View {
                 }
 
                 Button {
-                    // TODO: open Create Stack sheet.
+                    viewModel.presentCreate()
                 } label: {
                     Text("New stack")
                         .font(.uv.body(14, weight: .semibold))

@@ -71,4 +71,13 @@ public enum StacksAccessibilityFields {
 
     public static let emptyStateTitle  = "lbl_stacks_empty_title"
     public static let emptyAddButton   = "btn_stacks_empty_add"
+
+    // MARK: - Create sheet
+
+    public static let createSheet      = "view_stacks_create_sheet"
+    public static let createName       = "txt_stacks_create_name"
+    public static let createCommander  = "txt_stacks_create_commander"
+    public static let createPerson     = "txt_stacks_create_person"
+    public static let createSave       = "btn_stacks_create_save"
+    public static let createCancel     = "btn_stacks_create_cancel"
 }

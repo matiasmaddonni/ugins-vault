@@ -119,6 +119,7 @@
 		AE2C074E8A91FC496A8E8872 /* UginsVaultApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97BB29F0E8DFB1CE7D2F5912 /* UginsVaultApp.swift */; };
 		AE6379F8F565BD5867A79F2A /* CurrencyFormatterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FED931C6408DC0C8EF4C393 /* CurrencyFormatterTests.swift */; };
 		AFF399D7B782D2A848F5DE65 /* StackMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2B8B13A7AA89596C255A2A7 /* StackMapper.swift */; };
+		B08ECC294D7966F5FB9248EE /* CreateStackSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A90FDB23E4B11607C2E06A08 /* CreateStackSheet.swift */; };
 		B237E0D8D19CDE366D2B24F2 /* ScryfallClientProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFDCE5B9C39A840ACDFD5FEE /* ScryfallClientProtocol.swift */; };
 		B526B70783B9098FBA01C5B1 /* EditProfileSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0761C5A38C6AB65AF2DDB05B /* EditProfileSheet.swift */; };
 		BA252F32E3A800E29F3116DC /* SettingsAccessibilityFields.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7895D87271D049F9361F7C5 /* SettingsAccessibilityFields.swift */; };
@@ -290,6 +291,7 @@
 		A492FD5FFD6F0F268B981C3B /* UndoToast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UndoToast.swift; sourceTree = "<group>"; };
 		A7895D87271D049F9361F7C5 /* SettingsAccessibilityFields.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsAccessibilityFields.swift; sourceTree = "<group>"; };
 		A7D5FCA00BF74C67BD6A1A78 /* MoveCollectionItemUseCaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveCollectionItemUseCaseTests.swift; sourceTree = "<group>"; };
+		A90FDB23E4B11607C2E06A08 /* CreateStackSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateStackSheet.swift; sourceTree = "<group>"; };
 		AB67F41E9C8D32886C0CFDC5 /* MockSessionRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockSessionRepository.swift; sourceTree = "<group>"; };
 		AC0BCC75A0EFD4759095C557 /* Currency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Currency.swift; sourceTree = "<group>"; };
 		AC24792A4C63E1C2DE309121 /* StackDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackDetailView.swift; sourceTree = "<group>"; };
@@ -587,6 +589,7 @@
 		709C3109167FDEE437C8DB2E /* Stacks */ = {
 			isa = PBXGroup;
 			children = (
+				A90FDB23E4B11607C2E06A08 /* CreateStackSheet.swift */,
 				42F89FD1F65CFC7D256CB20C /* StackDetailAccessibilityFields.swift */,
 				AC24792A4C63E1C2DE309121 /* StackDetailView.swift */,
 				D442651635763F98973C6D46 /* StackDetailViewModel.swift */,
@@ -1103,6 +1106,7 @@
 				251486FC06A0047780C3A738 /* CollectionItemRepository.swift in Sources */,
 				E32D4DB95201F20C280C9954 /* CollectionView.swift in Sources */,
 				38AD971B1D895C67A16915ED /* CollectionViewModel.swift in Sources */,
+				B08ECC294D7966F5FB9248EE /* CreateStackSheet.swift in Sources */,
 				12F1A7FB6D1B2F2A0B02AEE1 /* Currency.swift in Sources */,
 				3BD831E2486CF58B18A2EB02 /* CurrencyFormatter.swift in Sources */,
 				6E951D98163A86EE73A17F28 /* DashboardView.swift in Sources */,

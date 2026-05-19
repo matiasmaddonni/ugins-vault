@@ -52,6 +52,12 @@ public final class StacksListViewModel {
         didSet { recomputeVisible() }
     }
 
+    // MARK: - Create-sheet plumbing
+
+    /// Set by the view layer to drive `.sheet(isPresented:)` for the
+    /// Create Stack flow.
+    public var isPresentingCreate: Bool = false
+
     // MARK: - Dependencies
 
     @ObservationIgnored private let stackRepository: StackRepository
@@ -131,6 +137,50 @@ public final class StacksListViewModel {
 
     public func applyFilter(_ filter: Filter) {
         self.filter = filter
+    }
+
+    // MARK: - Create
+
+    public func presentCreate() {
+        isPresentingCreate = true
+    }
+
+    public func dismissCreate() {
+        isPresentingCreate = false
+    }
+
+    /// Persists a new stack and refreshes the visible list. The next
+    /// available `sortOrder` is auto-assigned (max + 1).
+    public func createStack(
+        name: String,
+        kind: StackKind,
+        format: Format? = nil,
+        colors: Set<ManaColor> = [],
+        commander: String? = nil,
+        person: String? = nil
+    ) async {
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+
+        let nextOrder = (allStacks.map(\.sortOrder).max() ?? -1) + 1
+        let stack = Stack(
+            name: trimmed,
+            kind: kind,
+            sortOrder: nextOrder,
+            format: kind == .deck ? format : nil,
+            colors: kind == .deck ? colors : [],
+            commander: kind == .deck ? commander : nil,
+            person: kind == .loan ? person : nil,
+            since: kind == .loan ? Date() : nil
+        )
+
+        do {
+            try await stackRepository.save(stack)
+            await refresh()
+            dismissCreate()
+        } catch {
+            status = .error(message: error.localizedDescription)
+        }
     }
 
     public func cardCount(for stack: Stack) -> Int {
