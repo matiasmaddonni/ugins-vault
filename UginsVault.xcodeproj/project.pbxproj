@@ -20,6 +20,7 @@
 		1236E427EA0F62D5E4C35C25 /* ReduceMotionUseCasesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2F3C829887DF430EB6FAE40 /* ReduceMotionUseCasesTests.swift */; };
 		12F1A7FB6D1B2F2A0B02AEE1 /* Currency.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0BCC75A0EFD4759095C557 /* Currency.swift */; };
 		12FDF1B0AA37A026D7367386 /* ScryfallList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63396DCC792ECBADE8E2E89F /* ScryfallList.swift */; };
+		16FDE3E30CD1527C2BDE6B9E /* CollectionItemThumbnail.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFE112801B2C677CC5BEE999 /* CollectionItemThumbnail.swift */; };
 		17DB16F2AC3071AEC443B5B8 /* PressableButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D5C0D8A87D250E750022612 /* PressableButtonStyle.swift */; };
 		1891E0F83CA96F7FCE547471 /* UserDefaultsUserProfileRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86692ED694F927ABA0C5FACF /* UserDefaultsUserProfileRepositoryTests.swift */; };
 		199188E4A003CA3FBA8F2886 /* UpdateUserProfileUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = B25179043A976B8DE4E3D8DE /* UpdateUserProfileUseCase.swift */; };
@@ -321,6 +322,7 @@
 		CC6DEB0A1155CB665B9D4B88 /* CardQuery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardQuery.swift; sourceTree = "<group>"; };
 		CEC9AF64407073430308F16A /* ScryfallCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScryfallCard.swift; sourceTree = "<group>"; };
 		CFCFB3DA46448E4815631CF1 /* UserDefaultsSessionStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsSessionStorage.swift; sourceTree = "<group>"; };
+		CFE112801B2C677CC5BEE999 /* CollectionItemThumbnail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionItemThumbnail.swift; sourceTree = "<group>"; };
 		D06AE670C378E1558B650CB0 /* AuthRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthRepository.swift; sourceTree = "<group>"; };
 		D1E40E87CDD1B1A3D1ACD31B /* AppTheme+ColorScheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppTheme+ColorScheme.swift"; sourceTree = "<group>"; };
 		D2944A85044C1A10C3B0D836 /* RootViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewModelTests.swift; sourceTree = "<group>"; };
@@ -783,6 +785,7 @@
 		B263A4118AE86F1CC1EB17F2 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				CFE112801B2C677CC5BEE999 /* CollectionItemThumbnail.swift */,
 				DE28649EBE9B4B29F743AD76 /* StackActionBar.swift */,
 				788287228C083B5310709E02 /* StackCover.swift */,
 				0145E8B53202457704F3597C /* StackHeroCard.swift */,
@@ -1117,6 +1120,7 @@
 				62E60E75D8E8DDD0EEADAEA1 /* CollectionItem.swift in Sources */,
 				FA3CE1CA42A08054E36829E9 /* CollectionItemMapper.swift in Sources */,
 				251486FC06A0047780C3A738 /* CollectionItemRepository.swift in Sources */,
+				16FDE3E30CD1527C2BDE6B9E /* CollectionItemThumbnail.swift in Sources */,
 				E32D4DB95201F20C280C9954 /* CollectionView.swift in Sources */,
 				38AD971B1D895C67A16915ED /* CollectionViewModel.swift in Sources */,
 				B08ECC294D7966F5FB9248EE /* CreateStackSheet.swift in Sources */,

@@ -31,6 +31,7 @@ public final class StackDetailViewModel {
 
     public private(set) var stack: Stack
     public private(set) var items: [CollectionItem] = []
+    public private(set) var cardsByID: [UUID: Card] = [:]
     public private(set) var cardCount: Int = 0
     public private(set) var uniqueCount: Int = 0
     public private(set) var status: Status = .idle
@@ -45,6 +46,7 @@ public final class StackDetailViewModel {
     // MARK: - Dependencies
 
     @ObservationIgnored private let itemRepository: CollectionItemRepository
+    @ObservationIgnored private let cardRepository: CardRepository?
     @ObservationIgnored private let sessionRepository: SessionRepository
     @ObservationIgnored private let importDeckList: ImportDeckListUseCase?
 
@@ -54,12 +56,20 @@ public final class StackDetailViewModel {
         stack: Stack,
         itemRepository: CollectionItemRepository,
         sessionRepository: SessionRepository,
+        cardRepository: CardRepository? = nil,
         importDeckList: ImportDeckListUseCase? = nil
     ) {
         self.stack = stack
         self.itemRepository = itemRepository
+        self.cardRepository = cardRepository
         self.sessionRepository = sessionRepository
         self.importDeckList = importDeckList
+    }
+
+    // MARK: - Card lookup
+
+    public func card(for item: CollectionItem) -> Card? {
+        cardsByID[item.cardID]
     }
 
     // MARK: - Derived
@@ -149,10 +159,22 @@ public final class StackDetailViewModel {
             self.items = loaded
             self.cardCount   = try await itemRepository.cardCount(in: stack.id)
             self.uniqueCount = try await itemRepository.uniqueCount(in: stack.id)
+            await hydrateCards(for: loaded)
             self.status = .idle
         } catch {
             self.status = .error(message: error.localizedDescription)
         }
+    }
+
+    private func hydrateCards(for items: [CollectionItem]) async {
+        guard let cardRepository else { return }
+        var map: [UUID: Card] = [:]
+        for item in items where map[item.cardID] == nil {
+            if let card = try? await cardRepository.card(id: item.cardID) {
+                map[item.cardID] = card
+            }
+        }
+        cardsByID = map
     }
 
     // MARK: - Import

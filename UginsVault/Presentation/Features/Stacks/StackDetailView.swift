@@ -30,6 +30,14 @@ public struct StackDetailView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { toolbar }
             .task { await viewModel.onAppear() }
+            .navigationDestination(for: Card.self) { card in
+                CardDetailView(
+                    viewModel: DependencyContainer.shared.makeCardDetailViewModel(
+                        card: card,
+                        displayCurrency: viewModel.currency
+                    )
+                )
+            }
             .sheet(isPresented: $viewModel.isPresentingImport) {
                 ImportDeckListSheet(
                     isImporting: .constant(viewModel.isImporting),
@@ -189,18 +197,39 @@ public struct StackDetailView: View {
         }
     }
 
+    @ViewBuilder
     private func itemRow(item: CollectionItem, index: Int) -> some View {
+        if let card = viewModel.card(for: item) {
+            NavigationLink(value: card) {
+                itemRowBody(item: item, card: card, index: index)
+            }
+            .buttonStyle(.plain)
+        } else {
+            itemRowBody(item: item, card: nil, index: index)
+        }
+    }
+
+    private func itemRowBody(item: CollectionItem, card: Card?, index: Int) -> some View {
         HStack(spacing: Spacing.md) {
-            // Compact stand-in for the card row — v0.3 doesn't join
-            // `CollectionItem` against `Card.name`. A later milestone
-            // surfaces the printing's image + name here.
+            CollectionItemThumbnail(card: card)
+
             VStack(alignment: .leading, spacing: Spacing.xs - 2) {
-                Text(item.cardID.uuidString.prefix(8))
-                    .font(.uv.mono(12, weight: .semibold))
+                Text(card?.name ?? String(item.cardID.uuidString.prefix(8)))
+                    .font(.uv.body(14, weight: .semibold))
                     .foregroundStyle(Color.uv.text)
+                    .lineLimit(1)
+
+                if let card {
+                    Text("\(card.setCode.uppercased()) · #\(card.collectorNumber)")
+                        .font(.uv.mono(11))
+                        .foregroundStyle(Color.uv.muted)
+                        .lineLimit(1)
+                }
+
                 Text("\(item.finish.displayName) · \(item.condition.rawValue) · \(item.language.uppercased())")
                     .font(.uv.body(11))
-                    .foregroundStyle(Color.uv.muted)
+                    .foregroundStyle(Color.uv.muted2)
+                    .lineLimit(1)
             }
 
             Spacer(minLength: Spacing.sm)
@@ -208,9 +237,14 @@ public struct StackDetailView: View {
             Text("×\(item.quantity)")
                 .font(.uv.mono(13, weight: .semibold))
                 .foregroundStyle(Color.uv.gold)
+
+            Image(systemName: "chevron.right")
+                .font(.system(size: Layout.smallIcon - 4, weight: .semibold))
+                .foregroundStyle(Color.uv.muted2)
         }
         .padding(.horizontal, Spacing.rowHorizontal)
         .padding(.vertical, Spacing.md)
+        .contentShape(Rectangle())
         .accessibilityIdentifier(StackDetailAccessibilityFields.row(at: index))
     }
 

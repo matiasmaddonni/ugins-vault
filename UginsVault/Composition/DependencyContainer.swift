@@ -239,6 +239,7 @@ public final class DependencyContainer {
             stack: stack,
             itemRepository: collectionItemRepository,
             sessionRepository: sessionRepository,
+            cardRepository: cardRepository,
             importDeckList: makeImportDeckListUseCase()
         )
     }

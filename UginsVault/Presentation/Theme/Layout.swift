@@ -114,4 +114,10 @@ public enum Layout {
     /// Minimum height of the deck-list paste TextEditor in
     /// `ImportDeckListSheet`.
     public static let importEditorMinHeight: CGFloat = 280
+
+    /// Thumbnail width on `StackDetailView`'s card list rows.
+    public static let stackDetailRowThumbWidth: CGFloat = 40
+
+    /// Thumbnail height on `StackDetailView`'s card list rows.
+    public static let stackDetailRowThumbHeight: CGFloat = 56
 }
