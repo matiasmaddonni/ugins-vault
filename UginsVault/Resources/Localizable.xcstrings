@@ -426,6 +426,17 @@
         }
       }
     },
+    "Commander": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Comandante"
+          }
+        }
+      }
+    },
     "Commander (optional)": {
       "extractionState": "manual",
       "localizations": {
@@ -1529,6 +1540,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Edición"
+          }
+        }
+      }
+    },
+    "Set as commander": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Marcar como comandante"
           }
         }
       }

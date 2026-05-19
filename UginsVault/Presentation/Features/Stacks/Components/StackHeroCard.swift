@@ -9,27 +9,28 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 public struct StackHeroCard: View {
 
     public let stack: Stack
     public let cardCount: Int
-    public let uniqueCount: Int
     public let formattedValue: String
     public let subtitle: String
+    public let commanderArtURL: URL?
 
     public init(
         stack: Stack,
         cardCount: Int,
-        uniqueCount: Int,
         formattedValue: String,
-        subtitle: String
+        subtitle: String,
+        commanderArtURL: URL? = nil
     ) {
         self.stack = stack
         self.cardCount = cardCount
-        self.uniqueCount = uniqueCount
         self.formattedValue = formattedValue
         self.subtitle = subtitle
+        self.commanderArtURL = commanderArtURL
     }
 
     public var body: some View {
@@ -56,8 +57,21 @@ public struct StackHeroCard: View {
 
     // MARK: - Cover
 
+    @ViewBuilder
     private var cover: some View {
-        StackCover(stack: stack, size: Layout.stackHeroCoverSize)
+        if let commanderArtURL {
+            KFImage(commanderArtURL)
+                .resizable()
+                .scaledToFill()
+                .frame(width: Layout.stackHeroCoverSize, height: Layout.stackHeroCoverSize)
+                .clipShape(RoundedRectangle(cornerRadius: UVRadius.md))
+                .overlay(
+                    RoundedRectangle(cornerRadius: UVRadius.md)
+                        .strokeBorder(Color.uv.stroke, lineWidth: Layout.hairline)
+                )
+        } else {
+            StackCover(stack: stack, size: Layout.stackHeroCoverSize)
+        }
     }
 
     // MARK: - Title block
@@ -86,11 +100,9 @@ public struct StackHeroCard: View {
 
     private var statStrip: some View {
         HStack(spacing: 0) {
-            stat(label: "Cards",  value: "\(cardCount)")
+            stat(label: "Cards", value: "\(cardCount)")
             verticalDivider
-            stat(label: "Unique", value: "\(uniqueCount)")
-            verticalDivider
-            stat(label: "Value",  value: formattedValue)
+            stat(label: "Value", value: formattedValue)
         }
     }
 

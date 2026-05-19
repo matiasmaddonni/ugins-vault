@@ -41,6 +41,7 @@ public struct StackDetailView: View {
             }
             .sheet(isPresented: $viewModel.isPresentingImport) {
                 ImportDeckListSheet(
+                    initialText: viewModel.serializedCardList,
                     isImporting: .constant(viewModel.isImporting),
                     progress: viewModel.importProgress,
                     onImport: { source in
@@ -128,15 +129,17 @@ public struct StackDetailView: View {
 
     // MARK: - Main scroll
 
+    @State private var isPresentingShare: Bool = false
+
     private var mainScroll: some View {
         ScrollView {
             VStack(spacing: Spacing.lg) {
                 StackHeroCard(
                     stack: viewModel.stack,
                     cardCount: viewModel.cardCount,
-                    uniqueCount: viewModel.uniqueCount,
                     formattedValue: viewModel.formattedTotalValue,
-                    subtitle: viewModel.heroSubtitle
+                    subtitle: viewModel.heroSubtitle,
+                    commanderArtURL: viewModel.commanderArtURL
                 )
                 .accessibilityElement(children: .contain)
                 .accessibilityIdentifier(StackDetailAccessibilityFields.heroName)
@@ -147,6 +150,8 @@ public struct StackDetailView: View {
                         switch action.id {
                         case "edit_list", "add_cards", "sort_all":
                             viewModel.presentImport()
+                        case "export":
+                            isPresentingShare = true
                         default:
                             // Other actions remain stubs in v0.3.
                             break
@@ -162,6 +167,9 @@ public struct StackDetailView: View {
             .padding(.vertical, Spacing.md)
         }
         .refreshable { await viewModel.refresh() }
+        .sheet(isPresented: $isPresentingShare) {
+            ShareSheet(text: viewModel.serializedCardList)
+        }
     }
 
     // MARK: - Card list / empty
@@ -207,6 +215,19 @@ public struct StackDetailView: View {
                 itemRowBody(item: item, card: card, index: index)
             }
             .buttonStyle(.plain)
+            .contextMenu {
+                if viewModel.stack.kind == .deck {
+                    Button {
+                        Task { await viewModel.setCommander(cardID: card.id) }
+                    } label: {
+                        Label(
+                            viewModel.stack.commanderCardID == card.id ? "Commander" : "Set as commander",
+                            systemImage: "crown.fill"
+                        )
+                    }
+                    .disabled(viewModel.stack.commanderCardID == card.id)
+                }
+            }
         } else {
             itemRowBody(item: item, card: nil, index: index)
         }

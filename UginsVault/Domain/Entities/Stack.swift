@@ -27,6 +27,12 @@ public struct Stack: Identifiable, Hashable, Codable, Sendable {
     public var colors: Set<ManaColor>
     public var commander: String?
 
+    /// Points at the `Card.id` of the commander when the deck format
+    /// has one. The commander stays as one of the regular
+    /// `CollectionItem` rows — this field just pins which printing
+    /// counts as the helm so the hero card can render its art.
+    public var commanderCardID: UUID?
+
     // MARK: - Loan-only
 
     public var person: String?
@@ -41,6 +47,7 @@ public struct Stack: Identifiable, Hashable, Codable, Sendable {
         format: Format? = nil,
         colors: Set<ManaColor> = [],
         commander: String? = nil,
+        commanderCardID: UUID? = nil,
         person: String? = nil,
         since: Date? = nil
     ) {
@@ -52,6 +59,7 @@ public struct Stack: Identifiable, Hashable, Codable, Sendable {
         self.format = format
         self.colors = colors
         self.commander = commander
+        self.commanderCardID = commanderCardID
         self.person = person
         self.since = since
     }

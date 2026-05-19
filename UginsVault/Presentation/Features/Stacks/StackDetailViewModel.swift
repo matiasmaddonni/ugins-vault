@@ -92,10 +92,16 @@ public final class StackDetailViewModel {
     public var heroSubtitle: String {
         switch stack.kind {
         case .deck:
+            // Prefer the resolved commander card name when set, then
+            // the manual `stack.commander` string. Format already shows
+            // up in the badge — don't repeat it here.
+            if let commanderCard, !commanderCard.name.isEmpty {
+                return commanderCard.name
+            }
             if let commander = stack.commander, !commander.isEmpty {
                 return commander
             }
-            return stack.format?.displayName ?? StackKind.deck.displayLabel
+            return ""
         case .loan:
             if let person = stack.person, !person.isEmpty {
                 return String(localized: "On loan to \(person)")
@@ -104,6 +110,38 @@ public final class StackDetailViewModel {
         default:
             return stack.kind.displayLabel
         }
+    }
+
+    /// `Card` matching `stack.commanderCardID`, when both are set + the
+    /// card hydrated locally.
+    public var commanderCard: Card? {
+        guard let id = stack.commanderCardID else { return nil }
+        return cardsByID[id]
+    }
+
+    /// Big art URL used by `StackHeroCard` when a commander is pinned.
+    public var commanderArtURL: URL? {
+        commanderCard?.images.artCrop
+            ?? commanderCard?.images.normal
+            ?? commanderCard?.images.large
+    }
+
+    /// Decklist text — used by Edit list (pre-populates the import
+    /// sheet) and by Export (share sheet content). Format mirrors
+    /// Moxfield's `N Name (SET) NUMBER`.
+    public var serializedCardList: String {
+        items.map { item in
+            let card = cardsByID[item.cardID]
+            let name = card?.name ?? "Unknown card"
+            let suffix: String
+            if let card {
+                suffix = " (\(card.setCode.uppercased())) \(card.collectorNumber)"
+            } else {
+                suffix = ""
+            }
+            return "\(item.quantity) \(name)\(suffix)"
+        }
+        .joined(separator: "\n")
     }
 
     public var formattedTotalValue: String {
@@ -120,7 +158,6 @@ public final class StackDetailViewModel {
         case .deck:
             return [
                 .init(id: "edit_list",     label: String(localized: "Edit list"),     icon: "list.bullet.rectangle"),
-                .init(id: "sample_hand",   label: String(localized: "Sample hand"),   icon: "rectangle.on.rectangle"),
                 .init(id: "export",        label: String(localized: "Export"),        icon: "square.and.arrow.up"),
                 .init(id: "stats",         label: String(localized: "Stats"),         icon: "chart.bar.fill")
             ]
@@ -252,6 +289,26 @@ public final class StackDetailViewModel {
             try await itemRepository.deleteAll(in: stack.id)
             try await stackRepository.delete(id: stack.id)
             didDelete = true
+        } catch {
+            status = .error(message: error.localizedDescription)
+        }
+    }
+
+    // MARK: - Commander
+
+    /// Pins the printing identified by `cardID` as this deck's
+    /// commander. Persists via `StackRepository` + bumps the local
+    /// `stack` copy so the hero card re-renders.
+    public func setCommander(cardID: UUID) async {
+        guard let stackRepository else { return }
+        var updated = stack
+        updated.commanderCardID = cardID
+        if let card = cardsByID[cardID] {
+            updated.commander = card.name
+        }
+        do {
+            try await stackRepository.save(updated)
+            self.stack = updated
         } catch {
             status = .error(message: error.localizedDescription)
         }

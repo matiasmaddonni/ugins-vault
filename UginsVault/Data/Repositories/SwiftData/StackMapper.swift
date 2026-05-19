@@ -20,6 +20,7 @@ extension Stack {
             format: model.formatRaw.flatMap(Format.init(rawValue:)),
             colors: Stack.parseColors(model.colorsRaw),
             commander: model.commander,
+            commanderCardID: model.commanderCardID,
             person: model.person,
             since: model.since
         )
@@ -47,6 +48,7 @@ extension SwiftDataStack {
             formatRaw: stack.format?.rawValue,
             colorsRaw: Stack.encodeColors(stack.colors),
             commander: stack.commander,
+            commanderCardID: stack.commanderCardID,
             person: stack.person,
             since: stack.since
         )
@@ -54,14 +56,15 @@ extension SwiftDataStack {
 
     /// Mutating apply used by `save(_:)` for idempotent upserts.
     func apply(_ stack: Stack) {
-        name      = stack.name
-        kindRaw   = stack.kind.rawValue
-        sortOrder = stack.sortOrder
-        createdAt = stack.createdAt
-        formatRaw = stack.format?.rawValue
-        colorsRaw = Stack.encodeColors(stack.colors)
-        commander = stack.commander
-        person    = stack.person
-        since     = stack.since
+        name            = stack.name
+        kindRaw         = stack.kind.rawValue
+        sortOrder       = stack.sortOrder
+        createdAt       = stack.createdAt
+        formatRaw       = stack.format?.rawValue
+        colorsRaw       = Stack.encodeColors(stack.colors)
+        commander       = stack.commander
+        commanderCardID = stack.commanderCardID
+        person          = stack.person
+        since           = stack.since
     }
 }

@@ -100,11 +100,11 @@ struct StackDetailViewModelTests {
         #expect(sut.heroSubtitle == "Atraxa, Praetors' Voice")
     }
 
-    @Test("heroSubtitle falls back to format for decks without commander")
-    func heroSubtitleDeckFallsBackToFormat() throws {
+    @Test("heroSubtitle is empty for decks without commander (badge already shows format)")
+    func heroSubtitleDeckEmptyWhenNoCommander() throws {
         let stack = makeDeck(format: .modern)
         let (sut, _, _) = try makeSUT(stack: stack)
-        #expect(sut.heroSubtitle == "Modern")
+        #expect(sut.heroSubtitle.isEmpty)
     }
 
     @Test("heroSubtitle shows 'On loan to <person>' for loan stacks")
@@ -119,7 +119,7 @@ struct StackDetailViewModelTests {
         #expect(sut.heroSubtitle == "On loan to Diego")
     }
 
-    @Test("actions list reflects kind: deck = 4, loan = 3, sale = 4, inbox = 2")
+    @Test("actions list reflects kind: deck = 3, loan = 3, sale = 4, inbox = 2")
     func kindAwareActionsList() throws {
         let deck   = Stack(id: UUID(), name: "D", kind: .deck)
         let loan   = Stack(id: UUID(), name: "L", kind: .loan)
@@ -130,8 +130,9 @@ struct StackDetailViewModelTests {
         let (saleVM,  _, _) = try makeSUT(stack: sale)
         let (inboxVM, _, _) = try makeSUT(stack: inbox)
 
-        #expect(deckVM.actions.count == 4)
+        #expect(deckVM.actions.count == 3)
         #expect(deckVM.actions.first?.id == "edit_list")
+        #expect(deckVM.actions.contains(where: { $0.id == "sample_hand" }) == false)
         #expect(loanVM.actions.count == 3)
         #expect(loanVM.actions.first?.id == "mark_returned")
         #expect(saleVM.actions.count == 4)
@@ -182,5 +183,19 @@ struct StackDetailViewModelTests {
         await sut.deleteStack()
 
         #expect(sut.didDelete == false)
+    }
+
+    @Test("setCommander updates stack.commanderCardID and persists through StackRepository")
+    func setCommanderPersists() async throws {
+        let stack = makeDeck()
+        let (sut, stackRepo, _) = try makeSUTWithStackRepo(stack: stack)
+        try await stackRepo.save(stack)
+        let cardID = UUID()
+
+        await sut.setCommander(cardID: cardID)
+
+        #expect(sut.stack.commanderCardID == cardID)
+        let reloaded = try await stackRepo.stack(id: stack.id)
+        #expect(reloaded?.commanderCardID == cardID)
     }
 }

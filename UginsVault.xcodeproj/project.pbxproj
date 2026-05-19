@@ -97,6 +97,7 @@
 		8EFE053CBEFAEDFE58F4CFB2 /* GetPreferredLanguageUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = C773AFD4A060B2FAF65ED0D7 /* GetPreferredLanguageUseCase.swift */; };
 		90E214E49E62F94149A1B771 /* DeckListParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEE9AD320D027DC3F8C300B7 /* DeckListParser.swift */; };
 		925084683708396D7B13FC4A /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022058C6088F42791AD45A1E /* Card.swift */; };
+		93107406503E3F95801ECE06 /* ShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9253120BE80DE50C2898C3D8 /* ShareSheet.swift */; };
 		931B224E697B590F3560FA9B /* ScryfallCardMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F9E540CE0391011F30AB86 /* ScryfallCardMapper.swift */; };
 		9438152015621AB1F710D2DC /* CardDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3B286D185C14A9700C6FAE /* CardDetailView.swift */; };
 		9696FF06410F01FA18F74CCA /* SessionStorageDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E81C16036DB6EB019212AFB2 /* SessionStorageDataSource.swift */; };
@@ -281,6 +282,7 @@
 		8D81CAAA07CF4AF08E29E727 /* CollectionItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionItem.swift; sourceTree = "<group>"; };
 		8E4FB0A5D7430AB0DA3D7BA0 /* StackRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackRow.swift; sourceTree = "<group>"; };
 		8FED931C6408DC0C8EF4C393 /* CurrencyFormatterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyFormatterTests.swift; sourceTree = "<group>"; };
+		9253120BE80DE50C2898C3D8 /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
 		92F9E540CE0391011F30AB86 /* ScryfallCardMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScryfallCardMapper.swift; sourceTree = "<group>"; };
 		92FB0E89608EAA7D54FB9F57 /* MockSessionStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockSessionStorage.swift; sourceTree = "<group>"; };
 		97BB29F0E8DFB1CE7D2F5912 /* UginsVaultApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UginsVaultApp.swift; sourceTree = "<group>"; };
@@ -502,6 +504,7 @@
 				8D5C0D8A87D250E750022612 /* PressableButtonStyle.swift */,
 				516CAD5965C1D04A5DC02B7E /* SettingsGroup.swift */,
 				318970FDF52932C1306108D2 /* SettingsRow.swift */,
+				9253120BE80DE50C2898C3D8 /* ShareSheet.swift */,
 				992A23E7AB7B20D7AE9A86DF /* SheetPicker.swift */,
 				98186CA14E924EBFC12317CD /* ShimmerBar.swift */,
 				32845AB67AEC9F17C0A38241 /* UginMark.swift */,
@@ -1185,6 +1188,7 @@
 				5D477902216A216F1A93A027 /* SettingsRow.swift in Sources */,
 				54944E23AACB90264E5ECF37 /* SettingsView.swift in Sources */,
 				BB38EF94D2521EC6B683EFE9 /* SettingsViewModel.swift in Sources */,
+				93107406503E3F95801ECE06 /* ShareSheet.swift in Sources */,
 				6ED2BFA9EC9F813FA4A287EA /* SheetPicker.swift in Sources */,
 				43AB596E8F02FD5619372205 /* ShimmerBar.swift in Sources */,
 				3D5B326FE41E009A1763D533 /* SignOutUseCase.swift in Sources */,

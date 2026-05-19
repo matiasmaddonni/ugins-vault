@@ -13,17 +13,19 @@ import SwiftUI
 public struct ImportDeckListSheet: View {
 
     @Environment(\.dismiss) private var dismiss
-    @State private var text: String = ""
+    @State private var text: String
 
     @Binding var isImporting: Bool
     let progress: (current: Int, total: Int)
     let onImport: (String) async -> Void
 
     public init(
+        initialText: String = "",
         isImporting: Binding<Bool>,
         progress: (current: Int, total: Int),
         onImport: @escaping (String) async -> Void
     ) {
+        self._text = State(initialValue: initialText)
         self._isImporting = isImporting
         self.progress = progress
         self.onImport = onImport

@@ -24,6 +24,11 @@ public final class SwiftDataStack {
     public var colorsRaw: String        // CSV — "R,G"
     public var commander: String?
 
+    /// Scryfall printing id of the deck's commander, when set.
+    /// Defaulted to `nil` so SwiftData lightweight migration can
+    /// backfill the column on existing rows.
+    public var commanderCardID: UUID? = nil
+
     // MARK: - Loan-only
 
     public var person: String?
@@ -38,6 +43,7 @@ public final class SwiftDataStack {
         formatRaw: String? = nil,
         colorsRaw: String = "",
         commander: String? = nil,
+        commanderCardID: UUID? = nil,
         person: String? = nil,
         since: Date? = nil
     ) {
@@ -49,6 +55,7 @@ public final class SwiftDataStack {
         self.formatRaw = formatRaw
         self.colorsRaw = colorsRaw
         self.commander = commander
+        self.commanderCardID = commanderCardID
         self.person = person
         self.since = since
     }
