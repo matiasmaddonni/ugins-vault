@@ -44,4 +44,13 @@ public enum StackDetailAccessibilityFields {
     // MARK: - Nav
 
     public static let backButton = "btn_stack_detail_back"
+
+    // MARK: - Import sheet
+
+    public static let importSheet      = "view_stack_detail_import_sheet"
+    public static let importTextEditor = "txt_stack_detail_import_paste"
+    public static let importSubmit     = "btn_stack_detail_import_submit"
+    public static let importCancel     = "btn_stack_detail_import_cancel"
+    public static let importToolbar    = "btn_stack_detail_import_toolbar"
+    public static let importToast      = "view_stack_detail_import_toast"
 }

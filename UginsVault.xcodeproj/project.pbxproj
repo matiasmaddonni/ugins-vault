@@ -92,7 +92,9 @@
 		8677AEF97CB6763DE3ACA264 /* SwiftDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21D516D1F6F1F155C0EDF425 /* SwiftDataStack.swift */; };
 		8DC36E66DD629F6E282ED087 /* AuthOutcome.swift in Sources */ = {isa = PBXBuildFile; fileRef = 008CD0348B33CE24B25872D3 /* AuthOutcome.swift */; };
 		8DC62661088B629DEB01FEE7 /* MockUserProfileRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E1DE13E1B1316103380A480 /* MockUserProfileRepository.swift */; };
+		8E3384AC1E79643F3A94A392 /* DeckListParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83550EFB328469BB0AB8C711 /* DeckListParserTests.swift */; };
 		8EFE053CBEFAEDFE58F4CFB2 /* GetPreferredLanguageUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = C773AFD4A060B2FAF65ED0D7 /* GetPreferredLanguageUseCase.swift */; };
+		90E214E49E62F94149A1B771 /* DeckListParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEE9AD320D027DC3F8C300B7 /* DeckListParser.swift */; };
 		925084683708396D7B13FC4A /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022058C6088F42791AD45A1E /* Card.swift */; };
 		931B224E697B590F3560FA9B /* ScryfallCardMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F9E540CE0391011F30AB86 /* ScryfallCardMapper.swift */; };
 		9438152015621AB1F710D2DC /* CardDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3B286D185C14A9700C6FAE /* CardDetailView.swift */; };
@@ -142,6 +144,7 @@
 		D06DF6CDEABC44F2ED89D96C /* SwiftDataCardRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5CAF902F7401F1573386F6 /* SwiftDataCardRepositoryTests.swift */; };
 		D1F319CFEA55136043A75435 /* AdvanceFromSplashUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B919F0DA26D2A0D0C095D3A /* AdvanceFromSplashUseCaseTests.swift */; };
 		D349F6C3E27C8A8A67857FAA /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = F94C126CFFD087B2FC8A11C3 /* Kingfisher */; };
+		D3799019B105ADEF44DBCD67 /* ImportDeckListSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB22203AF39BD9D6A6A8E4E6 /* ImportDeckListSheet.swift */; };
 		D5A3BECD8767FC5F7F82AE1E /* Format.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D66ED7BC76F68D0CAD56FE /* Format.swift */; };
 		DB2583067962632F2E7F44EE /* MockURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57AA7C00F9C9814A8240307E /* MockURLProtocol.swift */; };
 		DD6FDAADD6085CFE408DA0D3 /* UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09F4AA64B7BACDA38D2A315E /* UserProfile.swift */; };
@@ -163,6 +166,7 @@
 		EE91097EA736D81E9B0431C0 /* Format+Tint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52D1E1F03C4442B140D042CE /* Format+Tint.swift */; };
 		EF42556E520A7260A5A13C29 /* MockCardCatalogueSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC84CF07D8BDD2AAF3FAA351 /* MockCardCatalogueSource.swift */; };
 		EFF31107C01F2A4DEF93219F /* ScryfallClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83648424B1B7782AB25BA533 /* ScryfallClient.swift */; };
+		F203D81390D52114AFD8FE1C /* ImportDeckListUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C043BF5EA556315B6A4168 /* ImportDeckListUseCase.swift */; };
 		F2407CF3302090EA536D195A /* SessionRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65E36B52668540EAF2505692 /* SessionRepositoryTests.swift */; };
 		F250BC96B3D8393CE2A94000 /* SwiftDataStackRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31CE46CEB27732A705954B60 /* SwiftDataStackRepository.swift */; };
 		F9CA93A1C8D6B1DFAB6352FD /* ManaColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FFAA967F2B33EF2EE166088 /* ManaColor.swift */; };
@@ -210,6 +214,7 @@
 		2E1DE13E1B1316103380A480 /* MockUserProfileRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockUserProfileRepository.swift; sourceTree = "<group>"; };
 		30D4D65BDA3DFD4130DD4196 /* SeedCatalogueUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedCatalogueUseCase.swift; sourceTree = "<group>"; };
 		318970FDF52932C1306108D2 /* SettingsRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsRow.swift; sourceTree = "<group>"; };
+		31C043BF5EA556315B6A4168 /* ImportDeckListUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportDeckListUseCase.swift; sourceTree = "<group>"; };
 		31CE46CEB27732A705954B60 /* SwiftDataStackRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataStackRepository.swift; sourceTree = "<group>"; };
 		3216608EB36204E2AC3B15A3 /* SplashViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashViewModelTests.swift; sourceTree = "<group>"; };
 		32845AB67AEC9F17C0A38241 /* UginMark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UginMark.swift; sourceTree = "<group>"; };
@@ -258,6 +263,7 @@
 		7D4D51577D76521BEB56A268 /* LocalBiometricsDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalBiometricsDataSource.swift; sourceTree = "<group>"; };
 		7F1BBDC1C16F6A79CB8F9DD9 /* CollectionItemMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionItemMapper.swift; sourceTree = "<group>"; };
 		808E807AB6AD0A579D3B0CFB /* FaceIDLockUseCasesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceIDLockUseCasesTests.swift; sourceTree = "<group>"; };
+		83550EFB328469BB0AB8C711 /* DeckListParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeckListParserTests.swift; sourceTree = "<group>"; };
 		83648424B1B7782AB25BA533 /* ScryfallClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScryfallClient.swift; sourceTree = "<group>"; };
 		85272FCAA471C72BBB964733 /* Language.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Language.swift; sourceTree = "<group>"; };
 		86692ED694F927ABA0C5FACF /* UserDefaultsUserProfileRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsUserProfileRepositoryTests.swift; sourceTree = "<group>"; };
@@ -325,6 +331,7 @@
 		DB87CECE5698FE5A267E3919 /* Layout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Layout.swift; sourceTree = "<group>"; };
 		DE28649EBE9B4B29F743AD76 /* StackActionBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackActionBar.swift; sourceTree = "<group>"; };
 		DE550385B2AD48345EDADCE1 /* GetUserProfileUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetUserProfileUseCase.swift; sourceTree = "<group>"; };
+		DEE9AD320D027DC3F8C300B7 /* DeckListParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeckListParser.swift; sourceTree = "<group>"; };
 		DFDCE5B9C39A840ACDFD5FEE /* ScryfallClientProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScryfallClientProtocol.swift; sourceTree = "<group>"; };
 		E1546804B521CE13CDDC8047 /* ScryfallCardCatalogueSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScryfallCardCatalogueSource.swift; sourceTree = "<group>"; };
 		E2F3C829887DF430EB6FAE40 /* ReduceMotionUseCasesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReduceMotionUseCasesTests.swift; sourceTree = "<group>"; };
@@ -343,6 +350,7 @@
 		F40247EE708FFAE2BA9F8B80 /* StackDetailViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackDetailViewModelTests.swift; sourceTree = "<group>"; };
 		F5F6E816E686E9EC593DB842 /* ManaPipsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManaPipsView.swift; sourceTree = "<group>"; };
 		F98A029D9D24CBEBE816D84F /* AdvanceFromSplashUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvanceFromSplashUseCase.swift; sourceTree = "<group>"; };
+		FB22203AF39BD9D6A6A8E4E6 /* ImportDeckListSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportDeckListSheet.swift; sourceTree = "<group>"; };
 		FC84CF07D8BDD2AAF3FAA351 /* MockCardCatalogueSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCardCatalogueSource.swift; sourceTree = "<group>"; };
 		FFCD2F4D0D0F3B216E4F4C50 /* GetCurrencyUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetCurrencyUseCase.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -460,6 +468,7 @@
 				D8BE925E1E6BE114CA523C35 /* AddCardToStackUseCase.swift */,
 				F98A029D9D24CBEBE816D84F /* AdvanceFromSplashUseCase.swift */,
 				C85847DB0B39B77E5902CA34 /* AuthenticateUseCase.swift */,
+				DEE9AD320D027DC3F8C300B7 /* DeckListParser.swift */,
 				FFCD2F4D0D0F3B216E4F4C50 /* GetCurrencyUseCase.swift */,
 				2661BD412EE857C8E252B6ED /* GetCurrentPhaseUseCase.swift */,
 				9A20FC4921F2E00FC42EA494 /* GetFaceIDLockUseCase.swift */,
@@ -467,6 +476,7 @@
 				BF6E960DA8979FDCDC3427CC /* GetReduceMotionUseCase.swift */,
 				C444ADD62422AFB6CD9E6680 /* GetThemeUseCase.swift */,
 				DE550385B2AD48345EDADCE1 /* GetUserProfileUseCase.swift */,
+				31C043BF5EA556315B6A4168 /* ImportDeckListUseCase.swift */,
 				71B545E5C8EA05663D305883 /* MoveCollectionItemUseCase.swift */,
 				526F026B36B77C9F533ADCA4 /* ResetCatalogueUseCase.swift */,
 				30D4D65BDA3DFD4130DD4196 /* SeedCatalogueUseCase.swift */,
@@ -590,6 +600,7 @@
 			isa = PBXGroup;
 			children = (
 				A90FDB23E4B11607C2E06A08 /* CreateStackSheet.swift */,
+				FB22203AF39BD9D6A6A8E4E6 /* ImportDeckListSheet.swift */,
 				42F89FD1F65CFC7D256CB20C /* StackDetailAccessibilityFields.swift */,
 				AC24792A4C63E1C2DE309121 /* StackDetailView.swift */,
 				D442651635763F98973C6D46 /* StackDetailViewModel.swift */,
@@ -921,6 +932,7 @@
 				8B919F0DA26D2A0D0C095D3A /* AdvanceFromSplashUseCaseTests.swift */,
 				40FC1F90EF3FACB6EF3311C7 /* AuthenticateUseCaseTests.swift */,
 				702189BA79E9144397C99499 /* CurrencyUseCasesTests.swift */,
+				83550EFB328469BB0AB8C711 /* DeckListParserTests.swift */,
 				808E807AB6AD0A579D3B0CFB /* FaceIDLockUseCasesTests.swift */,
 				888928878B0A6FC470CC1E59 /* GetCurrentPhaseUseCaseTests.swift */,
 				F0A5A2E99C9C42EC7627DD31 /* LanguageUseCasesTests.swift */,
@@ -1045,6 +1057,7 @@
 				DF6DB6AD06B34417E2611787 /* CollectionViewModelTests.swift in Sources */,
 				AE6379F8F565BD5867A79F2A /* CurrencyFormatterTests.swift in Sources */,
 				C8F6A4A5DA902DB3DA78A433 /* CurrencyUseCasesTests.swift in Sources */,
+				8E3384AC1E79643F3A94A392 /* DeckListParserTests.swift in Sources */,
 				65A0704C53BDC1ED1B508B0F /* FaceIDLockUseCasesTests.swift in Sources */,
 				9B2C2C1AAA0CBC0376D0B6D8 /* GetCurrentPhaseUseCaseTests.swift in Sources */,
 				E3DE5C9A192192D1BC19F7F3 /* LanguageUseCasesTests.swift in Sources */,
@@ -1110,6 +1123,7 @@
 				12F1A7FB6D1B2F2A0B02AEE1 /* Currency.swift in Sources */,
 				3BD831E2486CF58B18A2EB02 /* CurrencyFormatter.swift in Sources */,
 				6E951D98163A86EE73A17F28 /* DashboardView.swift in Sources */,
+				90E214E49E62F94149A1B771 /* DeckListParser.swift in Sources */,
 				23A96D674167308D114B9AD5 /* DependencyContainer.swift in Sources */,
 				B526B70783B9098FBA01C5B1 /* EditProfileSheet.swift in Sources */,
 				20034D10DC331521C91A7688 /* Finish.swift in Sources */,
@@ -1122,6 +1136,8 @@
 				97FC65D27CC4E69265C7A806 /* GetReduceMotionUseCase.swift in Sources */,
 				22A4C9A0366D2B975DA25775 /* GetThemeUseCase.swift in Sources */,
 				6D657305E1D604A26D0D335C /* GetUserProfileUseCase.swift in Sources */,
+				D3799019B105ADEF44DBCD67 /* ImportDeckListSheet.swift in Sources */,
+				F203D81390D52114AFD8FE1C /* ImportDeckListUseCase.swift in Sources */,
 				E84A6E9C8F3EC879B5AF0FF8 /* Language.swift in Sources */,
 				CE7E45DD605E0986C926CE31 /* Layout.swift in Sources */,
 				DEEA7CA6F7F580A2BF50ECF1 /* LocalAuthRepository.swift in Sources */,

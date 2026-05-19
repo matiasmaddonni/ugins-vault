@@ -35,21 +35,31 @@ public final class StackDetailViewModel {
     public private(set) var uniqueCount: Int = 0
     public private(set) var status: Status = .idle
 
+    // MARK: - Import sheet
+
+    public var isPresentingImport: Bool = false
+    public private(set) var isImporting: Bool = false
+    public private(set) var importProgress: (current: Int, total: Int) = (0, 0)
+    public private(set) var lastImportResult: ImportDeckListUseCase.ImportResult?
+
     // MARK: - Dependencies
 
     @ObservationIgnored private let itemRepository: CollectionItemRepository
     @ObservationIgnored private let sessionRepository: SessionRepository
+    @ObservationIgnored private let importDeckList: ImportDeckListUseCase?
 
     // MARK: - Init
 
     public init(
         stack: Stack,
         itemRepository: CollectionItemRepository,
-        sessionRepository: SessionRepository
+        sessionRepository: SessionRepository,
+        importDeckList: ImportDeckListUseCase? = nil
     ) {
         self.stack = stack
         self.itemRepository = itemRepository
         self.sessionRepository = sessionRepository
+        self.importDeckList = importDeckList
     }
 
     // MARK: - Derived
@@ -142,6 +152,45 @@ public final class StackDetailViewModel {
             self.status = .idle
         } catch {
             self.status = .error(message: error.localizedDescription)
+        }
+    }
+
+    // MARK: - Import
+
+    public func presentImport() {
+        lastImportResult = nil
+        isPresentingImport = true
+    }
+
+    public func dismissImport() {
+        isPresentingImport = false
+    }
+
+    public func dismissImportResult() {
+        lastImportResult = nil
+    }
+
+    /// Parses + resolves a Moxfield-style decklist and pushes the
+    /// matched cards into this stack.
+    public func importDeckList(source: String) async {
+        guard let importDeckList else { return }
+        isImporting = true
+        importProgress = (0, 0)
+        defer { isImporting = false }
+
+        do {
+            let result = try await importDeckList.execute(
+                source: source,
+                stackID: stack.id,
+                progress: { [weak self] current, total in
+                    self?.importProgress = (current, total)
+                }
+            )
+            lastImportResult = result
+            isPresentingImport = false
+            await refresh()
+        } catch {
+            status = .error(message: error.localizedDescription)
         }
     }
 }

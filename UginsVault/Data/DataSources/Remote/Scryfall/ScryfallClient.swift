@@ -70,10 +70,14 @@ public actor ScryfallClient: ScryfallClientProtocol {
         try await get("cards/\(id.uuidString.lowercased())")
     }
 
-    public func card(named: String, fuzzy: Bool) async throws -> ScryfallCard {
+    public func card(named: String, set: String? = nil, fuzzy: Bool = false) async throws -> ScryfallCard {
         let key = fuzzy ? "fuzzy" : "exact"
+        var items = [URLQueryItem(name: key, value: named)]
+        if let set, !set.isEmpty {
+            items.append(URLQueryItem(name: "set", value: set))
+        }
         var components = URLComponents()
-        components.queryItems = [URLQueryItem(name: key, value: named)]
+        components.queryItems = items
         let query = components.percentEncodedQuery ?? ""
         return try await get("cards/named?\(query)")
     }

@@ -210,6 +210,14 @@ public final class DependencyContainer {
         MoveCollectionItemUseCase(itemRepository: collectionItemRepository)
     }
 
+    public func makeImportDeckListUseCase() -> ImportDeckListUseCase {
+        ImportDeckListUseCase(
+            cardRepository: cardRepository,
+            scryfallClient: scryfallClient,
+            addCardToStack: makeAddCardToStackUseCase()
+        )
+    }
+
     @MainActor public func makeCollectionViewModel() -> CollectionViewModel {
         CollectionViewModel(
             sessionRepository: sessionRepository,
@@ -230,7 +238,8 @@ public final class DependencyContainer {
         StackDetailViewModel(
             stack: stack,
             itemRepository: collectionItemRepository,
-            sessionRepository: sessionRepository
+            sessionRepository: sessionRepository,
+            importDeckList: makeImportDeckListUseCase()
         )
     }
 

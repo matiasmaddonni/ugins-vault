@@ -110,4 +110,8 @@ public enum Layout {
 
     /// Height of each action tile inside `StackActionBar`.
     public static let stackActionHeight: CGFloat = 72
+
+    /// Minimum height of the deck-list paste TextEditor in
+    /// `ImportDeckListSheet`.
+    public static let importEditorMinHeight: CGFloat = 280
 }

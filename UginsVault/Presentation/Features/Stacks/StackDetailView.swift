@@ -22,12 +22,83 @@ public struct StackDetailView: View {
     }
 
     public var body: some View {
+        @Bindable var viewModel = viewModel
+
         content
             .background(Color.uv.bg.ignoresSafeArea())
             .navigationTitle(viewModel.stack.name)
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar { toolbar }
             .task { await viewModel.onAppear() }
+            .sheet(isPresented: $viewModel.isPresentingImport) {
+                ImportDeckListSheet(
+                    isImporting: .constant(viewModel.isImporting),
+                    progress: viewModel.importProgress,
+                    onImport: { source in
+                        await viewModel.importDeckList(source: source)
+                    }
+                )
+            }
+            .overlay(alignment: .bottom) { importResultOverlay }
+            .animation(.spring(response: 0.35, dampingFraction: 0.85), value: viewModel.lastImportResult)
             .accessibilityIdentifier(StackDetailAccessibilityFields.screen)
+    }
+
+    @ToolbarContentBuilder
+    private var toolbar: some ToolbarContent {
+        ToolbarItem(placement: .topBarTrailing) {
+            Button {
+                viewModel.presentImport()
+            } label: {
+                Image(systemName: "square.and.arrow.down")
+                    .font(.system(size: Layout.mediumIcon - 1, weight: .semibold))
+                    .foregroundStyle(Color.uv.gold)
+            }
+            .accessibilityLabel("Import list")
+            .accessibilityIdentifier(StackDetailAccessibilityFields.importToolbar)
+        }
+    }
+
+    @ViewBuilder
+    private var importResultOverlay: some View {
+        if let result = viewModel.lastImportResult {
+            HStack(spacing: Spacing.sm) {
+                Image(systemName: result.unresolved.isEmpty ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
+                    .foregroundStyle(result.unresolved.isEmpty ? Color.uv.up : Color.uv.warn)
+                VStack(alignment: .leading, spacing: 0) {
+                    Text("Imported \(result.importedCards) cards")
+                        .font(.uv.body(13, weight: .semibold))
+                        .foregroundStyle(Color.uv.text)
+                    if !result.unresolved.isEmpty {
+                        Text("\(result.unresolved.count) unresolved")
+                            .font(.uv.body(11))
+                            .foregroundStyle(Color.uv.muted)
+                    }
+                }
+                Spacer()
+                Button("Dismiss") { viewModel.dismissImportResult() }
+                    .font(.uv.body(12, weight: .semibold))
+                    .foregroundStyle(Color.uv.gold)
+            }
+            .padding(.horizontal, Spacing.rowHorizontal)
+            .padding(.vertical, Spacing.md)
+            .background(
+                RoundedRectangle(cornerRadius: UVRadius.md)
+                    .fill(Color.uv.panel)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: UVRadius.md)
+                            .strokeBorder(Color.uv.stroke, lineWidth: Layout.hairline)
+                    )
+            )
+            .padding(.horizontal, Spacing.screenEdge)
+            .padding(.bottom, Spacing.lg)
+            .transition(.move(edge: .bottom).combined(with: .opacity))
+            .task {
+                try? await Task.sleep(for: .seconds(5))
+                viewModel.dismissImportResult()
+            }
+            .accessibilityIdentifier(StackDetailAccessibilityFields.importToast)
+        }
     }
 
     @ViewBuilder
@@ -61,8 +132,14 @@ public struct StackDetailView: View {
 
                 StackActionBar(
                     actions: viewModel.actions,
-                    onAction: { _ in
-                        // v0.3 — every action is a stub (per scope).
+                    onAction: { action in
+                        switch action.id {
+                        case "edit_list", "add_cards", "sort_all":
+                            viewModel.presentImport()
+                        default:
+                            // Other actions remain stubs in v0.3.
+                            break
+                        }
                     }
                 )
                 .accessibilityElement(children: .contain)
@@ -159,9 +236,9 @@ public struct StackDetailView: View {
             }
 
             Button {
-                // TODO: open Add-to-stack sheet (Phase 4 wiring).
+                viewModel.presentImport()
             } label: {
-                Text("Add cards")
+                Text("Import list")
                     .font(.uv.body(14, weight: .semibold))
                     .foregroundStyle(Color(hex: 0x1A1410))
                     .padding(.horizontal, Spacing.lg + 2)
