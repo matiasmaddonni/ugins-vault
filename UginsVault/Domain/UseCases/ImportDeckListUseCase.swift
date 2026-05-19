@@ -138,19 +138,15 @@ public final class ImportDeckListUseCase {
     }
 
     private func localLookup(line: ParsedDeckLine) async throws -> Card? {
+        // Direct fetch — non-mutating, so we don't trample the
+        // Collection tab's observable `cards` slice from inside the
+        // import loop. Pin to set when the line specifies one so we
+        // never substitute a wrong printing.
         let normalizedName = normalizeName(line.name)
-        let query = CardQuery(text: normalizedName, offset: 0, limit: 25)
-        let candidates = try await cardRepository.refresh(query)
-        let lowerName = normalizedName.lowercased()
-        let exactMatches = candidates.filter { $0.name.lowercased() == lowerName }
-
-        // When the import line pins a set, only honour the local match
-        // if the set matches — otherwise punt to Scryfall so we pull the
-        // right printing instead of silently substituting.
-        if let setCode = line.setCode?.lowercased() {
-            return exactMatches.first { $0.setCode.lowercased() == setCode }
-        }
-        return exactMatches.first
+        return try await cardRepository.findOne(
+            name: normalizedName,
+            setCode: line.setCode
+        )
     }
 }
 

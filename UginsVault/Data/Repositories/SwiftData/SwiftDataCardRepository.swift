@@ -65,6 +65,24 @@ public final class SwiftDataCardRepository: CardRepository {
         return try context.fetch(descriptor).first.map(Card.init(from:))
     }
 
+    public func findOne(name: String, setCode: String?) async throws -> Card? {
+        var descriptor: FetchDescriptor<SwiftDataCard>
+        if let setCode {
+            let lowerSet = setCode.lowercased()
+            descriptor = FetchDescriptor<SwiftDataCard>(
+                predicate: #Predicate<SwiftDataCard> {
+                    $0.name == name && $0.setCode == lowerSet
+                }
+            )
+        } else {
+            descriptor = FetchDescriptor<SwiftDataCard>(
+                predicate: #Predicate<SwiftDataCard> { $0.name == name }
+            )
+        }
+        descriptor.fetchLimit = 1
+        return try context.fetch(descriptor).first.map(Card.init(from:))
+    }
+
     /// Distinct lowercase set codes currently in the catalogue, sorted.
     /// Used by the filter sheet to populate its set list.
     public func availableSetCodes() async throws -> [String] {

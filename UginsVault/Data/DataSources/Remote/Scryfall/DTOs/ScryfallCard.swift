@@ -44,6 +44,7 @@ public struct ScryfallCard: Decodable, Sendable, Identifiable {
 
     public let finishes: [String]?
     public let imageURIs: ImageURIs?
+    public let cardFaces: [CardFace]?     // Present for DFC / split cards.
     public let prices: Prices?
     public let legalities: [String: String]?
     public let reserved: Bool?
@@ -66,9 +67,21 @@ public struct ScryfallCard: Decodable, Sendable, Identifiable {
         case releasedAt       = "released_at"
         case finishes
         case imageURIs        = "image_uris"
+        case cardFaces        = "card_faces"
         case prices
         case legalities
         case reserved
+    }
+
+    /// Single face on a DFC / split / adventure card. Only the fields
+    /// we actually consume in the mapper are decoded — keep the surface
+    /// tight to match the rest of this DTO.
+    public struct CardFace: Decodable, Sendable {
+        public let imageURIs: ImageURIs?
+
+        enum CodingKeys: String, CodingKey {
+            case imageURIs = "image_uris"
+        }
     }
 
     // MARK: - Nested

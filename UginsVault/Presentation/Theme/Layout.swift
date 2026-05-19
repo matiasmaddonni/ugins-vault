@@ -120,4 +120,8 @@ public enum Layout {
 
     /// Thumbnail height on `StackDetailView`'s card list rows.
     public static let stackDetailRowThumbHeight: CGFloat = 56
+
+    /// Max scrollable height of the unresolved-names list inside
+    /// `ImportResultToast`.
+    public static let importToastUnresolvedMaxHeight: CGFloat = 180
 }

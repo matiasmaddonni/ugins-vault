@@ -70,41 +70,13 @@ public struct StackDetailView: View {
     @ViewBuilder
     private var importResultOverlay: some View {
         if let result = viewModel.lastImportResult {
-            HStack(spacing: Spacing.sm) {
-                Image(systemName: result.unresolved.isEmpty ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
-                    .foregroundStyle(result.unresolved.isEmpty ? Color.uv.up : Color.uv.warn)
-                VStack(alignment: .leading, spacing: 0) {
-                    Text("Imported \(result.importedCards) cards")
-                        .font(.uv.body(13, weight: .semibold))
-                        .foregroundStyle(Color.uv.text)
-                    if !result.unresolved.isEmpty {
-                        Text("\(result.unresolved.count) unresolved")
-                            .font(.uv.body(11))
-                            .foregroundStyle(Color.uv.muted)
-                    }
-                }
-                Spacer()
-                Button("Dismiss") { viewModel.dismissImportResult() }
-                    .font(.uv.body(12, weight: .semibold))
-                    .foregroundStyle(Color.uv.gold)
-            }
-            .padding(.horizontal, Spacing.rowHorizontal)
-            .padding(.vertical, Spacing.md)
-            .background(
-                RoundedRectangle(cornerRadius: UVRadius.md)
-                    .fill(Color.uv.panel)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: UVRadius.md)
-                            .strokeBorder(Color.uv.stroke, lineWidth: Layout.hairline)
-                    )
+            ImportResultToast(
+                result: result,
+                onDismiss: { viewModel.dismissImportResult() }
             )
             .padding(.horizontal, Spacing.screenEdge)
             .padding(.bottom, Spacing.lg)
             .transition(.move(edge: .bottom).combined(with: .opacity))
-            .task {
-                try? await Task.sleep(for: .seconds(5))
-                viewModel.dismissImportResult()
-            }
             .accessibilityIdentifier(StackDetailAccessibilityFields.importToast)
         }
     }

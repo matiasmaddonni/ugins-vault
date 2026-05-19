@@ -38,12 +38,15 @@ extension Card {
             releasedAt: releasedAt,
             finishes: Set((dto.finishes ?? ["nonfoil"]).compactMap(Finish.init(rawValue:))),
             images: CardImages(
-                small:      dto.imageURIs?.small,
-                normal:     dto.imageURIs?.normal,
-                large:      dto.imageURIs?.large,
-                png:        dto.imageURIs?.png,
-                artCrop:    dto.imageURIs?.artCrop,
-                borderCrop: dto.imageURIs?.borderCrop
+                // DFC / split / adventure cards put their image_uris on
+                // each face — fall back to the first face when the
+                // top-level is nil so the hero image isn't blank.
+                small:      dto.imageURIs?.small      ?? dto.cardFaces?.first?.imageURIs?.small,
+                normal:     dto.imageURIs?.normal     ?? dto.cardFaces?.first?.imageURIs?.normal,
+                large:      dto.imageURIs?.large      ?? dto.cardFaces?.first?.imageURIs?.large,
+                png:        dto.imageURIs?.png        ?? dto.cardFaces?.first?.imageURIs?.png,
+                artCrop:    dto.imageURIs?.artCrop    ?? dto.cardFaces?.first?.imageURIs?.artCrop,
+                borderCrop: dto.imageURIs?.borderCrop ?? dto.cardFaces?.first?.imageURIs?.borderCrop
             ),
             prices: CardPrices(
                 usd:       dto.prices?.usd.flatMap { Decimal(string: $0) },

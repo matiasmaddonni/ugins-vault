@@ -173,6 +173,7 @@
 		F9CA93A1C8D6B1DFAB6352FD /* ManaColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FFAA967F2B33EF2EE166088 /* ManaColor.swift */; };
 		FA3CE1CA42A08054E36829E9 /* CollectionItemMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F1BBDC1C16F6A79CB8F9DD9 /* CollectionItemMapper.swift */; };
 		FAB4CE119594808D52046890 /* MoveCollectionItemUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7D5FCA00BF74C67BD6A1A78 /* MoveCollectionItemUseCaseTests.swift */; };
+		FB74264F88367ACA6144A5EE /* ImportResultToast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7728567904942E129C06795B /* ImportResultToast.swift */; };
 		FD14524C781F56BAAB971238 /* AppPhase.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8D8A6C250B91C27F4E42ECA /* AppPhase.swift */; };
 /* End PBXBuildFile section */
 
@@ -259,6 +260,7 @@
 		753CE2FED9572B8636E8CEB0 /* CardCatalogueSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardCatalogueSource.swift; sourceTree = "<group>"; };
 		7607EA2A3CC32886537A41C2 /* SwiftDataCollectionItemRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataCollectionItemRepositoryTests.swift; sourceTree = "<group>"; };
 		7616CFCFC0F0F6EB395CA1CD /* StackKind+Accent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StackKind+Accent.swift"; sourceTree = "<group>"; };
+		7728567904942E129C06795B /* ImportResultToast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportResultToast.swift; sourceTree = "<group>"; };
 		788287228C083B5310709E02 /* StackCover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackCover.swift; sourceTree = "<group>"; };
 		7A1EAF33F9FA817C0BA176C4 /* UVTypography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UVTypography.swift; sourceTree = "<group>"; };
 		7D4D51577D76521BEB56A268 /* LocalBiometricsDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalBiometricsDataSource.swift; sourceTree = "<group>"; };
@@ -786,6 +788,7 @@
 			isa = PBXGroup;
 			children = (
 				CFE112801B2C677CC5BEE999 /* CollectionItemThumbnail.swift */,
+				7728567904942E129C06795B /* ImportResultToast.swift */,
 				DE28649EBE9B4B29F743AD76 /* StackActionBar.swift */,
 				788287228C083B5310709E02 /* StackCover.swift */,
 				0145E8B53202457704F3597C /* StackHeroCard.swift */,
@@ -1142,6 +1145,7 @@
 				6D657305E1D604A26D0D335C /* GetUserProfileUseCase.swift in Sources */,
 				D3799019B105ADEF44DBCD67 /* ImportDeckListSheet.swift in Sources */,
 				F203D81390D52114AFD8FE1C /* ImportDeckListUseCase.swift in Sources */,
+				FB74264F88367ACA6144A5EE /* ImportResultToast.swift in Sources */,
 				E84A6E9C8F3EC879B5AF0FF8 /* Language.swift in Sources */,
 				CE7E45DD605E0986C926CE31 /* Layout.swift in Sources */,
 				DEEA7CA6F7F580A2BF50ECF1 /* LocalAuthRepository.swift in Sources */,

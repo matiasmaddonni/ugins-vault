@@ -41,6 +41,12 @@ public protocol CardRepository: AnyObject, Observable {
     /// Looks up a single card by Scryfall printing id.
     func card(id: UUID) async throws -> Card?
 
+    /// Direct, non-mutating lookup by exact name. When `setCode` is
+    /// provided the search is pinned to that printing; otherwise the
+    /// first match wins. Unlike `refresh(_:)` this does NOT mutate the
+    /// observable `cards` slice — safe to call from import loops.
+    func findOne(name: String, setCode: String?) async throws -> Card?
+
     /// Distinct lowercase set codes currently in the catalogue. Used by
     /// the filter sheet to populate its picker.
     func availableSetCodes() async throws -> [String]
