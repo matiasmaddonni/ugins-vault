@@ -194,45 +194,92 @@ public struct CollectionView: View {
     }
 
     private var cardList: some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: Spacing.lg, pinnedViews: []) {
+        VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: Spacing.lg) {
                 header
                 searchBar(query: bindingForQuery)
                 activeFilterStrip
-
-                if viewModel.cards.isEmpty {
-                    emptyResults
-                } else {
-                    cardRows
-                    if case .loadingMore = viewModel.status {
-                        loadMoreSpinner
-                    } else if viewModel.hasMore {
-                        Color.clear
-                            .frame(height: 1)
-                            .task { await viewModel.loadMoreIfNeeded() }
-                    }
-                }
             }
             .padding(.horizontal, Spacing.screenEdge)
             .padding(.top, Spacing.sm)
-            .padding(.bottom, Spacing.xl)
+            .padding(.bottom, Spacing.md)
+
+            if viewModel.cards.isEmpty {
+                ScrollView {
+                    emptyResults
+                        .padding(.horizontal, Spacing.screenEdge)
+                        .padding(.vertical, Spacing.xl)
+                }
+                .refreshable { await viewModel.pullToRefresh() }
+            } else {
+                rowList
+            }
         }
-        .refreshable { await viewModel.pullToRefresh() }
     }
 
-    private var cardRows: some View {
-        ForEach(viewModel.cards) { card in
-            NavigationLink(value: card) {
-                CardRowView(card: card, displayCurrency: viewModel.currency)
-                    .contentShape(Rectangle())
+    private var rowList: some View {
+        List {
+            ForEach(viewModel.cards) { card in
+                NavigationLink(value: card) {
+                    CardRowView(card: card, displayCurrency: viewModel.currency)
+                }
+                .listRowBackground(Color.uv.bg)
+                .listRowSeparatorTint(Color.uv.stroke.opacity(0.4))
+                .listRowInsets(EdgeInsets(
+                    top: Spacing.xs,
+                    leading: Spacing.screenEdge,
+                    bottom: Spacing.xs,
+                    trailing: Spacing.screenEdge
+                ))
+                .accessibilityIdentifier("cell_collection_card_\(card.setCode)_\(card.collectorNumber)")
+                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                    Button(role: .destructive) {
+                        Task { await viewModel.removeCard(id: card.id) }
+                    } label: {
+                        Label("Remove", systemImage: "trash")
+                    }
+                    .tint(Color.uv.down)
+                    .accessibilityIdentifier("btn_collection_remove_\(card.setCode)_\(card.collectorNumber)")
+                }
+                .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                    Button {
+                        UIPasteboard.general.string = card.name
+                    } label: {
+                        Label("Copy name", systemImage: "doc.on.doc")
+                    }
+                    .tint(Color.uv.gold)
+                    .accessibilityIdentifier("btn_collection_copy_\(card.setCode)_\(card.collectorNumber)")
+                }
+                .contextMenu {
+                    Button {
+                        UIPasteboard.general.string = card.name
+                    } label: {
+                        Label("Copy name", systemImage: "doc.on.doc")
+                    }
+                    Button(role: .destructive) {
+                        Task { await viewModel.removeCard(id: card.id) }
+                    } label: {
+                        Label("Remove from catalogue", systemImage: "trash")
+                    }
+                }
             }
-            .buttonStyle(.plain)
-            .accessibilityIdentifier("cell_collection_card_\(card.setCode)_\(card.collectorNumber)")
 
-            Rectangle()
-                .fill(Color.uv.stroke.opacity(0.4))
-                .frame(height: Layout.hairline)
+            if case .loadingMore = viewModel.status {
+                loadMoreSpinner
+                    .listRowBackground(Color.uv.bg)
+                    .listRowSeparator(.hidden)
+            } else if viewModel.hasMore {
+                Color.clear
+                    .frame(height: 1)
+                    .listRowBackground(Color.uv.bg)
+                    .listRowSeparator(.hidden)
+                    .task { await viewModel.loadMoreIfNeeded() }
+            }
         }
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+        .background(Color.uv.bg)
+        .refreshable { await viewModel.pullToRefresh() }
     }
 
     private var loadMoreSpinner: some View {

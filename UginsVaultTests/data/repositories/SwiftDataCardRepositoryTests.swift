@@ -99,6 +99,32 @@ struct SwiftDataCardRepositoryTests {
         #expect(bolts.allSatisfy { $0.name.lowercased().contains("lightning") })
     }
 
+    @Test("delete(id:) removes a single card by Scryfall printing id")
+    func deleteByIdRemovesSingleRow() async throws {
+        let repo = try makeRepository()
+        let bolt = makeBolt()
+        let counterspell = makeBolt(name: "Counterspell")
+        try await repo.save([bolt, counterspell])
+        #expect(try await repo.totalCount() == 2)
+
+        try await repo.delete(id: bolt.id)
+
+        #expect(try await repo.totalCount() == 1)
+        #expect(try await repo.card(id: bolt.id) == nil)
+        #expect(try await repo.card(id: counterspell.id) != nil)
+    }
+
+    @Test("delete(id:) with an unknown id is a no-op")
+    func deleteUnknownIdNoOp() async throws {
+        let repo = try makeRepository()
+        try await repo.save([makeBolt()])
+        let randomID = UUID()
+
+        try await repo.delete(id: randomID)
+
+        #expect(try await repo.totalCount() == 1)
+    }
+
     @Test("deleteAll wipes the catalogue")
     func deleteAllWipes() async throws {
         let repo = try makeRepository()

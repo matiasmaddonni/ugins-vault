@@ -174,6 +174,23 @@ struct CollectionViewModelTests {
         #expect(sut.cards.count == 3)
     }
 
+    @Test("removeCard(id:) deletes from repo + drops the row + updates count")
+    func removeCardPulls() async throws {
+        let (sut, repo, _, _) = try makeSUT()
+        let a = makeCard(name: "A")
+        let b = makeCard(name: "B")
+        try await repo.save([a, b])
+        await sut.loadOrSeed()
+        #expect(sut.cards.count == 2)
+        #expect(sut.matchingCount == 2)
+
+        await sut.removeCard(id: a.id)
+
+        #expect(sut.cards.count == 1)
+        #expect(sut.cards.first?.id == b.id)
+        #expect(sut.matchingCount == 1)
+    }
+
     @Test("loadMoreIfNeeded appends the next page until hasMore is false")
     func paginationLoadsMore() async throws {
         let session = MockSessionRepository()

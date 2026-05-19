@@ -99,6 +99,22 @@ public final class SwiftDataCardRepository: CardRepository {
         try context.save()
     }
 
+    public func delete(id: UUID) async throws {
+        isWriting = true
+        defer { isWriting = false }
+
+        var descriptor = FetchDescriptor<SwiftDataCard>(
+            predicate: #Predicate<SwiftDataCard> { $0.id == id }
+        )
+        descriptor.fetchLimit = 1
+
+        if let existing = try context.fetch(descriptor).first {
+            context.delete(existing)
+            try context.save()
+            cards.removeAll { $0.id == id }
+        }
+    }
+
     public func deleteAll() async throws {
         isWriting = true
         defer { isWriting = false }

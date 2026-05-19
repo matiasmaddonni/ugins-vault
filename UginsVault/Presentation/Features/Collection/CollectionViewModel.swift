@@ -182,6 +182,20 @@ public final class CollectionViewModel {
         applyFilter(.empty)
     }
 
+    /// Removes a single card from the local catalogue (driven by the
+    /// row's trailing swipe action). Bumps the in-memory list + the
+    /// matching-count label.
+    public func removeCard(id: UUID) async {
+        do {
+            try await cardRepository.delete(id: id)
+            cards.removeAll { $0.id == id }
+            matchingCount = try await cardRepository.count(matching: currentQuery)
+            totalCount = try await cardRepository.totalCount()
+        } catch {
+            status = .error(message: error.localizedDescription)
+        }
+    }
+
     /// Wipes the local catalogue + re-seeds from Scryfall.
     public func reseed() async {
         status = .loading

@@ -50,6 +50,10 @@ public protocol CardRepository: AnyObject, Observable {
     /// Inserts or updates a batch of cards. Idempotent by `Card.id`.
     func save(_ cards: [Card]) async throws
 
+    /// Removes a single card by Scryfall printing id. No-op when the
+    /// id isn't stored.
+    func delete(id: UUID) async throws
+
     /// Wipes the catalogue. Used by Settings → Reset (future) and tests.
     func deleteAll() async throws
 }
