@@ -194,8 +194,20 @@ public final class DependencyContainer {
         CardDetailViewModel(
             card: card,
             displayCurrency: displayCurrency,
-            client: scryfallClient
+            client: scryfallClient,
+            stackRepository: stackRepository,
+            addCardToStack: makeAddCardToStackUseCase()
         )
+    }
+
+    // MARK: - Use case factories — stacks
+
+    public func makeAddCardToStackUseCase() -> AddCardToStackUseCase {
+        AddCardToStackUseCase(itemRepository: collectionItemRepository)
+    }
+
+    public func makeMoveCollectionItemUseCase() -> MoveCollectionItemUseCase {
+        MoveCollectionItemUseCase(itemRepository: collectionItemRepository)
     }
 
     @MainActor public func makeCollectionViewModel() -> CollectionViewModel {
@@ -203,6 +215,22 @@ public final class DependencyContainer {
             sessionRepository: sessionRepository,
             cardRepository: cardRepository,
             seedCatalogue: makeSeedCatalogueUseCase()
+        )
+    }
+
+    @MainActor public func makeStacksListViewModel() -> StacksListViewModel {
+        StacksListViewModel(
+            stackRepository: stackRepository,
+            itemRepository: collectionItemRepository,
+            sessionRepository: sessionRepository
+        )
+    }
+
+    @MainActor public func makeStackDetailViewModel(stack: Stack) -> StackDetailViewModel {
+        StackDetailViewModel(
+            stack: stack,
+            itemRepository: collectionItemRepository,
+            sessionRepository: sessionRepository
         )
     }
 

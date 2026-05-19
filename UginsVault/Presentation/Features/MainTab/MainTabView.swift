@@ -33,7 +33,7 @@ public struct MainTabView: View {
             }
 
             Tab("Stacks", systemImage: "square.stack.fill", value: .stacks) {
-                StacksView()
+                StacksView(viewModel: container.makeStacksListViewModel())
                     .accessibilityIdentifier(MainTabAccessibilityFields.stacksTab)
             }
 

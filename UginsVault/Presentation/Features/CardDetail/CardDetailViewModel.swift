@@ -27,22 +27,30 @@ public final class CardDetailViewModel {
     public private(set) var card: Card
     public private(set) var otherPrintings: [Card] = []
     public private(set) var status: OtherPrintingsStatus = .idle
+    public private(set) var availableStacks: [Stack] = []
+    public private(set) var lastAddedStackName: String?
     public let displayCurrency: Currency
 
     // MARK: - Dependencies
 
     @ObservationIgnored private let client: any ScryfallClientProtocol
+    @ObservationIgnored private let stackRepository: StackRepository?
+    @ObservationIgnored private let addCardToStack: AddCardToStackUseCase?
 
     // MARK: - Init
 
     public init(
         card: Card,
         displayCurrency: Currency,
-        client: any ScryfallClientProtocol
+        client: any ScryfallClientProtocol,
+        stackRepository: StackRepository? = nil,
+        addCardToStack: AddCardToStackUseCase? = nil
     ) {
         self.card = card
         self.displayCurrency = displayCurrency
         self.client = client
+        self.stackRepository = stackRepository
+        self.addCardToStack = addCardToStack
     }
 
     // MARK: - Intents
@@ -76,5 +84,36 @@ public final class CardDetailViewModel {
         otherPrintings = []
         status = .idle
         Task { await loadOtherPrintings() }
+    }
+
+    // MARK: - Add to stack
+
+    /// Pulls the user's stacks so the "Add to stack" sheet can pick one.
+    public func loadAvailableStacks() async {
+        guard let stackRepository else { return }
+        do {
+            availableStacks = try await stackRepository.refresh()
+        } catch {
+            availableStacks = []
+        }
+    }
+
+    /// Inserts (or increments) a `CollectionItem` row for the displayed
+    /// card in the chosen stack. Surfaces a one-shot toast string the
+    /// view can show before clearing it via `dismissAddToStackToast()`.
+    public func addCard(to stackID: UUID) async {
+        guard let addCardToStack else { return }
+        do {
+            try await addCardToStack.execute(cardID: card.id, stackID: stackID)
+            if let stack = availableStacks.first(where: { $0.id == stackID }) {
+                lastAddedStackName = stack.name
+            }
+        } catch {
+            lastAddedStackName = nil
+        }
+    }
+
+    public func dismissAddToStackToast() {
+        lastAddedStackName = nil
     }
 }

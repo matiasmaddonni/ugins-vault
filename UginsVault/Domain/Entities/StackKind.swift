@@ -22,12 +22,12 @@ public enum StackKind: String, Codable, CaseIterable, Identifiable, Sendable {
     /// User-facing label (`Stack.kind.displayLabel`).
     public var displayLabel: String {
         switch self {
-        case .deck:     return "Deck"
-        case .binder:   return "Binder"
-        case .loan:     return "On loan"
-        case .sale:     return "For sale"
-        case .showcase: return "Showcase"
-        case .inbox:    return "Unsorted"
+        case .deck:     return String(localized: "Deck")
+        case .binder:   return String(localized: "Binder")
+        case .loan:     return String(localized: "On loan")
+        case .sale:     return String(localized: "For sale")
+        case .showcase: return String(localized: "Showcase")
+        case .inbox:    return String(localized: "Unsorted")
         }
     }
 
@@ -48,11 +48,11 @@ public enum StackKind: String, Codable, CaseIterable, Identifiable, Sendable {
     public var defaultSubtitle: String {
         switch self {
         case .deck:     return ""           // overridden by deck format
-        case .binder:   return "For trade"
+        case .binder:   return String(localized: "For trade")
         case .loan:     return ""           // overridden by loan since
-        case .sale:     return "Listed"
-        case .showcase: return "Display only"
-        case .inbox:    return "Needs sorting"
+        case .sale:     return String(localized: "Listed")
+        case .showcase: return String(localized: "Display only")
+        case .inbox:    return String(localized: "Needs sorting")
         }
     }
 }

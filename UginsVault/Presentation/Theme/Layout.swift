@@ -58,4 +58,56 @@ public enum Layout {
     public static let mediumIcon: CGFloat = 18
     public static let largeIcon: CGFloat = 24
     public static let heroIcon: CGFloat = 36
+
+    // MARK: - Chips
+
+    /// SF Symbol point size used inside `UVChip` (filter row, etc.).
+    public static let chipIconSize: CGFloat = 12
+
+    // MARK: - Mana / colour identity
+
+    /// Pip diameter on `StackRow`'s sub-line + deck-cover overlays.
+    public static let manaPipSmall: CGFloat = 9
+
+    /// Pip diameter on the Stack-detail hero card.
+    public static let manaPipMedium: CGFloat = 12
+
+    // MARK: - Stack cover (Stacks tab list row)
+
+    /// Outer width / height of the square cover thumbnail on `StackRow`.
+    public static let stackCoverSize: CGFloat = 64
+
+    /// Width of each rotated card "leaf" in deck-fan mode. The 3-card
+    /// fan is composed of three of these stacked behind each other.
+    public static let stackFanCardWidth: CGFloat = 38
+
+    /// Height of each rotated card "leaf" in deck-fan mode.
+    public static let stackFanCardHeight: CGFloat = 54
+
+    /// Horizontal offset between the three fan leaves on `StackCover`.
+    public static let stackFanOffset: CGFloat = 8
+
+    /// SF Symbol point size rendered on a non-deck `StackCover`.
+    public static let stackCoverGlyph: CGFloat = 26
+
+    // MARK: - Stack kind badge
+
+    /// SF Symbol point size for the leading glyph inside `StackKindBadge`.
+    public static let stackBadgeIconSize: CGFloat = 10
+
+    // MARK: - Stack list row
+
+    /// Vertical padding inside a single `StackRow`.
+    public static let stackRowVertical: CGFloat = 10
+
+    // MARK: - Stack detail
+
+    /// Cover size on `StackHeroCard`.
+    public static let stackHeroCoverSize: CGFloat = 108
+
+    /// Width of each kind-aware action tile inside `StackActionBar`.
+    public static let stackActionWidth: CGFloat = 88
+
+    /// Height of each action tile inside `StackActionBar`.
+    public static let stackActionHeight: CGFloat = 72
 }

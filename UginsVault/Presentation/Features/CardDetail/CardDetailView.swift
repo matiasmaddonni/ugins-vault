@@ -14,6 +14,7 @@ import Kingfisher
 public struct CardDetailView: View {
 
     @State private var viewModel: CardDetailViewModel
+    @State private var isPresentingAddToStack: Bool = false
 
     public init(viewModel: CardDetailViewModel) {
         _viewModel = State(initialValue: viewModel)
@@ -24,6 +25,7 @@ public struct CardDetailView: View {
             VStack(alignment: .leading, spacing: Spacing.xl) {
                 hero
                 header
+                addToStackButton
                 oracleBlock
                 pricesBlock
                 otherPrintingsBlock
@@ -34,7 +36,101 @@ public struct CardDetailView: View {
         .background(Color.uv.bg.ignoresSafeArea())
         .navigationTitle(viewModel.card.name)
         .navigationBarTitleDisplayMode(.inline)
-        .task { await viewModel.loadOtherPrintings() }
+        .task {
+            await viewModel.loadOtherPrintings()
+            await viewModel.loadAvailableStacks()
+        }
+        .sheet(isPresented: $isPresentingAddToStack) {
+            addToStackSheet
+        }
+        .overlay(alignment: .bottom) { addedToastOverlay }
+        .animation(.spring(response: 0.35, dampingFraction: 0.85), value: viewModel.lastAddedStackName)
+    }
+
+    // MARK: - Add to stack
+
+    @ViewBuilder
+    private var addToStackButton: some View {
+        if !viewModel.availableStacks.isEmpty {
+            Button {
+                isPresentingAddToStack = true
+            } label: {
+                HStack(spacing: Spacing.sm) {
+                    Image(systemName: "rectangle.stack.badge.plus")
+                        .font(.system(size: Layout.mediumIcon - 2, weight: .semibold))
+                    Text("Add to stack")
+                        .font(.uv.body(14, weight: .semibold))
+                }
+                .foregroundStyle(Color(hex: 0x1A1410))
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, Spacing.md)
+                .background(
+                    RoundedRectangle(cornerRadius: UVRadius.md).fill(Color.uv.gold)
+                )
+            }
+            .accessibilityIdentifier("btn_card_detail_add_to_stack")
+        }
+    }
+
+    private var addToStackSheet: some View {
+        SheetPicker<UUID>(
+            title: "Add to stack",
+            options: viewModel.availableStacks.map { stack in
+                SheetPicker<UUID>.Option(
+                    id: stack.id,
+                    label: stack.name,
+                    detail: addToStackDetail(for: stack)
+                )
+            },
+            selection: UUID(),
+            onSelect: { stackID in
+                Task { await viewModel.addCard(to: stackID) }
+            }
+        )
+    }
+
+    private func addToStackDetail(for stack: Stack) -> String {
+        if stack.kind == .deck, let format = stack.format {
+            return "\(stack.kind.displayLabel) · \(format.displayName)"
+        }
+        return stack.kind.displayLabel
+    }
+
+    @ViewBuilder
+    private var addedToastOverlay: some View {
+        if let name = viewModel.lastAddedStackName {
+            HStack(spacing: Spacing.sm) {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundStyle(Color.uv.up)
+                Text("Added to \(name)")
+                    .font(.uv.body(13, weight: .medium))
+                    .foregroundStyle(Color.uv.text)
+                Spacer()
+                Button("Dismiss") {
+                    viewModel.dismissAddToStackToast()
+                }
+                .font(.uv.body(12, weight: .semibold))
+                .foregroundStyle(Color.uv.gold)
+            }
+            .padding(.horizontal, Spacing.rowHorizontal)
+            .padding(.vertical, Spacing.md)
+            .background(
+                RoundedRectangle(cornerRadius: UVRadius.md)
+                    .fill(Color.uv.panel)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: UVRadius.md)
+                            .strokeBorder(Color.uv.stroke, lineWidth: Layout.hairline)
+                    )
+            )
+            .padding(.horizontal, Spacing.screenEdge)
+            .padding(.bottom, Spacing.lg)
+            .transition(.move(edge: .bottom).combined(with: .opacity))
+            .task {
+                try? await Task.sleep(for: .seconds(3))
+                viewModel.dismissAddToStackToast()
+            }
+            .accessibilityIdentifier("view_card_detail_added_toast")
+        }
     }
 
     private var card: Card { viewModel.card }
