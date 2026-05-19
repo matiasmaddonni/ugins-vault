@@ -9,10 +9,12 @@
 /* Begin PBXBuildFile section */
 		03A2853D9B0FE203D7358BCD /* BiometricsDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 681E8F36221891F65AF47D43 /* BiometricsDataSource.swift */; };
 		04A5C37679102C3AA372E050 /* UserDefaultsUserProfileRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAEA17D6FEB580C3957F9EBD /* UserDefaultsUserProfileRepository.swift */; };
+		09257300F704FD14353DA6B1 /* ScryfallClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 366FE5B14548483E5C9A76E3 /* ScryfallClientTests.swift */; };
 		0A1DAAB06DB744FFFA3ECD54 /* ProfileHeroCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12D8BD42984578A11CFB42AD /* ProfileHeroCard.swift */; };
 		0D701BA81BCE782300A58C0E /* SetReduceMotionUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5D45EE3AECD4C466754DBE6 /* SetReduceMotionUseCase.swift */; };
 		1236E427EA0F62D5E4C35C25 /* ReduceMotionUseCasesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2F3C829887DF430EB6FAE40 /* ReduceMotionUseCasesTests.swift */; };
 		12F1A7FB6D1B2F2A0B02AEE1 /* Currency.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0BCC75A0EFD4759095C557 /* Currency.swift */; };
+		12FDF1B0AA37A026D7367386 /* ScryfallList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63396DCC792ECBADE8E2E89F /* ScryfallList.swift */; };
 		1891E0F83CA96F7FCE547471 /* UserDefaultsUserProfileRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86692ED694F927ABA0C5FACF /* UserDefaultsUserProfileRepositoryTests.swift */; };
 		199188E4A003CA3FBA8F2886 /* UpdateUserProfileUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = B25179043A976B8DE4E3D8DE /* UpdateUserProfileUseCase.swift */; };
 		1B184D67B97857BBC6B57A64 /* AdvanceFromSplashUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98A029D9D24CBEBE816D84F /* AdvanceFromSplashUseCase.swift */; };
@@ -27,6 +29,7 @@
 		38AD971B1D895C67A16915ED /* CollectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C0C9775E611D214E9197A6F /* CollectionViewModel.swift */; };
 		3BD831E2486CF58B18A2EB02 /* CurrencyFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E53902A1BA13EF9708B53E04 /* CurrencyFormatter.swift */; };
 		3C8812351F051559B367FB6D /* SetFaceIDLockUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FE09B07A90CA1A2D7AE6ABC /* SetFaceIDLockUseCase.swift */; };
+		3CFB72238673332DF7A1E7B9 /* ScryfallBulkData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C09D4DCC82D719D39D6E543 /* ScryfallBulkData.swift */; };
 		3D5B326FE41E009A1763D533 /* SignOutUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0440FAA86F393D21A1BF9176 /* SignOutUseCase.swift */; };
 		3F288873B02EE2353199B992 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3640EB69183473536EB61D1 /* LoginView.swift */; };
 		430D44014FEB2C86B5F111C9 /* UVRadius.swift in Sources */ = {isa = PBXBuildFile; fileRef = 538121236CB36B30D4CAC2B6 /* UVRadius.swift */; };
@@ -35,6 +38,7 @@
 		508E0014DF0E9D2E05EA3F47 /* UVColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C33F74A36AF89DA5A2AD6AA /* UVColors.swift */; };
 		54944E23AACB90264E5ECF37 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573BCA1AC5BFAE9E4BC99792 /* SettingsView.swift */; };
 		5755370A8FED8B4381367B53 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3E185146B2A0679E613C327 /* LoginViewModel.swift */; };
+		579C0A834958619589AA3ED2 /* ScryfallError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41211929DF0F9F6B9C41B173 /* ScryfallError.swift */; };
 		5D477902216A216F1A93A027 /* SettingsRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 318970FDF52932C1306108D2 /* SettingsRow.swift */; };
 		5E062EB92D5E31836F2FF167 /* SplashAccessibilityFields.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AE231447710A77FAF2A785A /* SplashAccessibilityFields.swift */; };
 		5F31E4A496EBD4ABEACF6AB1 /* GetCurrentPhaseUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2661BD412EE857C8E252B6ED /* GetCurrentPhaseUseCase.swift */; };
@@ -74,9 +78,11 @@
 		AE2B93CB5FE5B1481934FB35 /* MockBiometricsDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B7498C9D88299DA4D83BC46 /* MockBiometricsDataSource.swift */; };
 		AE2C074E8A91FC496A8E8872 /* UginsVaultApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97BB29F0E8DFB1CE7D2F5912 /* UginsVaultApp.swift */; };
 		AE6379F8F565BD5867A79F2A /* CurrencyFormatterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FED931C6408DC0C8EF4C393 /* CurrencyFormatterTests.swift */; };
+		B237E0D8D19CDE366D2B24F2 /* ScryfallClientProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFDCE5B9C39A840ACDFD5FEE /* ScryfallClientProtocol.swift */; };
 		B526B70783B9098FBA01C5B1 /* EditProfileSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0761C5A38C6AB65AF2DDB05B /* EditProfileSheet.swift */; };
 		BA252F32E3A800E29F3116DC /* SettingsAccessibilityFields.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7895D87271D049F9361F7C5 /* SettingsAccessibilityFields.swift */; };
 		BB38EF94D2521EC6B683EFE9 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E2205B1E5B1E5B52FF41741 /* SettingsViewModel.swift */; };
+		BC39EFAFB5A931361A74D7F0 /* ScryfallCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC9AF64407073430308F16A /* ScryfallCard.swift */; };
 		BD1B1EB7C0E4AF57D3D080A3 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6A23D4883264D6F06E74902 /* RootView.swift */; };
 		BF2BC74307856C61F077BD4D /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 15C6470E7EA25295B61B74F0 /* Localizable.xcstrings */; };
 		BFE6E0D4750EED43CF9F2309 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D39AC258A873B5014E325F1 /* MainTabView.swift */; };
@@ -87,6 +93,7 @@
 		CB4BE24F3E43D79D79F60B1C /* LoginAccessibilityFields.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DB3029F9071983EFAB8BD33 /* LoginAccessibilityFields.swift */; };
 		CE7E45DD605E0986C926CE31 /* Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB87CECE5698FE5A267E3919 /* Layout.swift */; };
 		D1F319CFEA55136043A75435 /* AdvanceFromSplashUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B919F0DA26D2A0D0C095D3A /* AdvanceFromSplashUseCaseTests.swift */; };
+		DB2583067962632F2E7F44EE /* MockURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57AA7C00F9C9814A8240307E /* MockURLProtocol.swift */; };
 		DD6FDAADD6085CFE408DA0D3 /* UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09F4AA64B7BACDA38D2A315E /* UserProfile.swift */; };
 		DEA29B9D77E1D02AB6F55772 /* UserDefaultsSessionRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3C7C2C422CCFA85708E2CF /* UserDefaultsSessionRepository.swift */; };
 		DEEA7CA6F7F580A2BF50ECF1 /* LocalAuthRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7140589A3B2F92B6620CD235 /* LocalAuthRepository.swift */; };
@@ -97,6 +104,7 @@
 		E66361098ED43FBBEF3F85A2 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9BA8273B66057AE761446B48 /* Preview Assets.xcassets */; };
 		E84A6E9C8F3EC879B5AF0FF8 /* Language.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85272FCAA471C72BBB964733 /* Language.swift */; };
 		EE65054D4FAC7685AC742AAD /* SetThemeUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5F01692FF1817D513068F08 /* SetThemeUseCase.swift */; };
+		EFF31107C01F2A4DEF93219F /* ScryfallClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83648424B1B7782AB25BA533 /* ScryfallClient.swift */; };
 		F2407CF3302090EA536D195A /* SessionRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65E36B52668540EAF2505692 /* SessionRepositoryTests.swift */; };
 		FD14524C781F56BAAB971238 /* AppPhase.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8D8A6C250B91C27F4E42ECA /* AppPhase.swift */; };
 /* End PBXBuildFile section */
@@ -117,6 +125,7 @@
 		0440FAA86F393D21A1BF9176 /* SignOutUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignOutUseCase.swift; sourceTree = "<group>"; };
 		0761C5A38C6AB65AF2DDB05B /* EditProfileSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileSheet.swift; sourceTree = "<group>"; };
 		09F4AA64B7BACDA38D2A315E /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
+		0C09D4DCC82D719D39D6E543 /* ScryfallBulkData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScryfallBulkData.swift; sourceTree = "<group>"; };
 		12D8BD42984578A11CFB42AD /* ProfileHeroCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileHeroCard.swift; sourceTree = "<group>"; };
 		150CEC6C2661103903F892A1 /* Spacing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Spacing.swift; sourceTree = "<group>"; };
 		15C6470E7EA25295B61B74F0 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
@@ -130,19 +139,23 @@
 		318970FDF52932C1306108D2 /* SettingsRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsRow.swift; sourceTree = "<group>"; };
 		3216608EB36204E2AC3B15A3 /* SplashViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashViewModelTests.swift; sourceTree = "<group>"; };
 		32845AB67AEC9F17C0A38241 /* UginMark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UginMark.swift; sourceTree = "<group>"; };
+		366FE5B14548483E5C9A76E3 /* ScryfallClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScryfallClientTests.swift; sourceTree = "<group>"; };
 		371EC3A6828D765DA2192949 /* SplashViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashViewModel.swift; sourceTree = "<group>"; };
 		3DB3029F9071983EFAB8BD33 /* LoginAccessibilityFields.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginAccessibilityFields.swift; sourceTree = "<group>"; };
 		3DE1358AD226C96D9BA1B04E /* UginsVault.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = UginsVault.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		40FC1F90EF3FACB6EF3311C7 /* AuthenticateUseCaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticateUseCaseTests.swift; sourceTree = "<group>"; };
+		41211929DF0F9F6B9C41B173 /* ScryfallError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScryfallError.swift; sourceTree = "<group>"; };
 		473CC7CA6C563BEDC2F0E115 /* AcknowledgementsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcknowledgementsSheet.swift; sourceTree = "<group>"; };
 		4E2205B1E5B1E5B52FF41741 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		516CAD5965C1D04A5DC02B7E /* SettingsGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsGroup.swift; sourceTree = "<group>"; };
 		538121236CB36B30D4CAC2B6 /* UVRadius.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UVRadius.swift; sourceTree = "<group>"; };
 		561406F4D85343AE2D7569A7 /* MockAuthRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAuthRepository.swift; sourceTree = "<group>"; };
 		573BCA1AC5BFAE9E4BC99792 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		57AA7C00F9C9814A8240307E /* MockURLProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockURLProtocol.swift; sourceTree = "<group>"; };
 		5A3C7C2C422CCFA85708E2CF /* UserDefaultsSessionRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsSessionRepository.swift; sourceTree = "<group>"; };
 		5F7208EE9B001A1ACDBA7BFB /* SessionRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRepository.swift; sourceTree = "<group>"; };
 		5FE09B07A90CA1A2D7AE6ABC /* SetFaceIDLockUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetFaceIDLockUseCase.swift; sourceTree = "<group>"; };
+		63396DCC792ECBADE8E2E89F /* ScryfallList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScryfallList.swift; sourceTree = "<group>"; };
 		65E36B52668540EAF2505692 /* SessionRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRepositoryTests.swift; sourceTree = "<group>"; };
 		681E8F36221891F65AF47D43 /* BiometricsDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricsDataSource.swift; sourceTree = "<group>"; };
 		69ED47A041532F48D41D9C0E /* UserProfileRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileRepository.swift; sourceTree = "<group>"; };
@@ -153,6 +166,7 @@
 		7A1EAF33F9FA817C0BA176C4 /* UVTypography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UVTypography.swift; sourceTree = "<group>"; };
 		7D4D51577D76521BEB56A268 /* LocalBiometricsDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalBiometricsDataSource.swift; sourceTree = "<group>"; };
 		808E807AB6AD0A579D3B0CFB /* FaceIDLockUseCasesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceIDLockUseCasesTests.swift; sourceTree = "<group>"; };
+		83648424B1B7782AB25BA533 /* ScryfallClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScryfallClient.swift; sourceTree = "<group>"; };
 		85272FCAA471C72BBB964733 /* Language.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Language.swift; sourceTree = "<group>"; };
 		86692ED694F927ABA0C5FACF /* UserDefaultsUserProfileRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsUserProfileRepositoryTests.swift; sourceTree = "<group>"; };
 		888928878B0A6FC470CC1E59 /* GetCurrentPhaseUseCaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetCurrentPhaseUseCaseTests.swift; sourceTree = "<group>"; };
@@ -187,6 +201,7 @@
 		C773AFD4A060B2FAF65ED0D7 /* GetPreferredLanguageUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetPreferredLanguageUseCase.swift; sourceTree = "<group>"; };
 		C85847DB0B39B77E5902CA34 /* AuthenticateUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticateUseCase.swift; sourceTree = "<group>"; };
 		C8D8A6C250B91C27F4E42ECA /* AppPhase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPhase.swift; sourceTree = "<group>"; };
+		CEC9AF64407073430308F16A /* ScryfallCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScryfallCard.swift; sourceTree = "<group>"; };
 		CFCFB3DA46448E4815631CF1 /* UserDefaultsSessionStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsSessionStorage.swift; sourceTree = "<group>"; };
 		D06AE670C378E1558B650CB0 /* AuthRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthRepository.swift; sourceTree = "<group>"; };
 		D1E40E87CDD1B1A3D1ACD31B /* AppTheme+ColorScheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppTheme+ColorScheme.swift"; sourceTree = "<group>"; };
@@ -195,6 +210,7 @@
 		D97F5A435A7AFCAAA9236A14 /* RootViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewModel.swift; sourceTree = "<group>"; };
 		DB87CECE5698FE5A267E3919 /* Layout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Layout.swift; sourceTree = "<group>"; };
 		DE550385B2AD48345EDADCE1 /* GetUserProfileUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetUserProfileUseCase.swift; sourceTree = "<group>"; };
+		DFDCE5B9C39A840ACDFD5FEE /* ScryfallClientProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScryfallClientProtocol.swift; sourceTree = "<group>"; };
 		E2F3C829887DF430EB6FAE40 /* ReduceMotionUseCasesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReduceMotionUseCasesTests.swift; sourceTree = "<group>"; };
 		E3640EB69183473536EB61D1 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		E53902A1BA13EF9708B53E04 /* CurrencyFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyFormatter.swift; sourceTree = "<group>"; };
@@ -234,6 +250,7 @@
 			children = (
 				2D31E93B7C8DBC2422F34B0F /* local */,
 				C1AC75624A12BFEE463B922F /* protocols */,
+				9DF2E5BDFAB147C3B9E9B02F /* remote */,
 			);
 			path = datasources;
 			sourceTree = "<group>";
@@ -250,6 +267,7 @@
 		28B4E7C79DF5CF0E3DE6C7A5 /* data */ = {
 			isa = PBXGroup;
 			children = (
+				BC2C03CAA84494D4BA78EDA1 /* datasources */,
 				307C8B2EC5A7E61B7FD2E3AF /* repositories */,
 			);
 			path = data;
@@ -341,6 +359,16 @@
 				1D39AC258A873B5014E325F1 /* MainTabView.swift */,
 			);
 			path = MainTab;
+			sourceTree = "<group>";
+		};
+		5B755AA170B53C754501D419 /* DTOs */ = {
+			isa = PBXGroup;
+			children = (
+				0C09D4DCC82D719D39D6E543 /* ScryfallBulkData.swift */,
+				CEC9AF64407073430308F16A /* ScryfallCard.swift */,
+				63396DCC792ECBADE8E2E89F /* ScryfallList.swift */,
+			);
+			path = DTOs;
 			sourceTree = "<group>";
 		};
 		60F8E42BA47C9A170C5112CE /* feature */ = {
@@ -476,6 +504,14 @@
 			path = Components;
 			sourceTree = "<group>";
 		};
+		9DF2E5BDFAB147C3B9E9B02F /* remote */ = {
+			isa = PBXGroup;
+			children = (
+				B0F7FD1A91899922F260D026 /* Scryfall */,
+			);
+			path = remote;
+			sourceTree = "<group>";
+		};
 		A42BDD2FD5E18B8B2589FE57 /* Theme */ = {
 			isa = PBXGroup;
 			children = (
@@ -510,12 +546,40 @@
 			path = Presentation;
 			sourceTree = "<group>";
 		};
+		B0F7FD1A91899922F260D026 /* Scryfall */ = {
+			isa = PBXGroup;
+			children = (
+				83648424B1B7782AB25BA533 /* ScryfallClient.swift */,
+				DFDCE5B9C39A840ACDFD5FEE /* ScryfallClientProtocol.swift */,
+				41211929DF0F9F6B9C41B173 /* ScryfallError.swift */,
+				5B755AA170B53C754501D419 /* DTOs */,
+			);
+			path = Scryfall;
+			sourceTree = "<group>";
+		};
 		B56ECBBA53428D73ABF9F2DC /* splash */ = {
 			isa = PBXGroup;
 			children = (
 				3216608EB36204E2AC3B15A3 /* SplashViewModelTests.swift */,
 			);
 			path = splash;
+			sourceTree = "<group>";
+		};
+		BC2C03CAA84494D4BA78EDA1 /* datasources */ = {
+			isa = PBXGroup;
+			children = (
+				BD1A31F94EE6017210C1B008 /* remote */,
+			);
+			path = datasources;
+			sourceTree = "<group>";
+		};
+		BD1A31F94EE6017210C1B008 /* remote */ = {
+			isa = PBXGroup;
+			children = (
+				57AA7C00F9C9814A8240307E /* MockURLProtocol.swift */,
+				366FE5B14548483E5C9A76E3 /* ScryfallClientTests.swift */,
+			);
+			path = remote;
 			sourceTree = "<group>";
 		};
 		C1AC75624A12BFEE463B922F /* protocols */ = {
@@ -740,9 +804,11 @@
 				AE2B93CB5FE5B1481934FB35 /* MockBiometricsDataSource.swift in Sources */,
 				30D744219D96F9401D182A80 /* MockSessionRepository.swift in Sources */,
 				98C957936BC1062C8D372933 /* MockSessionStorage.swift in Sources */,
+				DB2583067962632F2E7F44EE /* MockURLProtocol.swift in Sources */,
 				8DC62661088B629DEB01FEE7 /* MockUserProfileRepository.swift in Sources */,
 				1236E427EA0F62D5E4C35C25 /* ReduceMotionUseCasesTests.swift in Sources */,
 				E0BF279F4B1621930E8FD6F3 /* RootViewModelTests.swift in Sources */,
+				09257300F704FD14353DA6B1 /* ScryfallClientTests.swift in Sources */,
 				F2407CF3302090EA536D195A /* SessionRepositoryTests.swift in Sources */,
 				6E9822A72F41A5C16146F2DE /* SplashViewModelTests.swift in Sources */,
 				9ABDB3861B40F2DFBEAA4C50 /* ThemeUseCasesTests.swift in Sources */,
@@ -791,6 +857,12 @@
 				0A1DAAB06DB744FFFA3ECD54 /* ProfileHeroCard.swift in Sources */,
 				BD1B1EB7C0E4AF57D3D080A3 /* RootView.swift in Sources */,
 				81D75306AADC3E03A96E2D72 /* RootViewModel.swift in Sources */,
+				3CFB72238673332DF7A1E7B9 /* ScryfallBulkData.swift in Sources */,
+				BC39EFAFB5A931361A74D7F0 /* ScryfallCard.swift in Sources */,
+				EFF31107C01F2A4DEF93219F /* ScryfallClient.swift in Sources */,
+				B237E0D8D19CDE366D2B24F2 /* ScryfallClientProtocol.swift in Sources */,
+				579C0A834958619589AA3ED2 /* ScryfallError.swift in Sources */,
+				12FDF1B0AA37A026D7367386 /* ScryfallList.swift in Sources */,
 				6472BF826E63A166D491B256 /* SessionRepository.swift in Sources */,
 				9696FF06410F01FA18F74CCA /* SessionStorageDataSource.swift in Sources */,
 				9A5ADBF0F8854E6394A33003 /* SetCurrencyUseCase.swift in Sources */,

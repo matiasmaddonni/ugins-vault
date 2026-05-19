@@ -29,6 +29,7 @@ public final class DependencyContainer {
 
     public lazy var biometricsDataSource: BiometricsDataSource = LocalBiometricsDataSource()
     public lazy var sessionStorage:       SessionStorageDataSource = UserDefaultsSessionStorage()
+    public lazy var scryfallClient:       any ScryfallClientProtocol = ScryfallClient()
 
     // MARK: - Repositories
 
