@@ -21,4 +21,8 @@ public protocol ScryfallClientProtocol: Actor {
     /// Returns a single card by name. `fuzzy` enables Scryfall's
     /// approximate-match endpoint (`/cards/named?fuzzy=`).
     func card(named: String, fuzzy: Bool) async throws -> ScryfallCard
+
+    /// Paged Scryfall search. `query` is Scryfall search syntax
+    /// (`"set:fdn"`, `"c:r t:instant"`, …); `page` is 1-indexed.
+    func searchCards(query: String, page: Int) async throws -> ScryfallList<ScryfallCard>
 }

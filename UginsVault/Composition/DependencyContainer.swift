@@ -15,6 +15,7 @@
 //
 
 import Foundation
+import SwiftData
 
 @MainActor
 public final class DependencyContainer {
@@ -36,6 +37,18 @@ public final class DependencyContainer {
     public lazy var authRepository:        AuthRepository        = LocalAuthRepository(biometrics: biometricsDataSource)
     public lazy var sessionRepository:     SessionRepository     = UserDefaultsSessionRepository(storage: sessionStorage)
     public lazy var userProfileRepository: UserProfileRepository = UserDefaultsUserProfileRepository(storage: sessionStorage)
+
+    public lazy var modelContainer: ModelContainer = {
+        do {
+            return try ModelContainer(for: SwiftDataCard.self)
+        } catch {
+            fatalError("Failed to construct SwiftData ModelContainer: \(error)")
+        }
+    }()
+
+    public lazy var cardRepository: CardRepository = SwiftDataCardRepository(modelContainer: modelContainer)
+
+    public lazy var cardCatalogueSource: CardCatalogueSource = ScryfallCardCatalogueSource(client: scryfallClient)
 
     // MARK: - Use case factories — auth
 
@@ -107,6 +120,12 @@ public final class DependencyContainer {
         UpdateUserProfileUseCase(userProfileRepository: userProfileRepository)
     }
 
+    // MARK: - Use case factories — catalogue
+
+    public func makeSeedCatalogueUseCase() -> SeedCatalogueUseCase {
+        SeedCatalogueUseCase(source: cardCatalogueSource, repository: cardRepository)
+    }
+
     // MARK: - ViewModel factories
 
     @MainActor public func makeRootViewModel() -> RootViewModel {
@@ -132,7 +151,9 @@ public final class DependencyContainer {
 
     @MainActor public func makeCollectionViewModel() -> CollectionViewModel {
         CollectionViewModel(
-            sessionRepository: sessionRepository
+            sessionRepository: sessionRepository,
+            cardRepository: cardRepository,
+            seedCatalogue: makeSeedCatalogueUseCase()
         )
     }
 

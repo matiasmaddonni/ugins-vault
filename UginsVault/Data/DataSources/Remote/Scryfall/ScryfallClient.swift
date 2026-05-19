@@ -78,6 +78,16 @@ public actor ScryfallClient: ScryfallClientProtocol {
         return try await get("cards/named?\(query)")
     }
 
+    public func searchCards(query: String, page: Int) async throws -> ScryfallList<ScryfallCard> {
+        var components = URLComponents()
+        components.queryItems = [
+            URLQueryItem(name: "q", value: query),
+            URLQueryItem(name: "page", value: String(page))
+        ]
+        let queryString = components.percentEncodedQuery ?? ""
+        return try await get("cards/search?\(queryString)")
+    }
+
     // MARK: - Generic GET
 
     /// Issues a throttled GET against the Scryfall API and decodes the

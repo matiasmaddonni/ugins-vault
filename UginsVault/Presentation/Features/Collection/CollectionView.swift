@@ -2,8 +2,9 @@
 //  CollectionView.swift
 //  UginsVault — Presentation: Collection
 //
-//  The Collection tab. Header (title + count + value), search, empty state.
-//  Tab bar is owned by `MainTabView`. Theme is owned by Settings + RootView.
+//  The Collection tab. Header (title + count + total value), search,
+//  card list. On empty catalogue, kicks the seed flow automatically;
+//  while seeding, renders a status panel.
 //
 
 import SwiftUI
@@ -17,37 +18,152 @@ public struct CollectionView: View {
     }
 
     public var body: some View {
-        @Bindable var viewModel = viewModel
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: Spacing.lg) {
-                    header
-                    searchBar(query: $viewModel.searchQuery)
-                    emptyState
+            content
+                .background(Color.uv.bg.ignoresSafeArea())
+                .navigationTitle("")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar { toolbar }
+                .task { await viewModel.onAppear() }
+                .navigationDestination(for: Card.self) { card in
+                    CardDetailView(card: card, displayCurrency: viewModel.currency)
                 }
-                .padding(.horizontal, Spacing.screenEdge)
-                .padding(.top, Spacing.sm)
-                .padding(.bottom, Spacing.xl)
-            }
-            .background(Color.uv.bg.ignoresSafeArea())
-            .navigationTitle("")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        // TODO: open Add Card sheet
-                    } label: {
-                        Image(systemName: "plus")
-                            .font(.system(size: 17, weight: .semibold))
-                            .foregroundStyle(Color.uv.gold)
-                    }
-                    .accessibilityLabel("Add card")
-                    .accessibilityIdentifier(CollectionAccessibilityFields.addCardToolbar)
-                }
-            }
-            .onAppear { viewModel.refreshPreferences() }
         }
         .accessibilityIdentifier(CollectionAccessibilityFields.screen)
+    }
+
+    @ToolbarContentBuilder
+    private var toolbar: some ToolbarContent {
+        ToolbarItem(placement: .topBarTrailing) {
+            Button {
+                // TODO: open Add Card sheet
+            } label: {
+                Image(systemName: "plus")
+                    .font(.system(size: 17, weight: .semibold))
+                    .foregroundStyle(Color.uv.gold)
+            }
+            .accessibilityLabel("Add card")
+            .accessibilityIdentifier(CollectionAccessibilityFields.addCardToolbar)
+        }
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        switch viewModel.status {
+        case .seeding(let savedSoFar):
+            seedingPanel(savedSoFar: savedSoFar)
+
+        case .error(let message):
+            errorPanel(message: message)
+
+        case .loading where viewModel.cards.isEmpty:
+            loadingPanel
+
+        case .idle, .loading:
+            cardList
+        }
+    }
+
+    // MARK: - States
+
+    private var loadingPanel: some View {
+        VStack(spacing: Spacing.md) {
+            ProgressView()
+                .tint(Color.uv.gold)
+            Text("Loading…")
+                .font(.uv.body(13))
+                .foregroundStyle(Color.uv.muted)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private func seedingPanel(savedSoFar: Int) -> some View {
+        VStack(spacing: Spacing.md + 2) {
+            UginMark(size: Layout.emptyStateMarkSize, showsGlow: true)
+
+            VStack(spacing: Spacing.xs) {
+                Text("Building your catalogue")
+                    .font(.uv.display(18, weight: .semibold))
+                    .foregroundStyle(Color.uv.text)
+                Text("Pulling cards from Scryfall…")
+                    .font(.uv.body(13))
+                    .foregroundStyle(Color.uv.muted)
+            }
+
+            HStack(spacing: Spacing.sm) {
+                ProgressView()
+                    .tint(Color.uv.gold)
+                Text("\(savedSoFar) cards saved")
+                    .font(.uv.mono(12))
+                    .foregroundStyle(Color.uv.muted)
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(.horizontal, Spacing.xl)
+    }
+
+    private func errorPanel(message: String) -> some View {
+        VStack(spacing: Spacing.md) {
+            Image(systemName: "exclamationmark.triangle")
+                .font(.system(size: Layout.heroIcon, weight: .medium))
+                .foregroundStyle(Color.uv.down)
+
+            VStack(spacing: Spacing.xs) {
+                Text("Couldn't load the catalogue")
+                    .font(.uv.display(16, weight: .semibold))
+                    .foregroundStyle(Color.uv.text)
+
+                Text(message)
+                    .font(.uv.body(12))
+                    .foregroundStyle(Color.uv.muted)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, Spacing.xl)
+            }
+
+            Button {
+                Task { await viewModel.loadOrSeed() }
+            } label: {
+                Text("Retry")
+                    .font(.uv.body(14, weight: .semibold))
+                    .foregroundStyle(Color(hex: 0x1A1410))
+                    .padding(.horizontal, Spacing.lg + 2)
+                    .padding(.vertical, Spacing.md)
+                    .background(
+                        RoundedRectangle(cornerRadius: UVRadius.md).fill(Color.uv.gold)
+                    )
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(.horizontal, Spacing.xl)
+    }
+
+    private var cardList: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: Spacing.lg) {
+                header
+                searchBar(query: bindingForQuery)
+
+                if viewModel.cards.isEmpty {
+                    emptyResults
+                } else {
+                    ForEach(viewModel.cards) { card in
+                        NavigationLink(value: card) {
+                            CardRowView(card: card, displayCurrency: viewModel.currency)
+                                .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityIdentifier("cell_collection_card_\(card.setCode)_\(card.collectorNumber)")
+
+                        Rectangle()
+                            .fill(Color.uv.stroke.opacity(0.4))
+                            .frame(height: Layout.hairline)
+                    }
+                }
+            }
+            .padding(.horizontal, Spacing.screenEdge)
+            .padding(.top, Spacing.sm)
+            .padding(.bottom, Spacing.xl)
+        }
     }
 
     // MARK: - Header
@@ -70,7 +186,7 @@ public struct CollectionView: View {
                     .fill(Color.uv.muted.opacity(0.5))
                     .frame(width: 3, height: 3)
 
-                Text(CurrencyFormatter.format(viewModel.totalValue, currency: viewModel.currency))
+                Text(CurrencyFormatter.format(viewModel.totalValueUSD, currency: viewModel.currency))
                     .font(.uv.mono(12, weight: .semibold))
                     .foregroundStyle(Color.uv.gold)
                     .accessibilityIdentifier(CollectionAccessibilityFields.totalValueLabel)
@@ -79,6 +195,16 @@ public struct CollectionView: View {
     }
 
     // MARK: - Search
+
+    private var bindingForQuery: Binding<String> {
+        Binding(
+            get: { viewModel.searchQuery },
+            set: { newValue in
+                viewModel.searchQuery = newValue
+                Task { await viewModel.search() }
+            }
+        )
+    }
 
     private func searchBar(query: Binding<String>) -> some View {
         HStack(spacing: Spacing.md - 2) {
@@ -104,51 +230,23 @@ public struct CollectionView: View {
         )
     }
 
-    // MARK: - Empty state
+    // MARK: - Empty results
 
-    private var emptyState: some View {
+    private var emptyResults: some View {
         VStack(spacing: Spacing.md + 2) {
             UginMark(size: Layout.emptyStateMarkSize, showsGlow: false)
                 .opacity(0.45)
 
             VStack(spacing: Spacing.xs + 2) {
-                Text("Your vault is empty")
+                Text("No matches")
                     .font(.uv.display(18, weight: .semibold))
                     .foregroundStyle(Color.uv.text)
-                    .accessibilityIdentifier(CollectionAccessibilityFields.emptyStateTitle)
 
-                Text("Add your first card or import a CSV from ManaBox, Moxfield, or Archidekt.")
+                Text("Try a different name or clear the search.")
                     .font(.uv.body(13))
                     .foregroundStyle(Color.uv.muted)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, Spacing.xl)
-            }
-
-            HStack(spacing: Spacing.sm) {
-                Button { /* TODO: open Add Card sheet */ } label: {
-                    Label("Add card", systemImage: "plus")
-                        .font(.uv.body(14, weight: .semibold))
-                        .foregroundStyle(Color(hex: 0x1A1410))
-                        .padding(.horizontal, Spacing.lg + 2)
-                        .padding(.vertical, Spacing.md)
-                        .background(
-                            RoundedRectangle(cornerRadius: UVRadius.md).fill(Color.uv.gold)
-                        )
-                }
-                .accessibilityIdentifier(CollectionAccessibilityFields.emptyAddCardButton)
-
-                Button { /* TODO: import CSV */ } label: {
-                    Label("Import CSV", systemImage: "tray.and.arrow.down")
-                        .font(.uv.body(14, weight: .semibold))
-                        .foregroundStyle(Color.uv.text)
-                        .padding(.horizontal, Spacing.lg + 2)
-                        .padding(.vertical, Spacing.md)
-                        .background(
-                            RoundedRectangle(cornerRadius: UVRadius.md)
-                                .strokeBorder(Color.uv.stroke, lineWidth: 1)
-                        )
-                }
-                .accessibilityIdentifier(CollectionAccessibilityFields.emptyImportCSVButton)
             }
         }
         .frame(maxWidth: .infinity)
