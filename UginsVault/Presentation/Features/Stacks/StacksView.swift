@@ -15,6 +15,7 @@ import SwiftUI
 public struct StacksView: View {
 
     @State private var viewModel: StacksListViewModel
+    @State private var pendingDelete: Stack?
 
     public init(viewModel: StacksListViewModel) {
         _viewModel = State(initialValue: viewModel)
@@ -47,8 +48,38 @@ public struct StacksView: View {
                         )
                     }
                 }
+                .confirmationDialog(
+                    deleteConfirmationTitle,
+                    isPresented: deleteDialogBinding,
+                    titleVisibility: .visible,
+                    presenting: pendingDelete
+                ) { stack in
+                    Button("Delete stack", role: .destructive) {
+                        Task { await viewModel.deleteStack(id: stack.id) }
+                        pendingDelete = nil
+                    }
+                    Button("Cancel", role: .cancel) {
+                        pendingDelete = nil
+                    }
+                } message: { stack in
+                    Text("Removes \"\(stack.name)\" and every card stored in it. This can't be undone.")
+                }
         }
         .accessibilityIdentifier(StacksAccessibilityFields.screen)
+    }
+
+    private var deleteConfirmationTitle: String {
+        guard let pendingDelete else { return "" }
+        return "Delete \(pendingDelete.name)?"
+    }
+
+    private var deleteDialogBinding: Binding<Bool> {
+        Binding(
+            get: { pendingDelete != nil },
+            set: { isPresented in
+                if !isPresented { pendingDelete = nil }
+            }
+        )
     }
 
     // MARK: - Toolbar
@@ -202,6 +233,15 @@ public struct StacksView: View {
                     bottom: Spacing.xs,
                     trailing: Spacing.screenEdge
                 ))
+                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                    Button(role: .destructive) {
+                        pendingDelete = stack
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                    }
+                    .tint(Color.uv.down)
+                    .accessibilityIdentifier(StacksAccessibilityFields.rowDelete(at: index))
+                }
             }
         }
         .listStyle(.plain)

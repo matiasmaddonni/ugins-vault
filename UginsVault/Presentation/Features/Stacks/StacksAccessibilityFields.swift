@@ -67,6 +67,10 @@ public enum StacksAccessibilityFields {
         "lbl_stacks_row_value_\(index)"
     }
 
+    public static func rowDelete(at index: Int) -> String {
+        "btn_stacks_row_delete_\(index)"
+    }
+
     // MARK: - Empty state
 
     public static let emptyStateTitle  = "lbl_stacks_empty_title"

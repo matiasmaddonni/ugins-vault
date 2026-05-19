@@ -194,6 +194,21 @@ public final class StacksListViewModel {
         nil
     }
 
+    // MARK: - Delete
+
+    /// Removes a stack + every `CollectionItem` row that referenced it
+    /// (cascade). Used by the row's trailing swipe action and the
+    /// detail screen's destructive toolbar button.
+    public func deleteStack(id: UUID) async {
+        do {
+            try await itemRepository.deleteAll(in: id)
+            try await stackRepository.delete(id: id)
+            await refresh()
+        } catch {
+            status = .error(message: error.localizedDescription)
+        }
+    }
+
     // MARK: - Private
 
     private func recomputeVisible() {

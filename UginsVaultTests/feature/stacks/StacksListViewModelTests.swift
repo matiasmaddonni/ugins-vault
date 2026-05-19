@@ -233,6 +233,23 @@ struct StacksListViewModelTests {
         #expect(stored?.commander == nil)
     }
 
+    @Test("deleteStack removes the stack + cascades the CollectionItem rows")
+    func deleteStackCascades() async throws {
+        let (sut, stackRepo, itemRepo, _) = try makeSUT()
+        let stack = makeStack(name: "Burn", kind: .deck)
+        try await stackRepo.save(stack)
+        try await itemRepo.save(makeItem(stackID: stack.id, quantity: 4))
+        try await itemRepo.save(makeItem(stackID: stack.id, quantity: 2))
+        await sut.refresh()
+        #expect(sut.allStacks.count == 1)
+
+        await sut.deleteStack(id: stack.id)
+
+        #expect(sut.allStacks.isEmpty)
+        #expect(try await stackRepo.totalCount() == 0)
+        #expect(try await itemRepo.items(in: stack.id).isEmpty)
+    }
+
     @Test("Filter chipLabel returns the right plural per kind")
     func filterChipLabels() {
         #expect(StacksListViewModel.Filter.all.chipLabel == "All")

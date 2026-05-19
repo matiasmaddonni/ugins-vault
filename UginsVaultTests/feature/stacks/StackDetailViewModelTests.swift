@@ -38,6 +38,24 @@ struct StackDetailViewModelTests {
         return (sut, itemRepo, session)
     }
 
+    private func makeSUTWithStackRepo(stack: Stack) throws -> (
+        StackDetailViewModel,
+        SwiftDataStackRepository,
+        SwiftDataCollectionItemRepository
+    ) {
+        let container = try makeContainer()
+        let stackRepo = SwiftDataStackRepository(modelContainer: container)
+        let itemRepo  = SwiftDataCollectionItemRepository(modelContainer: container)
+        let session   = MockSessionRepository()
+        let sut = StackDetailViewModel(
+            stack: stack,
+            itemRepository: itemRepo,
+            sessionRepository: session,
+            stackRepository: stackRepo
+        )
+        return (sut, stackRepo, itemRepo)
+    }
+
     private func makeDeck(format: Format = .modern, colors: Set<ManaColor> = [.red]) -> Stack {
         Stack(id: UUID(), name: "Burn", kind: .deck, format: format, colors: colors)
     }
@@ -139,5 +157,30 @@ struct StackDetailViewModelTests {
         // active currency without crashing.
         let formatted = sut.formattedTotalValue
         #expect(!formatted.isEmpty)
+    }
+
+    @Test("deleteStack wipes the stack + every CollectionItem it owned and flips didDelete")
+    func deleteStackCascadesAndFlipsDidDelete() async throws {
+        let stack = makeDeck()
+        let (sut, stackRepo, itemRepo) = try makeSUTWithStackRepo(stack: stack)
+        try await stackRepo.save(stack)
+        try await itemRepo.save(makeItem(stackID: stack.id, quantity: 4))
+        try await itemRepo.save(makeItem(stackID: stack.id, quantity: 1))
+
+        await sut.deleteStack()
+
+        #expect(sut.didDelete)
+        #expect(try await stackRepo.totalCount() == 0)
+        #expect(try await itemRepo.items(in: stack.id).isEmpty)
+    }
+
+    @Test("deleteStack no-ops when no StackRepository is wired in")
+    func deleteStackNoOpsWithoutStackRepo() async throws {
+        let stack = makeDeck()
+        let (sut, _, _) = try makeSUT(stack: stack)
+
+        await sut.deleteStack()
+
+        #expect(sut.didDelete == false)
     }
 }

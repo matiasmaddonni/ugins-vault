@@ -43,7 +43,8 @@ public enum StackDetailAccessibilityFields {
 
     // MARK: - Nav
 
-    public static let backButton = "btn_stack_detail_back"
+    public static let backButton    = "btn_stack_detail_back"
+    public static let deleteToolbar = "btn_stack_detail_delete_toolbar"
 
     // MARK: - Import sheet
 

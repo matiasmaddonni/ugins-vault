@@ -43,10 +43,16 @@ public final class StackDetailViewModel {
     public private(set) var importProgress: (current: Int, total: Int) = (0, 0)
     public private(set) var lastImportResult: ImportDeckListUseCase.ImportResult?
 
+    // MARK: - Delete
+
+    public var isPresentingDeleteConfirm: Bool = false
+    public private(set) var didDelete: Bool = false
+
     // MARK: - Dependencies
 
     @ObservationIgnored private let itemRepository: CollectionItemRepository
     @ObservationIgnored private let cardRepository: CardRepository?
+    @ObservationIgnored private let stackRepository: StackRepository?
     @ObservationIgnored private let sessionRepository: SessionRepository
     @ObservationIgnored private let importDeckList: ImportDeckListUseCase?
 
@@ -57,11 +63,13 @@ public final class StackDetailViewModel {
         itemRepository: CollectionItemRepository,
         sessionRepository: SessionRepository,
         cardRepository: CardRepository? = nil,
+        stackRepository: StackRepository? = nil,
         importDeckList: ImportDeckListUseCase? = nil
     ) {
         self.stack = stack
         self.itemRepository = itemRepository
         self.cardRepository = cardRepository
+        self.stackRepository = stackRepository
         self.sessionRepository = sessionRepository
         self.importDeckList = importDeckList
     }
@@ -190,6 +198,30 @@ public final class StackDetailViewModel {
 
     public func dismissImportResult() {
         lastImportResult = nil
+    }
+
+    // MARK: - Delete stack
+
+    public func presentDeleteConfirm() {
+        isPresentingDeleteConfirm = true
+    }
+
+    public func dismissDeleteConfirm() {
+        isPresentingDeleteConfirm = false
+    }
+
+    /// Cascades a stack delete: wipes the `CollectionItem` rows that
+    /// referenced this stack and then removes the stack row itself.
+    /// Flips `didDelete` so the view can pop the navigation stack.
+    public func deleteStack() async {
+        guard let stackRepository else { return }
+        do {
+            try await itemRepository.deleteAll(in: stack.id)
+            try await stackRepository.delete(id: stack.id)
+            didDelete = true
+        } catch {
+            status = .error(message: error.localizedDescription)
+        }
     }
 
     /// Parses + resolves a Moxfield-style decklist and pushes the

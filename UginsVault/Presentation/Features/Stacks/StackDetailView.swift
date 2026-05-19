@@ -16,6 +16,7 @@ import SwiftUI
 public struct StackDetailView: View {
 
     @State private var viewModel: StackDetailViewModel
+    @Environment(\.dismiss) private var dismiss
 
     public init(viewModel: StackDetailViewModel) {
         _viewModel = State(initialValue: viewModel)
@@ -47,6 +48,21 @@ public struct StackDetailView: View {
                     }
                 )
             }
+            .confirmationDialog(
+                "Delete \(viewModel.stack.name)?",
+                isPresented: $viewModel.isPresentingDeleteConfirm,
+                titleVisibility: .visible
+            ) {
+                Button("Delete stack", role: .destructive) {
+                    Task {
+                        await viewModel.deleteStack()
+                        if viewModel.didDelete { dismiss() }
+                    }
+                }
+                Button("Cancel", role: .cancel) { viewModel.dismissDeleteConfirm() }
+            } message: {
+                Text("Removes \"\(viewModel.stack.name)\" and every card stored in it. This can't be undone.")
+            }
             .overlay(alignment: .bottom) { importResultOverlay }
             .animation(.spring(response: 0.35, dampingFraction: 0.85), value: viewModel.lastImportResult)
             .accessibilityIdentifier(StackDetailAccessibilityFields.screen)
@@ -64,6 +80,21 @@ public struct StackDetailView: View {
             }
             .accessibilityLabel("Import list")
             .accessibilityIdentifier(StackDetailAccessibilityFields.importToolbar)
+        }
+
+        ToolbarItem(placement: .topBarTrailing) {
+            Menu {
+                Button(role: .destructive) {
+                    viewModel.presentDeleteConfirm()
+                } label: {
+                    Label("Delete stack", systemImage: "trash")
+                }
+            } label: {
+                Image(systemName: "ellipsis.circle")
+                    .font(.system(size: Layout.mediumIcon - 1, weight: .semibold))
+                    .foregroundStyle(Color.uv.gold)
+            }
+            .accessibilityIdentifier(StackDetailAccessibilityFields.deleteToolbar)
         }
     }
 
