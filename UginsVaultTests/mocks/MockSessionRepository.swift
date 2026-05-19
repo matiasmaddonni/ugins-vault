@@ -10,33 +10,53 @@ import Observation
 @Observable
 final class MockSessionRepository: SessionRepository, @unchecked Sendable {
 
-    // Stubs
-    @ObservationIgnored var stubbedPhase: AppPhase = .splash
-    @ObservationIgnored var stubbedTheme: AppTheme = .dark
-    @ObservationIgnored var stubbedCurrency: Currency = .usd
+    // Observable state (also doubles as stub setter)
+    var phase:        AppPhase  = .splash
+    var theme:        AppTheme  = .dark
+    var currency:     Currency  = .usd
+    var language:     Language  = .system
+    var reduceMotion: Bool      = false
+    var faceIDLock:   Bool      = true
 
     // Spies
-    @ObservationIgnored private(set) var savedPhase: AppPhase?
-    @ObservationIgnored private(set) var savedTheme: AppTheme?
-    @ObservationIgnored private(set) var savedCurrency: Currency?
+    @ObservationIgnored private(set) var savedPhase:        AppPhase?
+    @ObservationIgnored private(set) var savedTheme:        AppTheme?
+    @ObservationIgnored private(set) var savedCurrency:     Currency?
+    @ObservationIgnored private(set) var savedLanguage:     Language?
+    @ObservationIgnored private(set) var savedReduceMotion: Bool?
+    @ObservationIgnored private(set) var savedFaceIDLock:   Bool?
     @ObservationIgnored private(set) var savePhaseCallCount: Int = 0
 
-    func loadPhase() -> AppPhase { stubbedPhase }
+    // Mutations
+
     func savePhase(_ phase: AppPhase) {
         savedPhase = phase
-        stubbedPhase = phase
+        self.phase = phase
         savePhaseCallCount += 1
     }
 
-    func loadTheme() -> AppTheme { stubbedTheme }
     func saveTheme(_ theme: AppTheme) {
         savedTheme = theme
-        stubbedTheme = theme
+        self.theme = theme
     }
 
-    func loadCurrency() -> Currency { stubbedCurrency }
     func saveCurrency(_ currency: Currency) {
         savedCurrency = currency
-        stubbedCurrency = currency
+        self.currency = currency
+    }
+
+    func saveLanguage(_ language: Language) {
+        savedLanguage = language
+        self.language = language
+    }
+
+    func saveReduceMotion(_ reduceMotion: Bool) {
+        savedReduceMotion = reduceMotion
+        self.reduceMotion = reduceMotion
+    }
+
+    func saveFaceIDLock(_ enabled: Bool) {
+        savedFaceIDLock = enabled
+        self.faceIDLock = enabled
     }
 }

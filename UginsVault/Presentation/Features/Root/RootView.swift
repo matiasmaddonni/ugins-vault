@@ -2,8 +2,8 @@
 //  RootView.swift
 //  UginsVault — Presentation: Root
 //
-//  Phase router. Cross-fades between Splash / Login / Home and pipes phase
-//  transitions from children back into `RootViewModel`.
+//  Phase router. Cross-fades between Splash / Login / Home and applies the
+//  app-wide preferences (theme + language) from `SessionRepository`.
 //
 
 import SwiftUI
@@ -43,13 +43,13 @@ public struct RootView: View {
                 .transition(.opacity)
 
             case .home:
-                HomeView(
-                    viewModel: container.makeHomeViewModel()
-                )
-                .transition(.opacity)
+                MainTabView(container: container)
+                    .transition(.opacity)
             }
         }
         .animation(.easeInOut(duration: 0.25), value: viewModel.phase)
+        .preferredColorScheme(container.sessionRepository.theme.colorScheme)
+        .environment(\.locale, container.sessionRepository.language.locale ?? Locale.autoupdatingCurrent)
     }
 }
 

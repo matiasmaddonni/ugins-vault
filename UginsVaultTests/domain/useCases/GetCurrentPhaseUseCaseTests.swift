@@ -12,7 +12,7 @@ struct GetCurrentPhaseUseCaseTests {
     @Test("Returns whatever the session reports")
     func returnsSessionValue() {
         let session = MockSessionRepository()
-        session.stubbedPhase = .home
+        session.phase = .home
         let sut = GetCurrentPhaseUseCase(sessionRepository: session)
 
         #expect(sut.execute() == .home)

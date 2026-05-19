@@ -8,7 +8,7 @@
 
 import Foundation
 
-public final class GetCurrentPhaseUseCase: Sendable {
+public final class GetCurrentPhaseUseCase {
 
     private let sessionRepository: SessionRepository
 
@@ -17,6 +17,6 @@ public final class GetCurrentPhaseUseCase: Sendable {
     }
 
     public func execute() -> AppPhase {
-        sessionRepository.loadPhase()
+        sessionRepository.phase
     }
 }

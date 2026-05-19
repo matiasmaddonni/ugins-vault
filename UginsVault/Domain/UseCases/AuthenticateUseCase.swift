@@ -9,7 +9,7 @@
 
 import Foundation
 
-public final class AuthenticateUseCase: Sendable {
+public final class AuthenticateUseCase {
 
     private let authRepository: AuthRepository
     private let sessionRepository: SessionRepository

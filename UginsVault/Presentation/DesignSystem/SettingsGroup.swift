@@ -1,0 +1,54 @@
+//
+//  SettingsGroup.swift
+//  UginsVault — Presentation: DesignSystem
+//
+//  Section container used by Settings. Renders a small-caps gold header
+//  above a panel-coloured rounded card that holds `SettingsRow`s.
+//
+
+import SwiftUI
+
+public struct SettingsGroup<Content: View>: View {
+
+    private let title: String
+    private let footer: String?
+    private let content: Content
+
+    public init(
+        _ title: String,
+        footer: String? = nil,
+        @ViewBuilder content: () -> Content
+    ) {
+        self.title = title
+        self.footer = footer
+        self.content = content()
+    }
+
+    public var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .uvSectionLabel()
+                .padding(.horizontal, 16)
+
+            VStack(spacing: 0) {
+                content
+            }
+            .background(
+                RoundedRectangle(cornerRadius: UVRadius.lg)
+                    .fill(Color.uv.panel)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: UVRadius.lg)
+                            .strokeBorder(Color.uv.stroke, lineWidth: 1)
+                    )
+            )
+
+            if let footer {
+                Text(footer)
+                    .font(.uv.body(11))
+                    .foregroundStyle(Color.uv.muted)
+                    .padding(.horizontal, 16)
+                    .padding(.top, 4)
+            }
+        }
+    }
+}

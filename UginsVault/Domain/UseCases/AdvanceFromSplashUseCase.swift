@@ -8,7 +8,7 @@
 
 import Foundation
 
-public final class AdvanceFromSplashUseCase: Sendable {
+public final class AdvanceFromSplashUseCase {
 
     private let sessionRepository: SessionRepository
 
@@ -18,7 +18,8 @@ public final class AdvanceFromSplashUseCase: Sendable {
 
     @discardableResult
     public func execute() -> AppPhase {
-        let next: AppPhase = .login
+        // Skip login entirely when the user has disabled Face ID lock in Settings.
+        let next: AppPhase = sessionRepository.faceIDLock ? .login : .home
         sessionRepository.savePhase(next)
         return next
     }

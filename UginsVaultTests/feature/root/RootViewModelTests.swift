@@ -13,7 +13,7 @@ struct RootViewModelTests {
     @Test("Initial phase comes from the session via the use case")
     func initialPhase() {
         let session = MockSessionRepository()
-        session.stubbedPhase = .login
+        session.phase = .login
         let sut = RootViewModel(
             getCurrentPhaseUseCase: GetCurrentPhaseUseCase(sessionRepository: session)
         )
@@ -24,7 +24,7 @@ struct RootViewModelTests {
     @Test("transition(to:) updates the published phase")
     func transitionUpdates() {
         let session = MockSessionRepository()
-        session.stubbedPhase = .splash
+        session.phase = .splash
         let sut = RootViewModel(
             getCurrentPhaseUseCase: GetCurrentPhaseUseCase(sessionRepository: session)
         )
@@ -39,7 +39,7 @@ struct RootViewModelTests {
     @Test("transition(to:) is a no-op when the phase is unchanged")
     func transitionIdempotent() {
         let session = MockSessionRepository()
-        session.stubbedPhase = .home
+        session.phase = .home
         let sut = RootViewModel(
             getCurrentPhaseUseCase: GetCurrentPhaseUseCase(sessionRepository: session)
         )

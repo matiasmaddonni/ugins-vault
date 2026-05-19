@@ -8,7 +8,7 @@
 
 import Foundation
 
-public final class SignOutUseCase: Sendable {
+public final class SignOutUseCase {
 
     private let sessionRepository: SessionRepository
 

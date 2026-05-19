@@ -31,10 +31,11 @@ public final class DependencyContainer {
 
     // MARK: - Repositories
 
-    public lazy var authRepository:    AuthRepository    = LocalAuthRepository(biometrics: biometricsDataSource)
-    public lazy var sessionRepository: SessionRepository = UserDefaultsSessionRepository(storage: sessionStorage)
+    public lazy var authRepository:        AuthRepository        = LocalAuthRepository(biometrics: biometricsDataSource)
+    public lazy var sessionRepository:     SessionRepository     = UserDefaultsSessionRepository(storage: sessionStorage)
+    public lazy var userProfileRepository: UserProfileRepository = UserDefaultsUserProfileRepository(storage: sessionStorage)
 
-    // MARK: - Use case factories
+    // MARK: - Use case factories — auth
 
     public func makeAuthenticateUseCase() -> AuthenticateUseCase {
         AuthenticateUseCase(authRepository: authRepository, sessionRepository: sessionRepository)
@@ -50,6 +51,58 @@ public final class DependencyContainer {
 
     public func makeSignOutUseCase() -> SignOutUseCase {
         SignOutUseCase(sessionRepository: sessionRepository)
+    }
+
+    // MARK: - Use case factories — preferences
+
+    public func makeGetThemeUseCase() -> GetThemeUseCase {
+        GetThemeUseCase(sessionRepository: sessionRepository)
+    }
+
+    public func makeSetThemeUseCase() -> SetThemeUseCase {
+        SetThemeUseCase(sessionRepository: sessionRepository)
+    }
+
+    public func makeGetPreferredLanguageUseCase() -> GetPreferredLanguageUseCase {
+        GetPreferredLanguageUseCase(sessionRepository: sessionRepository)
+    }
+
+    public func makeSetPreferredLanguageUseCase() -> SetPreferredLanguageUseCase {
+        SetPreferredLanguageUseCase(sessionRepository: sessionRepository)
+    }
+
+    public func makeGetCurrencyUseCase() -> GetCurrencyUseCase {
+        GetCurrencyUseCase(sessionRepository: sessionRepository)
+    }
+
+    public func makeSetCurrencyUseCase() -> SetCurrencyUseCase {
+        SetCurrencyUseCase(sessionRepository: sessionRepository)
+    }
+
+    public func makeGetReduceMotionUseCase() -> GetReduceMotionUseCase {
+        GetReduceMotionUseCase(sessionRepository: sessionRepository)
+    }
+
+    public func makeSetReduceMotionUseCase() -> SetReduceMotionUseCase {
+        SetReduceMotionUseCase(sessionRepository: sessionRepository)
+    }
+
+    public func makeGetFaceIDLockUseCase() -> GetFaceIDLockUseCase {
+        GetFaceIDLockUseCase(sessionRepository: sessionRepository)
+    }
+
+    public func makeSetFaceIDLockUseCase() -> SetFaceIDLockUseCase {
+        SetFaceIDLockUseCase(sessionRepository: sessionRepository)
+    }
+
+    // MARK: - Use case factories — profile
+
+    public func makeGetUserProfileUseCase() -> GetUserProfileUseCase {
+        GetUserProfileUseCase(userProfileRepository: userProfileRepository)
+    }
+
+    public func makeUpdateUserProfileUseCase() -> UpdateUserProfileUseCase {
+        UpdateUserProfileUseCase(userProfileRepository: userProfileRepository)
     }
 
     // MARK: - ViewModel factories
@@ -75,9 +128,28 @@ public final class DependencyContainer {
         )
     }
 
-    @MainActor public func makeHomeViewModel() -> HomeViewModel {
-        HomeViewModel(
+    @MainActor public func makeCollectionViewModel() -> CollectionViewModel {
+        CollectionViewModel(
             sessionRepository: sessionRepository
+        )
+    }
+
+    @MainActor public func makeSettingsViewModel() -> SettingsViewModel {
+        SettingsViewModel(
+            sessionRepository:           sessionRepository,
+            userProfileRepository:       userProfileRepository,
+            getThemeUseCase:             makeGetThemeUseCase(),
+            setThemeUseCase:             makeSetThemeUseCase(),
+            getPreferredLanguageUseCase: makeGetPreferredLanguageUseCase(),
+            setPreferredLanguageUseCase: makeSetPreferredLanguageUseCase(),
+            getCurrencyUseCase:          makeGetCurrencyUseCase(),
+            setCurrencyUseCase:          makeSetCurrencyUseCase(),
+            getReduceMotionUseCase:      makeGetReduceMotionUseCase(),
+            setReduceMotionUseCase:      makeSetReduceMotionUseCase(),
+            getFaceIDLockUseCase:        makeGetFaceIDLockUseCase(),
+            setFaceIDLockUseCase:        makeSetFaceIDLockUseCase(),
+            getUserProfileUseCase:       makeGetUserProfileUseCase(),
+            updateUserProfileUseCase:    makeUpdateUserProfileUseCase()
         )
     }
 }
