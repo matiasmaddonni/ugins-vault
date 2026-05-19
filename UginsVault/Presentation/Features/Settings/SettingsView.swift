@@ -3,8 +3,7 @@
 //  UginsVault — Presentation: Settings
 //
 //  The Settings tab. Hero card + Display, Privacy & Security, and About
-//  sections. Currency + Language pickers land in Steps 4–5; the rows are
-//  visible here but the pickers light up after those steps ship.
+//  sections.
 //
 
 import SwiftUI
@@ -36,7 +35,7 @@ public struct SettingsView: View {
     public var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 24) {
+                VStack(spacing: Spacing.xl) {
                     ProfileHeroCard(
                         profile: viewModel.profile,
                         onTap: { isEditingProfile = true }
@@ -46,9 +45,9 @@ public struct SettingsView: View {
                     privacyGroup
                     aboutGroup
                 }
-                .padding(.horizontal, 16)
-                .padding(.top, 8)
-                .padding(.bottom, 32)
+                .padding(.horizontal, Spacing.screenEdge)
+                .padding(.top, Spacing.sm)
+                .padding(.bottom, Spacing.xxl)
             }
             .background(Color.uv.bg.ignoresSafeArea())
             .navigationTitle("Settings")
@@ -70,6 +69,8 @@ public struct SettingsView: View {
                         selection: viewModel.language,
                         onSelect: { viewModel.setLanguage($0) }
                     )
+                    .accessibilityElement(children: .contain)
+                    .accessibilityIdentifier(SettingsAccessibilityFields.languageSheet)
                 case .currency:
                     SheetPicker(
                         title: "Display currency",
@@ -77,95 +78,100 @@ public struct SettingsView: View {
                         selection: viewModel.currency,
                         onSelect: { viewModel.setCurrency($0) }
                     )
+                    .accessibilityElement(children: .contain)
+                    .accessibilityIdentifier(SettingsAccessibilityFields.currencySheet)
                 }
             }
         }
+        .accessibilityIdentifier(SettingsAccessibilityFields.screen)
     }
 
     // MARK: - Display
 
     private var displayGroup: some View {
         SettingsGroup("Display") {
-            // Appearance (segmented)
-            HStack(spacing: 12) {
-                Image(systemName: "circle.lefthalf.filled")
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundStyle(Color.uv.gold)
-                    .frame(width: 24)
-
-                Text("Appearance")
-                    .font(.uv.body(15, weight: .medium))
-                    .foregroundStyle(Color.uv.text)
-
-                Spacer()
-
-                Picker("Appearance", selection: appearanceBinding) {
-                    Text("System").tag(AppTheme.system)
-                    Text("Light").tag(AppTheme.light)
-                    Text("Dark").tag(AppTheme.dark)
-                }
-                .pickerStyle(.segmented)
-                .frame(maxWidth: 200)
-            }
-            .padding(.horizontal, 14)
-            .padding(.vertical, 12)
-
+            appearanceRow
             divider
-
-            // Language (sheet picker)
-            SettingsRow(
-                icon: "character.bubble",
-                title: "Language",
-                value: languageLabel(for: viewModel.language)
-            ) {
-                presentedSheet = .language
-            }
-
-            // Currency (sheet picker)
-            SettingsRow(
-                icon: "dollarsign.circle",
-                title: "Display currency",
-                subtitle: "Values shown in USD until conversion rates ship in v0.3",
-                value: viewModel.currency.rawValue
-            ) {
-                presentedSheet = .currency
-            }
-
+            languageRow
+            currencyRow
             divider
-
-            // Reduce motion (toggle)
-            HStack(spacing: 12) {
-                Image(systemName: "wand.and.stars.inverse")
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundStyle(Color.uv.gold)
-                    .frame(width: 24)
-
-                Text("Reduce motion")
-                    .font(.uv.body(15, weight: .medium))
-                    .foregroundStyle(Color.uv.text)
-
-                Spacer()
-
-                Toggle("", isOn: reduceMotionBinding)
-                    .labelsHidden()
-                    .tint(Color.uv.gold)
-            }
-            .padding(.horizontal, 14)
-            .padding(.vertical, 12)
+            reduceMotionRow
         }
+    }
+
+    private var appearanceRow: some View {
+        HStack(spacing: Spacing.md) {
+            iconLeading(systemName: "circle.lefthalf.filled")
+
+            Text("Appearance")
+                .font(.uv.body(15, weight: .medium))
+                .foregroundStyle(Color.uv.text)
+
+            Spacer()
+
+            Picker("Appearance", selection: appearanceBinding) {
+                Text("System").tag(AppTheme.system)
+                Text("Light").tag(AppTheme.light)
+                Text("Dark").tag(AppTheme.dark)
+            }
+            .pickerStyle(.segmented)
+            .frame(maxWidth: Layout.appearancePickerMaxWidth)
+            .accessibilityIdentifier(SettingsAccessibilityFields.appearancePicker)
+        }
+        .padding(.horizontal, Spacing.rowHorizontal)
+        .padding(.vertical, Spacing.rowVertical)
+    }
+
+    private var languageRow: some View {
+        SettingsRow(
+            icon: "character.bubble",
+            title: "Language",
+            value: languageLabel(for: viewModel.language)
+        ) {
+            presentedSheet = .language
+        }
+        .accessibilityIdentifier(SettingsAccessibilityFields.languageRow)
+    }
+
+    private var currencyRow: some View {
+        SettingsRow(
+            icon: "dollarsign.circle",
+            title: "Display currency",
+            subtitle: "Values shown in USD until conversion rates ship in v0.3",
+            value: viewModel.currency.rawValue
+        ) {
+            presentedSheet = .currency
+        }
+        .accessibilityIdentifier(SettingsAccessibilityFields.currencyRow)
+    }
+
+    private var reduceMotionRow: some View {
+        HStack(spacing: Spacing.md) {
+            iconLeading(systemName: "wand.and.stars.inverse")
+
+            Text("Reduce motion")
+                .font(.uv.body(15, weight: .medium))
+                .foregroundStyle(Color.uv.text)
+
+            Spacer()
+
+            Toggle("", isOn: reduceMotionBinding)
+                .labelsHidden()
+                .tint(Color.uv.gold)
+                .accessibilityIdentifier(SettingsAccessibilityFields.reduceMotionToggle)
+        }
+        .padding(.horizontal, Spacing.rowHorizontal)
+        .padding(.vertical, Spacing.rowVertical)
     }
 
     // MARK: - Privacy
 
     private var privacyGroup: some View {
         SettingsGroup("Privacy & security") {
-            HStack(spacing: 12) {
-                Image(systemName: "faceid")
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundStyle(Color.uv.gold)
-                    .frame(width: 24)
+            HStack(spacing: Spacing.md) {
+                iconLeading(systemName: "faceid")
 
-                VStack(alignment: .leading, spacing: 2) {
+                VStack(alignment: .leading, spacing: Spacing.xs / 2) {
                     Text("Face ID lock")
                         .font(.uv.body(15, weight: .medium))
                         .foregroundStyle(Color.uv.text)
@@ -180,16 +186,17 @@ public struct SettingsView: View {
                 Toggle("", isOn: faceIDLockBinding)
                     .labelsHidden()
                     .tint(Color.uv.gold)
+                    .accessibilityIdentifier(SettingsAccessibilityFields.faceIDLockToggle)
             }
-            .padding(.horizontal, 14)
-            .padding(.vertical, 12)
+            .padding(.horizontal, Spacing.rowHorizontal)
+            .padding(.vertical, Spacing.rowVertical)
         }
     }
 
     // MARK: - About
 
     private var aboutGroup: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: Spacing.lg) {
             SettingsGroup("About") {
                 SettingsRow(
                     icon: "info.circle",
@@ -199,6 +206,7 @@ public struct SettingsView: View {
                         .font(.uv.mono(13, weight: .medium))
                         .foregroundStyle(Color.uv.muted)
                 }
+                .accessibilityIdentifier(SettingsAccessibilityFields.versionRow)
 
                 SettingsRow(
                     icon: "doc.text",
@@ -207,13 +215,15 @@ public struct SettingsView: View {
                 ) {
                     isPresentingAcknowledgements = true
                 }
+                .accessibilityIdentifier(SettingsAccessibilityFields.acknowledgementsRow)
             }
 
             Text("Magic: The Gathering is © Wizards of the Coast. Ugin's Vault is an unofficial fan tool.")
                 .font(.uv.body(11))
                 .foregroundStyle(Color.uv.muted2)
                 .multilineTextAlignment(.center)
-                .padding(.horizontal, 24)
+                .padding(.horizontal, Spacing.xl)
+                .accessibilityIdentifier(SettingsAccessibilityFields.mtgFooterLabel)
         }
     }
 
@@ -271,8 +281,15 @@ public struct SettingsView: View {
     private var divider: some View {
         Rectangle()
             .fill(Color.uv.stroke.opacity(0.6))
-            .frame(height: 0.5)
-            .padding(.leading, 50)
+            .frame(height: Layout.hairline)
+            .padding(.leading, Spacing.rowDividerLeading)
+    }
+
+    private func iconLeading(systemName: String) -> some View {
+        Image(systemName: systemName)
+            .font(.system(size: Layout.smallIcon, weight: .medium))
+            .foregroundStyle(Color.uv.gold)
+            .frame(width: Layout.settingsRowIconWidth)
     }
 }
 

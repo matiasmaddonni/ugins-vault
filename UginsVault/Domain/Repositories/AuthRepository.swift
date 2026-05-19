@@ -9,6 +9,7 @@
 import Foundation
 import Observation
 
+@MainActor
 public protocol AuthRepository: AnyObject, Observable {
 
     /// Whether the device has biometry enrolled and available *right now*.

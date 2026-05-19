@@ -5,6 +5,7 @@
 
 import Foundation
 
+@MainActor
 public final class GetCurrencyUseCase {
 
     private let sessionRepository: SessionRepository

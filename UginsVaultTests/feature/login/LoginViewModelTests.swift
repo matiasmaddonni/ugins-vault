@@ -6,8 +6,8 @@
 import Testing
 @testable import UginsVault
 
-@MainActor
 @Suite("LoginViewModel")
+@MainActor
 struct LoginViewModelTests {
 
     private func makeSUT(

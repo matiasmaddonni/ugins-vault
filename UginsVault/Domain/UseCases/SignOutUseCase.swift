@@ -8,6 +8,7 @@
 
 import Foundation
 
+@MainActor
 public final class SignOutUseCase {
 
     private let sessionRepository: SessionRepository

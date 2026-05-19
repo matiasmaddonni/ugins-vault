@@ -7,6 +7,7 @@ import Testing
 @testable import UginsVault
 
 @Suite("SessionRepository")
+@MainActor
 struct SessionRepositoryTests {
 
     @Test("loadPhase defaults to .splash when storage is empty")

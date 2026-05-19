@@ -29,30 +29,32 @@ public struct AcknowledgementsSheet: View {
     public var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
-                    ForEach(credits) { credit in
-                        VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: Spacing.xl) {
+                    ForEach(Array(credits.enumerated()), id: \.offset) { index, credit in
+                        VStack(alignment: .leading, spacing: Spacing.xs) {
                             Text(credit.title)
                                 .font(.uv.body(13, weight: .semibold))
                                 .foregroundStyle(Color.uv.muted)
+                                .accessibilityIdentifier("lbl_settings_ack_title_\(index)")
 
                             Text(credit.detail)
                                 .font(.uv.body(15, weight: .medium))
                                 .foregroundStyle(Color.uv.text)
+                                .accessibilityIdentifier("lbl_settings_ack_detail_\(index)")
                         }
                     }
 
                     Divider()
                         .background(Color.uv.stroke)
-                        .padding(.vertical, 4)
+                        .padding(.vertical, Spacing.xs)
 
                     Text("Magic: The Gathering is © Wizards of the Coast. Ugin's Vault is an unofficial fan tool and is not produced, endorsed, supported, or affiliated with Wizards of the Coast.")
                         .font(.uv.body(12))
                         .foregroundStyle(Color.uv.muted)
                         .multilineTextAlignment(.leading)
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 20)
+                .padding(.horizontal, Spacing.screenEdge)
+                .padding(.vertical, Spacing.xl - 4)
             }
             .background(Color.uv.bg.ignoresSafeArea())
             .navigationTitle("Acknowledgements")
@@ -61,5 +63,7 @@ public struct AcknowledgementsSheet: View {
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
         .presentationBackground(Color.uv.bg)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier(SettingsAccessibilityFields.acknowledgementsSheet)
     }
 }

@@ -8,6 +8,7 @@
 
 import Foundation
 
+@MainActor
 public final class AdvanceFromSplashUseCase {
 
     private let sessionRepository: SessionRepository

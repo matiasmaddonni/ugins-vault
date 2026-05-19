@@ -9,6 +9,7 @@
 
 import Foundation
 
+@MainActor
 public final class AuthenticateUseCase {
 
     private let authRepository: AuthRepository

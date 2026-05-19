@@ -47,18 +47,18 @@ public struct SheetPicker<Value: Hashable>: View {
             Text(title)
                 .font(.uv.display(20, weight: .semibold))
                 .foregroundStyle(Color.uv.text)
-                .padding(.horizontal, 20)
-                .padding(.top, 24)
-                .padding(.bottom, 16)
+                .padding(.horizontal, Spacing.xl - 4)
+                .padding(.top, Spacing.xl)
+                .padding(.bottom, Spacing.lg)
 
             VStack(spacing: 0) {
-                ForEach(options) { option in
+                ForEach(Array(options.enumerated()), id: \.offset) { _, option in
                     Button {
                         onSelect(option.id)
                         dismiss()
                     } label: {
-                        HStack(spacing: 12) {
-                            VStack(alignment: .leading, spacing: 2) {
+                        HStack(spacing: Spacing.md) {
+                            VStack(alignment: .leading, spacing: Spacing.xs / 2) {
                                 Text(option.label)
                                     .font(.uv.body(16, weight: .medium))
                                     .foregroundStyle(Color.uv.text)
@@ -78,8 +78,8 @@ public struct SheetPicker<Value: Hashable>: View {
                                     .foregroundStyle(Color.uv.gold)
                             }
                         }
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 16)
+                        .padding(.horizontal, Spacing.xl - 4)
+                        .padding(.vertical, Spacing.lg)
                         .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
@@ -87,8 +87,8 @@ public struct SheetPicker<Value: Hashable>: View {
                     if option.id != options.last?.id {
                         Rectangle()
                             .fill(Color.uv.stroke.opacity(0.6))
-                            .frame(height: 0.5)
-                            .padding(.leading, 20)
+                            .frame(height: Layout.hairline)
+                            .padding(.leading, Spacing.xl - 4)
                     }
                 }
             }
@@ -100,7 +100,7 @@ public struct SheetPicker<Value: Hashable>: View {
                             .strokeBorder(Color.uv.stroke, lineWidth: 1)
                     )
             )
-            .padding(.horizontal, 16)
+            .padding(.horizontal, Spacing.screenEdge)
 
             Spacer(minLength: 0)
         }

@@ -31,12 +31,12 @@ public struct EditProfileSheet: View {
     public var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
+                VStack(alignment: .leading, spacing: Spacing.xl) {
                     nameField
                     tintPicker
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 20)
+                .padding(.horizontal, Spacing.screenEdge)
+                .padding(.vertical, Spacing.xl - 4)
             }
             .background(Color.uv.bg.ignoresSafeArea())
             .navigationTitle("Edit profile")
@@ -45,6 +45,7 @@ public struct EditProfileSheet: View {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancel") { dismiss() }
                         .foregroundStyle(Color.uv.muted)
+                        .accessibilityIdentifier(SettingsAccessibilityFields.editProfileCancel)
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Save") {
@@ -57,24 +58,27 @@ public struct EditProfileSheet: View {
                     }
                     .foregroundStyle(Color.uv.gold)
                     .fontWeight(.semibold)
+                    .accessibilityIdentifier(SettingsAccessibilityFields.editProfileSave)
                 }
             }
         }
         .presentationDetents([.medium])
         .presentationDragIndicator(.visible)
         .presentationBackground(Color.uv.bg)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier(SettingsAccessibilityFields.editProfileSheet)
     }
 
     private var nameField: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: Spacing.sm - 2) {
             Text("Name")
                 .uvSectionLabel()
 
             TextField("Your name", text: $name)
                 .font(.uv.body(16))
                 .foregroundStyle(Color.uv.text)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 12)
+                .padding(.horizontal, Spacing.rowHorizontal)
+                .padding(.vertical, Spacing.rowVertical)
                 .background(
                     RoundedRectangle(cornerRadius: UVRadius.md)
                         .fill(Color.uv.panel)
@@ -85,15 +89,16 @@ public struct EditProfileSheet: View {
                 )
                 .textInputAutocapitalization(.words)
                 .submitLabel(.done)
+                .accessibilityIdentifier(SettingsAccessibilityFields.editProfileName)
         }
     }
 
     private var tintPicker: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: Spacing.sm) {
             Text("Monogram tint")
                 .uvSectionLabel()
 
-            HStack(spacing: 12) {
+            HStack(spacing: Spacing.md) {
                 ForEach(MonogramTint.allCases) { tint in
                     tintChip(tint: tint)
                 }
@@ -107,7 +112,7 @@ public struct EditProfileSheet: View {
         } label: {
             Circle()
                 .fill(fill(for: tint))
-                .frame(width: 36, height: 36)
+                .frame(width: Layout.monogramTintChipDiameter, height: Layout.monogramTintChipDiameter)
                 .overlay(
                     Circle()
                         .strokeBorder(
@@ -118,6 +123,7 @@ public struct EditProfileSheet: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel("\(tint.rawValue) tint")
+        .accessibilityIdentifier(SettingsAccessibilityFields.tintChip(tint))
     }
 
     private func fill(for tint: MonogramTint) -> Color {

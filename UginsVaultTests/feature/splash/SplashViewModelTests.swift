@@ -6,8 +6,8 @@
 import Testing
 @testable import UginsVault
 
-@MainActor
 @Suite("SplashViewModel")
+@MainActor
 struct SplashViewModelTests {
 
     @Test("start() flips didAppear and (after hold) calls onAdvance with .login")

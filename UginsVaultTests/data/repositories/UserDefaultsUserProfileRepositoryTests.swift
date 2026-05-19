@@ -7,6 +7,7 @@ import Testing
 @testable import UginsVault
 
 @Suite("UserDefaultsUserProfileRepository")
+@MainActor
 struct UserDefaultsUserProfileRepositoryTests {
 
     @Test("load returns the default profile when storage is empty")

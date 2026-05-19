@@ -16,6 +16,7 @@
 
 import Foundation
 
+@MainActor
 public final class DependencyContainer {
 
     // MARK: - Singleton

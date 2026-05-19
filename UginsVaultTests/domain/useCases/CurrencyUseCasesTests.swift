@@ -7,6 +7,7 @@ import Testing
 @testable import UginsVault
 
 @Suite("CurrencyUseCases")
+@MainActor
 struct CurrencyUseCasesTests {
 
     @Test("GetCurrency reads from the session repository")

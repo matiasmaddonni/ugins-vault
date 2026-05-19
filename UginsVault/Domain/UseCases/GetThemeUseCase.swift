@@ -5,6 +5,7 @@
 
 import Foundation
 
+@MainActor
 public final class GetThemeUseCase {
 
     private let sessionRepository: SessionRepository

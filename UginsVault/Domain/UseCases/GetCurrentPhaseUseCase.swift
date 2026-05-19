@@ -8,6 +8,7 @@
 
 import Foundation
 
+@MainActor
 public final class GetCurrentPhaseUseCase {
 
     private let sessionRepository: SessionRepository

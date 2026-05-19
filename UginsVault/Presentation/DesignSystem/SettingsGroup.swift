@@ -25,10 +25,10 @@ public struct SettingsGroup<Content: View>: View {
     }
 
     public var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: Spacing.sm) {
             Text(title)
                 .uvSectionLabel()
-                .padding(.horizontal, 16)
+                .padding(.horizontal, Spacing.lg)
 
             VStack(spacing: 0) {
                 content
@@ -46,8 +46,8 @@ public struct SettingsGroup<Content: View>: View {
                 Text(footer)
                     .font(.uv.body(11))
                     .foregroundStyle(Color.uv.muted)
-                    .padding(.horizontal, 16)
-                    .padding(.top, 4)
+                    .padding(.horizontal, Spacing.lg)
+                    .padding(.top, Spacing.xs)
             }
         }
     }

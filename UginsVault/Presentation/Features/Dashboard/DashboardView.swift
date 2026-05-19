@@ -17,9 +17,9 @@ public struct DashboardView: View {
             ZStack {
                 Color.uv.bg.ignoresSafeArea()
 
-                VStack(spacing: 14) {
+                VStack(spacing: Spacing.md + 2) {
                     Image(systemName: "chart.bar.fill")
-                        .font(.system(size: 36, weight: .medium))
+                        .font(.system(size: Layout.heroIcon, weight: .medium))
                         .foregroundStyle(Color.uv.gold)
 
                     Text("Dashboard")
@@ -30,7 +30,7 @@ public struct DashboardView: View {
                         .font(.uv.body(13))
                         .foregroundStyle(Color.uv.muted)
                         .multilineTextAlignment(.center)
-                        .padding(.horizontal, 40)
+                        .padding(.horizontal, Spacing.xxxl)
                 }
             }
             .navigationTitle("")

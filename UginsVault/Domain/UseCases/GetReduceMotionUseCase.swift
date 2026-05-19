@@ -5,6 +5,7 @@
 
 import Foundation
 
+@MainActor
 public final class GetReduceMotionUseCase {
 
     private let sessionRepository: SessionRepository

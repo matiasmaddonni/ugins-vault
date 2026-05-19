@@ -7,6 +7,7 @@ import Testing
 @testable import UginsVault
 
 @Suite("AuthenticateUseCase")
+@MainActor
 struct AuthenticateUseCaseTests {
 
     @Test("Success outcome persists phase = .home")

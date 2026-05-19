@@ -5,6 +5,7 @@
 
 import Foundation
 
+@MainActor
 public final class SetPreferredLanguageUseCase {
 
     private let sessionRepository: SessionRepository

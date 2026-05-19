@@ -7,6 +7,7 @@ import Testing
 @testable import UginsVault
 
 @Suite("FaceIDLockUseCases")
+@MainActor
 struct FaceIDLockUseCasesTests {
 
     @Test("GetFaceIDLock reads from the session repository")

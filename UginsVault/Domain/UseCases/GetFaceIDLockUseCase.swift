@@ -5,6 +5,7 @@
 
 import Foundation
 
+@MainActor
 public final class GetFaceIDLockUseCase {
 
     private let sessionRepository: SessionRepository

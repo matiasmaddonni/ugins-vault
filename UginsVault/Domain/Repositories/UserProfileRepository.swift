@@ -11,6 +11,7 @@
 import Foundation
 import Observation
 
+@MainActor
 public protocol UserProfileRepository: AnyObject, Observable {
 
     var profile: UserProfile { get }

@@ -6,8 +6,8 @@
 import Testing
 @testable import UginsVault
 
-@MainActor
 @Suite("RootViewModel")
+@MainActor
 struct RootViewModelTests {
 
     @Test("Initial phase comes from the session via the use case")

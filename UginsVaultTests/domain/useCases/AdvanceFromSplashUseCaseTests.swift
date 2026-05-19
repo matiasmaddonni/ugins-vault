@@ -7,6 +7,7 @@ import Testing
 @testable import UginsVault
 
 @Suite("AdvanceFromSplashUseCase")
+@MainActor
 struct AdvanceFromSplashUseCaseTests {
 
     @Test("Routes to .login when Face ID lock is enabled")

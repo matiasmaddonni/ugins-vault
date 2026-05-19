@@ -8,6 +8,7 @@ import Testing
 @testable import UginsVault
 
 @Suite("CurrencyFormatter")
+@MainActor
 struct CurrencyFormatterTests {
 
     @Test("USD under en_US uses the dollar sign and . separator")

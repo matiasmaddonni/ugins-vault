@@ -7,6 +7,7 @@ import Testing
 @testable import UginsVault
 
 @Suite("AuthRepository")
+@MainActor
 struct AuthRepositoryTests {
 
     @Test("Forwards isBiometryAvailable from data source")

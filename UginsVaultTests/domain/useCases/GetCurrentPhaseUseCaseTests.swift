@@ -7,6 +7,7 @@ import Testing
 @testable import UginsVault
 
 @Suite("GetCurrentPhaseUseCase")
+@MainActor
 struct GetCurrentPhaseUseCaseTests {
 
     @Test("Returns whatever the session reports")

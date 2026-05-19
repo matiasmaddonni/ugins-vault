@@ -29,21 +29,27 @@ public struct MainTabView: View {
         TabView(selection: $selectedTab) {
             Tab("Collection", systemImage: "rectangle.portrait.fill", value: .collection) {
                 CollectionView(viewModel: container.makeCollectionViewModel())
+                    .accessibilityIdentifier(MainTabAccessibilityFields.collectionTab)
             }
 
             Tab("Stacks", systemImage: "square.stack.fill", value: .stacks) {
                 StacksView()
+                    .accessibilityIdentifier(MainTabAccessibilityFields.stacksTab)
             }
 
             Tab("Dashboard", systemImage: "chart.bar.fill", value: .dashboard) {
                 DashboardView()
+                    .accessibilityIdentifier(MainTabAccessibilityFields.dashboardTab)
             }
 
             Tab("Settings", systemImage: "gearshape.fill", value: .settings) {
                 SettingsView(viewModel: container.makeSettingsViewModel())
+                    .accessibilityIdentifier(MainTabAccessibilityFields.settingsTab)
             }
         }
         .tint(Color.uv.gold)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier(MainTabAccessibilityFields.tabBar)
     }
 }
 

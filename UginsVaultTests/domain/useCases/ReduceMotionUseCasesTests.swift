@@ -7,6 +7,7 @@ import Testing
 @testable import UginsVault
 
 @Suite("ReduceMotionUseCases")
+@MainActor
 struct ReduceMotionUseCasesTests {
 
     @Test("GetReduceMotion reads from the session repository")

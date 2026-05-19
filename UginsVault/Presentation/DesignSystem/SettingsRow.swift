@@ -42,13 +42,13 @@ public struct SettingsRow<Trailing: View>: View {
         Button {
             action?()
         } label: {
-            HStack(spacing: 12) {
+            HStack(spacing: Spacing.md) {
                 Image(systemName: icon)
-                    .font(.system(size: 16, weight: .medium))
+                    .font(.system(size: Layout.smallIcon, weight: .medium))
                     .foregroundStyle(isDestructive ? Color.uv.down : Color.uv.gold)
-                    .frame(width: 24, alignment: .center)
+                    .frame(width: Layout.settingsRowIconWidth, alignment: .center)
 
-                VStack(alignment: .leading, spacing: 2) {
+                VStack(alignment: .leading, spacing: Spacing.xs / 2) {
                     Text(title)
                         .font(.uv.body(15, weight: .medium))
                         .foregroundStyle(isDestructive ? Color.uv.down : Color.uv.text)
@@ -60,20 +60,20 @@ public struct SettingsRow<Trailing: View>: View {
                     }
                 }
 
-                Spacer(minLength: 8)
+                Spacer(minLength: Spacing.sm)
 
                 trailing
             }
-            .padding(.horizontal, 14)
-            .padding(.vertical, 12)
+            .padding(.horizontal, Spacing.rowHorizontal)
+            .padding(.vertical, Spacing.rowVertical)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .overlay(alignment: .bottom) {
             Rectangle()
                 .fill(Color.uv.stroke.opacity(0.6))
-                .frame(height: 0.5)
-                .padding(.leading, 50)
+                .frame(height: Layout.hairline)
+                .padding(.leading, Spacing.rowDividerLeading)
         }
         .disabled(action == nil && !(Trailing.self != EmptyView.self))
     }
@@ -125,7 +125,7 @@ public struct _SettingsRowChevron: View {
     let value: String?
 
     public var body: some View {
-        HStack(spacing: 6) {
+        HStack(spacing: Spacing.sm - 2) {
             if let value {
                 Text(value)
                     .font(.uv.mono(13, weight: .medium))

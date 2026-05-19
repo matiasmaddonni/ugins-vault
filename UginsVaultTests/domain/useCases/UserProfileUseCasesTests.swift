@@ -7,6 +7,7 @@ import Testing
 @testable import UginsVault
 
 @Suite("UserProfileUseCases")
+@MainActor
 struct UserProfileUseCasesTests {
 
     @Test("GetUserProfile reads the persisted profile")

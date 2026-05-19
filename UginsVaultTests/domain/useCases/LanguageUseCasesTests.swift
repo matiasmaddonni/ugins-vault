@@ -7,6 +7,7 @@ import Testing
 @testable import UginsVault
 
 @Suite("LanguageUseCases")
+@MainActor
 struct LanguageUseCasesTests {
 
     @Test("GetPreferredLanguage reads from the session repository")

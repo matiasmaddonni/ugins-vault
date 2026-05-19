@@ -23,6 +23,9 @@ final class MockAuthRepository: AuthRepository, @unchecked Sendable {
     func authenticate(reason: String) async -> AuthOutcome {
         authenticateCallCount += 1
         lastReason = reason
+        // Force a suspension point so re-entry guards in callers actually
+        // get a chance to observe `.scanning` while we're mid-flight.
+        await Task.yield()
         return stubbedAuthenticateOutcome
     }
 }

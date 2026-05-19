@@ -32,12 +32,12 @@ public struct ProfileHeroCard: View {
 
     public var body: some View {
         Button(action: onTap) {
-            VStack(spacing: 14) {
+            VStack(spacing: Spacing.md + 2) {
                 topRow
                 statStrip
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 16)
+            .padding(.horizontal, Spacing.lg)
+            .padding(.vertical, Spacing.lg)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
                 ZStack(alignment: .top) {
@@ -46,7 +46,7 @@ public struct ProfileHeroCard: View {
                         colors: [Color.uv.gold.opacity(0.18), .clear],
                         startPoint: .top, endPoint: .bottom
                     )
-                    .frame(height: 60)
+                    .frame(height: Spacing.huge)
                     .blendMode(.plusLighter)
                 }
             )
@@ -58,27 +58,31 @@ public struct ProfileHeroCard: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier(SettingsAccessibilityFields.profileHero)
     }
 
     // MARK: - Subviews
 
     private var topRow: some View {
-        HStack(alignment: .center, spacing: 16) {
+        HStack(alignment: .center, spacing: Spacing.lg) {
             avatar
 
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: Spacing.xs) {
                 Text(profile.name)
                     .font(.uv.display(20, weight: .semibold))
                     .foregroundStyle(Color.uv.text)
                     .lineLimit(1)
+                    .accessibilityIdentifier(SettingsAccessibilityFields.profileName)
 
                 Text("Planeswalker · since \(String(profile.memberSince))")
                     .font(.uv.body(12))
                     .foregroundStyle(Color.uv.muted)
                     .lineLimit(1)
+                    .accessibilityIdentifier(SettingsAccessibilityFields.profileSubtitle)
             }
 
-            Spacer(minLength: 8)
+            Spacer(minLength: Spacing.sm)
 
             Image(systemName: "chevron.right")
                 .font(.system(size: 12, weight: .semibold))
@@ -90,7 +94,7 @@ public struct ProfileHeroCard: View {
         ZStack {
             Circle()
                 .fill(tintFill)
-                .frame(width: 52, height: 52)
+                .frame(width: Layout.profileAvatarDiameter, height: Layout.profileAvatarDiameter)
 
             Text(profile.monogram)
                 .font(.uv.mono(20, weight: .semibold))
@@ -100,6 +104,7 @@ public struct ProfileHeroCard: View {
             Circle().strokeBorder(Color.uv.gold, lineWidth: 1.5)
         )
         .accessibilityHidden(true)
+        .accessibilityIdentifier(SettingsAccessibilityFields.profileAvatar)
     }
 
     private var statStrip: some View {
@@ -111,7 +116,7 @@ public struct ProfileHeroCard: View {
             statCell(label: "Decks", value: deckCount.map(String.init) ?? "—")
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 10)
+        .padding(.vertical, Spacing.md - 2)
         .background(
             RoundedRectangle(cornerRadius: UVRadius.md)
                 .fill(Color.uv.bg.opacity(0.5))
@@ -119,7 +124,7 @@ public struct ProfileHeroCard: View {
     }
 
     private func statCell(label: String, value: String) -> some View {
-        VStack(spacing: 2) {
+        VStack(spacing: Spacing.xs / 2) {
             Text(value)
                 .font(.uv.mono(14, weight: .semibold))
                 .foregroundStyle(Color.uv.text)
@@ -132,7 +137,7 @@ public struct ProfileHeroCard: View {
     private var divider: some View {
         Rectangle()
             .fill(Color.uv.stroke)
-            .frame(width: 1, height: 20)
+            .frame(width: Layout.statDividerWidth, height: Layout.statDividerHeight)
     }
 
     private var tintFill: Color {

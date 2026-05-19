@@ -7,6 +7,7 @@ import Testing
 @testable import UginsVault
 
 @Suite("ThemeUseCases")
+@MainActor
 struct ThemeUseCasesTests {
 
     @Test("GetTheme reads from the session repository")

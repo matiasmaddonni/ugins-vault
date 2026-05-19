@@ -13,6 +13,7 @@
 import Foundation
 import Observation
 
+@MainActor
 public protocol SessionRepository: AnyObject, Observable {
 
     // MARK: - Observable state

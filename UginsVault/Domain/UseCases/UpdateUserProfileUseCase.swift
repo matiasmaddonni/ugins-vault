@@ -5,6 +5,7 @@
 
 import Foundation
 
+@MainActor
 public final class UpdateUserProfileUseCase {
 
     private let userProfileRepository: UserProfileRepository
