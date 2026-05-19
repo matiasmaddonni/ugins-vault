@@ -36,15 +36,15 @@ public struct TotalValueTile: View {
             headerRow
             valueText
             deltaRow
+            Spacer(minLength: Spacing.xs)
             SparklineView(points: monthSparkline)
-                .frame(height: Layout.dashboardSparklineHeight)
-                .padding(.top, Spacing.xs)
+                .frame(maxHeight: .infinity)
                 .accessibilityIdentifier(DashboardAccessibilityFields.sparkline)
         }
         .padding(.horizontal, Spacing.lg - 2)
         .padding(.top, Spacing.lg - 2)
         .padding(.bottom, Spacing.md - 2)
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: UVRadius.lg)
                 .fill(
@@ -77,11 +77,11 @@ public struct TotalValueTile: View {
 
     private var valueText: some View {
         Text(CurrencyFormatter.format(totalValueUSD, currency: currency))
-            .font(.uv.display(30, weight: .bold))
+            .font(.uv.display(34, weight: .bold))
             .foregroundStyle(Color.uv.text)
-            .tracking(-0.6)
+            .tracking(-0.8)
             .lineLimit(1)
-            .minimumScaleFactor(0.65)
+            .minimumScaleFactor(0.55)
             .accessibilityIdentifier(DashboardAccessibilityFields.totalValueLabel)
     }
 

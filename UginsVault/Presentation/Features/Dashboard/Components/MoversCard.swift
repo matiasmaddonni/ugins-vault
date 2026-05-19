@@ -30,16 +30,21 @@ public struct MoversCard: View {
     }
 
     public var body: some View {
-        VStack(alignment: .leading, spacing: Spacing.sm) {
+        VStack(alignment: .leading, spacing: 0) {
             header
+                .padding(.bottom, Spacing.sm)
+
             if items.isEmpty {
                 emptyRow
+                Spacer(minLength: 0)
             } else {
                 ForEach(Array(items.prefix(5).enumerated()), id: \.element.id) { index, mover in
                     row(index: index + 1, mover: mover)
+                    if index < min(items.count, 5) - 1 {
+                        Spacer(minLength: Spacing.xs)
+                    }
                 }
             }
-            Spacer(minLength: 0)
         }
         .padding(.horizontal, Spacing.lg - 2)
         .padding(.vertical, Spacing.md)

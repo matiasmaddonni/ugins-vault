@@ -131,16 +131,16 @@ public enum Layout {
 
     // MARK: - Dashboard
 
-    /// Vertical spacing between Dashboard sections.
-    public static let dashboardSectionSpacing: CGFloat = 12
+    /// Vertical spacing between Dashboard sections. Bumped from 12 →
+    /// 20 because the cards' panel chrome eats so much of the gutter
+    /// that a 12pt gap reads as "touching" against the dark bg.
+    public static let dashboardSectionSpacing: CGFloat = 20
 
     /// Horizontal padding around the Dashboard scroll content.
     public static let dashboardSidePadding: CGFloat = 12
 
     /// Horizontal spacing between cards inside a single Dashboard row
-    /// (hero tiles, movers cards, quick stats). Matches
-    /// `dashboardSectionSpacing` so vertical and horizontal gutters
-    /// read as one consistent rhythm.
+    /// (hero tiles, movers cards, quick stats).
     public static let dashboardRowSpacing: CGFloat = 12
 
     /// Hero row total height (TotalValueTile + WeekMoversTile).

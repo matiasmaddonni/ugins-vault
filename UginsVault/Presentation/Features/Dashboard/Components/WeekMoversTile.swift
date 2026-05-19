@@ -20,20 +20,28 @@ public struct WeekMoversTile: View {
     }
 
     public var body: some View {
-        VStack(alignment: .leading, spacing: Spacing.sm) {
+        VStack(alignment: .leading, spacing: 0) {
             Text("Week movers")
                 .uvSectionLabel()
-            ForEach(gainers.prefix(2)) { mover in
-                row(mover: mover, tone: Color.uv.up)
+                .padding(.bottom, Spacing.sm)
+
+            VStack(alignment: .leading, spacing: Spacing.xs + 2) {
+                ForEach(gainers.prefix(2)) { mover in
+                    row(mover: mover, tone: Color.uv.up)
+                }
             }
+
+            Spacer(minLength: Spacing.xs)
             Rectangle()
                 .fill(Color.uv.stroke.opacity(0.6))
                 .frame(height: Layout.hairline)
-                .padding(.vertical, 2)
-            ForEach(losers.prefix(2)) { mover in
-                row(mover: mover, tone: Color.uv.down)
+            Spacer(minLength: Spacing.xs)
+
+            VStack(alignment: .leading, spacing: Spacing.xs + 2) {
+                ForEach(losers.prefix(2)) { mover in
+                    row(mover: mover, tone: Color.uv.down)
+                }
             }
-            Spacer(minLength: 0)
         }
         .padding(.horizontal, Spacing.lg - 2)
         .padding(.vertical, Spacing.md)
