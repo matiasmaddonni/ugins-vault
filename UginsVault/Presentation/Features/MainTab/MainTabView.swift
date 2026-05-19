@@ -38,7 +38,7 @@ public struct MainTabView: View {
             }
 
             Tab("Dashboard", systemImage: "chart.bar.fill", value: .dashboard) {
-                DashboardView()
+                DashboardView(viewModel: container.makeDashboardViewModel())
                     .accessibilityIdentifier(MainTabAccessibilityFields.dashboardTab)
             }
 

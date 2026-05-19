@@ -81,6 +81,11 @@ public final class DependencyContainer {
 
     public lazy var cardCatalogueSource: CardCatalogueSource = ScryfallCardCatalogueSource(client: scryfallClient)
 
+    // Dashboard ships v0.4 with a fully-mocked repository; flip the
+    // binding here when the real-stats producer + price-history
+    // service land.
+    public lazy var dashboardRepository: DashboardRepository = MockDashboardRepository()
+
     // MARK: - Use case factories — auth
 
     public func makeAuthenticateUseCase() -> AuthenticateUseCase {
@@ -224,6 +229,13 @@ public final class DependencyContainer {
             sessionRepository: sessionRepository,
             cardRepository: cardRepository,
             seedCatalogue: makeSeedCatalogueUseCase()
+        )
+    }
+
+    @MainActor public func makeDashboardViewModel() -> DashboardViewModel {
+        DashboardViewModel(
+            repository: dashboardRepository,
+            sessionRepository: sessionRepository
         )
     }
 

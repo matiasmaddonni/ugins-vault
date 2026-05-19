@@ -128,4 +128,69 @@ public enum Layout {
     /// Max scrollable height of the unresolved-names list inside
     /// `ImportResultToast`.
     public static let importToastUnresolvedMaxHeight: CGFloat = 180
+
+    // MARK: - Dashboard
+
+    /// Vertical spacing between Dashboard sections.
+    public static let dashboardSectionSpacing: CGFloat = 14
+
+    /// Horizontal padding around the Dashboard scroll content.
+    public static let dashboardSidePadding: CGFloat = 12
+
+    /// Hero row total height (TotalValueTile + WeekMoversTile).
+    public static let dashboardHeroHeight: CGFloat = 168
+
+    /// MoversRow card height.
+    public static let dashboardMoversCardHeight: CGFloat = 188
+
+    /// Donut diameter inside ByFormatPanel.
+    public static let dashboardDonutSize: CGFloat = 130
+
+    /// Donut stroke thickness inside ByFormatPanel.
+    public static let dashboardDonutThickness: CGFloat = 20
+
+    /// Legend swatch size beside the donut.
+    public static let dashboardLegendSwatchSize: CGFloat = 10
+
+    /// Set-bar height in BySetPanel.
+    public static let dashboardSetBarHeight: CGFloat = 6
+
+    /// Hero sparkline height inside TotalValueTile.
+    public static let dashboardSparklineHeight: CGFloat = 42
+
+    /// 1pt finishing dot rendered at the latest sparkline point.
+    public static let sparklineDotSize: CGFloat = 4
+
+    /// Wishlist tile leading icon square diameter.
+    public static let dashboardWishlistIconSize: CGFloat = 42
+
+    /// Wishlist icon point size inside the tile.
+    public static let dashboardWishlistIconGlyph: CGFloat = 20
+
+    /// QuickStatCard inner spacing (label / value / sub).
+    public static let dashboardQuickStatSpacing: CGFloat = 2
+
+    /// Tracking applied to the section-label uppercase mono text.
+    public static let sectionLabelTracking: CGFloat = 1.7
+
+    /// Width of the leading index column inside `MoversCard` rows.
+    public static let dashboardMoverIndexWidth: CGFloat = 12
+
+    // MARK: - Dashboard skeleton
+
+    /// Cap on the right hero block so the skeleton mirrors the real
+    /// 1.4 / 1 split.
+    public static let dashboardSkeletonHeroRight: CGFloat = 140
+
+    /// Approximate height of the by-format panel in skeleton mode.
+    public static let dashboardSkeletonFormatHeight: CGFloat = 200
+
+    /// Approximate height of the by-set panel in skeleton mode.
+    public static let dashboardSkeletonSetHeight: CGFloat = 240
+
+    /// Approximate height of the wishlist teaser in skeleton mode.
+    public static let dashboardSkeletonWishlistHeight: CGFloat = 80
+
+    /// Approximate height of each quick-stat card in skeleton mode.
+    public static let dashboardSkeletonStatHeight: CGFloat = 84
 }
