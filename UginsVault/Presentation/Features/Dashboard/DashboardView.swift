@@ -89,27 +89,29 @@ public struct DashboardView: View {
     }
 
     private func heroRow(snapshot: DashboardSnapshot) -> some View {
-        GeometryReader { proxy in
-            let leftW = proxy.size.width * (1.4 / 2.4)
-            HStack(spacing: Spacing.sm) {
-                TotalValueTile(
-                    totalValueUSD: snapshot.totalValueUSD,
-                    weekDeltaUSD: snapshot.weekDeltaUSD,
-                    weekDeltaPct: snapshot.weekDeltaPct,
-                    monthSparkline: snapshot.monthSparkline,
-                    currency: viewModel.currency
-                )
-                .frame(width: leftW)
+        // Equal 1/1 split (deviates from the brief's 1.4/1 ratio on
+        // purpose) so the hero tiles line up vertically with the
+        // gainers/losers row + every full-width panel underneath. The
+        // staggered ratio looked broken on-device because nothing
+        // else on the screen shares it.
+        HStack(spacing: Layout.dashboardRowSpacing) {
+            TotalValueTile(
+                totalValueUSD: snapshot.totalValueUSD,
+                weekDeltaUSD: snapshot.weekDeltaUSD,
+                weekDeltaPct: snapshot.weekDeltaPct,
+                monthSparkline: snapshot.monthSparkline,
+                currency: viewModel.currency
+            )
+            .frame(maxWidth: .infinity)
 
-                WeekMoversTile(gainers: snapshot.gainers, losers: snapshot.losers)
-                    .frame(maxWidth: .infinity)
-            }
+            WeekMoversTile(gainers: snapshot.gainers, losers: snapshot.losers)
+                .frame(maxWidth: .infinity)
         }
         .frame(height: Layout.dashboardHeroHeight)
     }
 
     private func moversRow(snapshot: DashboardSnapshot) -> some View {
-        HStack(spacing: Spacing.sm) {
+        HStack(spacing: Layout.dashboardRowSpacing) {
             MoversCard(title: "Gainers", tone: .up, items: snapshot.gainers)
             MoversCard(title: "Losers",  tone: .down, items: snapshot.losers)
         }

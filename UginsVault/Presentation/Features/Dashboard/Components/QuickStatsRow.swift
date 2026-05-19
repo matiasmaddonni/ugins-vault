@@ -20,8 +20,8 @@ public struct QuickStatsRow: View {
     }
 
     public var body: some View {
-        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: Spacing.sm), count: 4),
-                  spacing: Spacing.sm) {
+        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: Layout.dashboardRowSpacing), count: 4),
+                  spacing: Layout.dashboardRowSpacing) {
             QuickStatCard(
                 key: "total",
                 label: "Total",
