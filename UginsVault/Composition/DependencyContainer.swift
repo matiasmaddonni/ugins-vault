@@ -39,12 +39,32 @@ public final class DependencyContainer {
     public lazy var userProfileRepository: UserProfileRepository = UserDefaultsUserProfileRepository(storage: sessionStorage)
 
     public lazy var modelContainer: ModelContainer = {
+        // SwiftUI Previews don't share storage with the running simulator
+        // and don't run schema migrations cleanly across edits — always
+        // build an in-memory container there to keep #Preview crash-free.
+        if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
+            return Self.makeInMemoryContainer()
+        }
+
         do {
             return try ModelContainer(for: SwiftDataCard.self)
         } catch {
-            fatalError("Failed to construct SwiftData ModelContainer: \(error)")
+            // On-disk store failed to open (most often a lightweight
+            // migration failure after a schema bump). Fall back to a
+            // fresh in-memory store so the app launches; the catalogue
+            // simply re-seeds from Scryfall on first onAppear.
+            return Self.makeInMemoryContainer()
         }
     }()
+
+    private static func makeInMemoryContainer() -> ModelContainer {
+        let config = ModelConfiguration(isStoredInMemoryOnly: true)
+        do {
+            return try ModelContainer(for: SwiftDataCard.self, configurations: config)
+        } catch {
+            fatalError("Failed to construct in-memory ModelContainer: \(error)")
+        }
+    }
 
     public lazy var cardRepository: CardRepository = SwiftDataCardRepository(modelContainer: modelContainer)
 
