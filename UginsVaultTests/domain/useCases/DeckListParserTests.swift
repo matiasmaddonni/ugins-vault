@@ -45,20 +45,20 @@ struct DeckListParserTests {
         #expect(out[0].setCode == "cmm")
     }
 
-    @Test("Section headers + comments + blank lines are skipped")
+    @Test("Comments + blank lines + non-stop section headers are skipped")
     func skipsNoiseLines() {
         let out = DeckListParser.parse("""
 
         // a comment
-        Sideboard
 
-        4 Lightning Bolt
         Commander:
         1 Atraxa, Praetors' Voice
+        Deck
+        4 Lightning Bolt
         """)
         #expect(out.count == 2)
-        #expect(out[0].name == "Lightning Bolt")
-        #expect(out[1].name == "Atraxa, Praetors' Voice")
+        #expect(out[0].name == "Atraxa, Praetors' Voice")
+        #expect(out[1].name == "Lightning Bolt")
     }
 
     @Test("A bare `Name` line defaults the quantity to 1 (Moxfield commander row)")
@@ -69,17 +69,16 @@ struct DeckListParserTests {
         #expect(out[0].name == "Lightning Bolt")
     }
 
-    @Test("SIDEBOARD: header (uppercase + colon) is treated as a section break")
-    func uppercaseSideboardHeader() {
+    @Test("SIDEBOARD: header is a hard stop — entries below are dropped")
+    func uppercaseSideboardHeaderStops() {
         let out = DeckListParser.parse("""
         4 Lightning Bolt
 
         SIDEBOARD:
         1 Counterspell
         """)
-        #expect(out.count == 2)
+        #expect(out.count == 1)
         #expect(out[0].name == "Lightning Bolt")
-        #expect(out[1].name == "Counterspell")
     }
 
     @Test("Promo-suffixed collector numbers (`90s`, `241p`, `STX-188`) still parse")
@@ -103,5 +102,45 @@ struct DeckListParserTests {
         #expect(out.count == 1)
         #expect(out[0].name == "Fell the Profane / Fell Mire")
         #expect(out[0].setCode == "mh3")
+    }
+
+    @Test("SIDEBOARD: stops parsing — entries after it are dropped")
+    func sideboardStopsParsing() {
+        let out = DeckListParser.parse("""
+        4 Lightning Bolt
+        1 Brainstorm
+
+        SIDEBOARD:
+        1 Clever Concealment
+        1 Eiganjo Castle
+        """)
+        #expect(out.count == 2)
+        #expect(out.map(\.name) == ["Lightning Bolt", "Brainstorm"])
+    }
+
+    @Test("// SIDEBOARD and // CONSIDERING headers stop parsing too")
+    func commentedStopSectionStopsParsing() {
+        let out = DeckListParser.parse("""
+        4 Lightning Bolt
+
+        // CONSIDERING
+        1 Counterspell
+
+        // SIDEBOARD
+        1 Brainstorm
+        """)
+        #expect(out.count == 1)
+        #expect(out[0].name == "Lightning Bolt")
+    }
+
+    @Test("Maybeboard header also stops parsing")
+    func maybeboardStops() {
+        let out = DeckListParser.parse("""
+        4 Lightning Bolt
+        Maybeboard
+        1 Brainstorm
+        """)
+        #expect(out.count == 1)
+        #expect(out[0].name == "Lightning Bolt")
     }
 }

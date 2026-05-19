@@ -45,24 +45,36 @@ public struct ParsedDeckLine: Equatable, Sendable {
 public enum DeckListParser {
 
     /// Splits the input by newlines and parses each non-empty,
-    /// non-comment line into a `ParsedDeckLine`. Unparseable lines are
-    /// silently dropped — the use case keeps a separate "unresolved"
-    /// bucket for lines that *did* parse but failed to match a real card.
+    /// non-comment line into a `ParsedDeckLine`. Once a "stop section"
+    /// header (SIDEBOARD / MAYBEBOARD / CONSIDERING / TOKENS) is hit,
+    /// every subsequent line is skipped — those lists never belong in
+    /// the imported stack.
     public static func parse(_ source: String) -> [ParsedDeckLine] {
         var results: [ParsedDeckLine] = []
+        var stopped = false
 
         for raw in source.split(whereSeparator: \.isNewline) {
             let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
             guard !trimmed.isEmpty else { continue }
-            // Skip comments that start with `//` (with optional whitespace).
-            // NOTE: card names contain `//` (split / DFC), so only treat
-            // them as comments when they're the first non-whitespace token
-            // and not followed by an alphabetic character — the comment
-            // form is always `//` then space or end-of-line.
-            if trimmed.hasPrefix("//") && !isDoubleFacedName(trimmed) { continue }
-            guard !isSectionHeader(trimmed) else { continue }
 
-            if let parsed = parseLine(trimmed) {
+            // Comments — Moxfield uses leading `//` for comments (e.g.
+            // `// 7 mana value or higher`) and sometimes for section
+            // headers like `//SIDEBOARD`. Strip the prefix + retest as
+            // a section header before dropping.
+            let stripped = trimmed.hasPrefix("//")
+                ? String(trimmed.dropFirst(2)).trimmingCharacters(in: .whitespaces)
+                : trimmed
+
+            if isStopSection(stripped) {
+                stopped = true
+                continue
+            }
+            if stopped { continue }
+
+            if trimmed.hasPrefix("//") && !isDoubleFacedName(trimmed) { continue }
+            guard !isSectionHeader(stripped) else { continue }
+
+            if let parsed = parseLine(stripped) {
                 results.append(parsed)
             }
         }
@@ -125,14 +137,26 @@ public enum DeckListParser {
     private static func isSectionHeader(_ line: String) -> Bool {
         // Strip a trailing colon + lowercase + trim — handles
         // "SIDEBOARD:", "Commander :", "Maybeboard" all in one shape.
-        let stripped = line
+        let key = line
             .trimmingCharacters(in: CharacterSet(charactersIn: ": "))
             .lowercased()
         let headers: Set<String> = [
-            "sideboard", "maybeboard", "commander", "companion",
-            "deck", "main", "tokens"
+            "commander", "companion", "deck", "main"
         ]
-        return headers.contains(stripped)
+        return headers.contains(key) || isStopSection(line)
+    }
+
+    /// Section headers that signal "everything below this is NOT part
+    /// of the main deck" — sideboards, considering lists, token sheets,
+    /// etc. Hitting one of these stops parsing for the rest of the file.
+    private static func isStopSection(_ line: String) -> Bool {
+        let key = line
+            .trimmingCharacters(in: CharacterSet(charactersIn: ": "))
+            .lowercased()
+        let stops: Set<String> = [
+            "sideboard", "maybeboard", "considering", "tokens"
+        ]
+        return stops.contains(key)
     }
 
     /// Returns `true` if the line is a card name that *starts* with `//`
