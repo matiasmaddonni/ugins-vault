@@ -37,8 +37,22 @@ public struct RootView: View {
             case .login:
                 LoginView(
                     viewModel: container.makeLoginViewModel(
-                        onAuthenticated: { viewModel.transition(to: .home) }
+                        onAuthenticated: {
+                            // First launch (no prior sync) routes through
+                            // PriceSyncView. Returning users skip to home.
+                            let next: AppPhase = container.priceRepository.lastSyncedAt == nil
+                                ? .priceSync
+                                : .home
+                            viewModel.transition(to: next)
+                        }
                     )
+                )
+                .transition(.opacity)
+
+            case .priceSync:
+                PriceSyncView(
+                    viewModel: container.makePriceSyncViewModel(),
+                    onFinish: { viewModel.transition(to: .home) }
                 )
                 .transition(.opacity)
 

@@ -50,7 +50,8 @@ public final class DependencyContainer {
             return try ModelContainer(
                 for: SwiftDataCard.self,
                 SwiftDataStack.self,
-                SwiftDataCollectionItem.self
+                SwiftDataCollectionItem.self,
+                SwiftDataPriceSnapshot.self
             )
         } catch {
             // On-disk store failed to open (most often a lightweight
@@ -68,6 +69,7 @@ public final class DependencyContainer {
                 for: SwiftDataCard.self,
                 SwiftDataStack.self,
                 SwiftDataCollectionItem.self,
+                SwiftDataPriceSnapshot.self,
                 configurations: config
             )
         } catch {
@@ -78,6 +80,16 @@ public final class DependencyContainer {
     public lazy var cardRepository: CardRepository = SwiftDataCardRepository(modelContainer: modelContainer)
     public lazy var stackRepository: StackRepository = SwiftDataStackRepository(modelContainer: modelContainer)
     public lazy var collectionItemRepository: CollectionItemRepository = SwiftDataCollectionItemRepository(modelContainer: modelContainer)
+    public lazy var priceRepository: PriceRepository = SwiftDataPriceRepository(
+        modelContainer: modelContainer,
+        lastSyncStorage: sessionStorage
+    )
+
+    // MARK: - Pricing wiring (v0.5)
+
+    public lazy var networkReachability: NetworkReachability = NWPathReachability()
+    public lazy var mtgjsonClient: MTGJSONClient = MTGJSONClient()
+    public lazy var priceCatalogueSource: PriceCatalogueSource = MTGJSONPriceCatalogueSource(client: mtgjsonClient)
 
     public lazy var cardCatalogueSource: CardCatalogueSource = ScryfallCardCatalogueSource(client: scryfallClient)
 
@@ -166,6 +178,25 @@ public final class DependencyContainer {
         ResetCatalogueUseCase(
             cardRepository: cardRepository,
             seedCatalogue: makeSeedCatalogueUseCase()
+        )
+    }
+
+    // MARK: - Use case factories — pricing
+
+    public func makeSyncPricesUseCase() -> SyncPricesUseCase {
+        SyncPricesUseCase(
+            priceRepository: priceRepository,
+            cardRepository: cardRepository,
+            priceSource: priceCatalogueSource
+        )
+    }
+
+    @MainActor public func makePriceSyncViewModel() -> PriceSyncViewModel {
+        PriceSyncViewModel(
+            useCase: makeSyncPricesUseCase(),
+            seedCatalogue: makeSeedCatalogueUseCase(),
+            cardRepository: cardRepository,
+            reachability: networkReachability
         )
     }
 

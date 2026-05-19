@@ -51,15 +51,6 @@ public struct CardPrices: Codable, Hashable, Sendable {
     }
 }
 
-public struct PriceSnapshot: Codable, Hashable, Sendable {
-
-    public let date: Date
-    public let currency: Currency
-    public let value: Decimal
-
-    public init(date: Date, currency: Currency, value: Decimal) {
-        self.date = date
-        self.currency = currency
-        self.value = value
-    }
-}
+// NOTE: `PriceSnapshot` moved to `Domain/Entities/Pricing/PriceSnapshot.swift`
+// in v0.5 — it now carries a per-source identifier and is persisted
+// in SwiftData for the rolling pricing-history window.
