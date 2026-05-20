@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 public struct ProfileHeroCard: View {
 
@@ -14,6 +15,7 @@ public struct ProfileHeroCard: View {
     private let cardCount: Int?
     private let totalValueLabel: String?
     private let deckCount: Int?
+    private let avatarImage: UIImage?
     private let onTap: () -> Void
 
     public init(
@@ -21,12 +23,14 @@ public struct ProfileHeroCard: View {
         cardCount: Int? = nil,
         totalValueLabel: String? = nil,
         deckCount: Int? = nil,
+        avatarImage: UIImage? = nil,
         onTap: @escaping () -> Void
     ) {
         self.profile = profile
         self.cardCount = cardCount
         self.totalValueLabel = totalValueLabel
         self.deckCount = deckCount
+        self.avatarImage = avatarImage
         self.onTap = onTap
     }
 
@@ -90,15 +94,26 @@ public struct ProfileHeroCard: View {
         }
     }
 
+    @ViewBuilder
     private var avatar: some View {
-        ZStack {
-            Circle()
-                .fill(tintFill)
-                .frame(width: Layout.profileAvatarDiameter, height: Layout.profileAvatarDiameter)
+        Group {
+            if let avatarImage {
+                Image(uiImage: avatarImage)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: Layout.profileAvatarDiameter, height: Layout.profileAvatarDiameter)
+                    .clipShape(Circle())
+            } else {
+                ZStack {
+                    Circle()
+                        .fill(tintFill)
+                        .frame(width: Layout.profileAvatarDiameter, height: Layout.profileAvatarDiameter)
 
-            Text(profile.monogram)
-                .font(.uv.mono(20, weight: .semibold))
-                .foregroundStyle(Color.uv.gold)
+                    Text(profile.monogram)
+                        .font(.uv.mono(20, weight: .semibold))
+                        .foregroundStyle(Color.uv.gold)
+                }
+            }
         }
         .overlay(
             Circle().strokeBorder(Color.uv.gold, lineWidth: 1.5)

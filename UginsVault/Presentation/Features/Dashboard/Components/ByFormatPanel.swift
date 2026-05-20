@@ -11,10 +11,12 @@ public struct ByFormatPanel: View {
 
     public let slices: [FormatSlice]
     public let currency: Currency
+    public let rate: ExchangeRate?
 
-    public init(slices: [FormatSlice], currency: Currency) {
+    public init(slices: [FormatSlice], currency: Currency, rate: ExchangeRate? = nil) {
         self.slices = slices
         self.currency = currency
+        self.rate = rate
     }
 
     public var body: some View {
@@ -28,7 +30,7 @@ public struct ByFormatPanel: View {
                     VStack(spacing: 0) {
                         Text("Total")
                             .uvSectionLabel()
-                        Text(CurrencyFormatter.format(total, currency: currency))
+                        Text(CurrencyFormatter.format(total, currency: currency, rate: rate))
                             .font(.uv.display(15, weight: .bold))
                             .foregroundStyle(Color.uv.text)
                             .lineLimit(1)
@@ -61,7 +63,7 @@ public struct ByFormatPanel: View {
                         .font(.uv.body(13))
                         .foregroundStyle(Color.uv.text)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    Text(CurrencyFormatter.format(slice.valueUSD, currency: currency))
+                    Text(CurrencyFormatter.format(slice.valueUSD, currency: currency, rate: rate))
                         .font(.uv.mono(12, weight: .medium))
                         .foregroundStyle(Color.uv.text2)
                 }

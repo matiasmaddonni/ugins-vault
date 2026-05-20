@@ -31,6 +31,7 @@ public final class DependencyContainer {
     public lazy var biometricsDataSource: BiometricsDataSource = LocalBiometricsDataSource()
     public lazy var sessionStorage:       SessionStorageDataSource = UserDefaultsSessionStorage()
     public lazy var scryfallClient:       any ScryfallClientProtocol = ScryfallClient()
+    public lazy var avatarStorage:        AvatarStorage = FileAvatarStorage()
 
     // MARK: - Repositories
 
@@ -91,12 +92,30 @@ public final class DependencyContainer {
     public lazy var mtgjsonClient: MTGJSONClient = MTGJSONClient()
     public lazy var priceCatalogueSource: PriceCatalogueSource = MTGJSONPriceCatalogueSource(client: mtgjsonClient)
 
+    // MARK: - FX wiring (v0.7)
+
+    public lazy var dolarAPIClient: DolarAPIClient = DolarAPIClient()
+    public lazy var frankfurterClient: FrankfurterClient = FrankfurterClient()
+    public lazy var exchangeRateRepository: ExchangeRateRepository = RemoteExchangeRateRepository(
+        dolarClient: dolarAPIClient,
+        frankfurterClient: frankfurterClient,
+        sessionRepository: sessionRepository,
+        storage: sessionStorage
+    )
+
     public lazy var cardCatalogueSource: CardCatalogueSource = ScryfallCardCatalogueSource(client: scryfallClient)
 
-    // Dashboard ships v0.4 with a fully-mocked repository; flip the
-    // binding here when the real-stats producer + price-history
-    // service land.
-    public lazy var dashboardRepository: DashboardRepository = MockDashboardRepository()
+    // v0.6: real catalogue-derived stats; mock-only historical bits
+    // (sparkline / gainers / losers / wishlist counts) come from
+    // `MockDashboardRepository.seed` until the price-history backend
+    // lands and we wire `RealDashboardSnapshotProducer.assemble(...)`.
+    public lazy var dashboardRepository: DashboardRepository = RealDashboardRepository(
+        cardRepository: cardRepository,
+        collectionItemRepository: collectionItemRepository,
+        stackRepository: stackRepository,
+        priceRepository: priceRepository,
+        sessionRepository: sessionRepository
+    )
 
     // MARK: - Use case factories — auth
 
@@ -181,6 +200,36 @@ public final class DependencyContainer {
         )
     }
 
+    // MARK: - Use case factories — pricing prefs
+
+    public func makeGetPreferredPriceSourceUseCase() -> GetPreferredPriceSourceUseCase {
+        GetPreferredPriceSourceUseCase(sessionRepository: sessionRepository)
+    }
+
+    public func makeSetPreferredPriceSourceUseCase() -> SetPreferredPriceSourceUseCase {
+        SetPreferredPriceSourceUseCase(sessionRepository: sessionRepository)
+    }
+
+    public func makeGetDashboardMoverThresholdUseCase() -> GetDashboardMoverThresholdUseCase {
+        GetDashboardMoverThresholdUseCase(sessionRepository: sessionRepository)
+    }
+
+    public func makeSetDashboardMoverThresholdUseCase() -> SetDashboardMoverThresholdUseCase {
+        SetDashboardMoverThresholdUseCase(sessionRepository: sessionRepository)
+    }
+
+    public func makeGetManualARSRateUseCase() -> GetManualARSRateUseCase {
+        GetManualARSRateUseCase(sessionRepository: sessionRepository)
+    }
+
+    public func makeSetManualARSRateUseCase() -> SetManualARSRateUseCase {
+        SetManualARSRateUseCase(sessionRepository: sessionRepository)
+    }
+
+    public func makeLatestPriceUseCase() -> LatestPriceUseCase {
+        LatestPriceUseCase(priceRepository: priceRepository)
+    }
+
     // MARK: - Use case factories — pricing
 
     public func makeSyncPricesUseCase() -> SyncPricesUseCase {
@@ -233,7 +282,10 @@ public final class DependencyContainer {
             client: scryfallClient,
             stackRepository: stackRepository,
             addCardToStack: makeAddCardToStackUseCase(),
-            cardRepository: cardRepository
+            cardRepository: cardRepository,
+            priceRepository: priceRepository,
+            latestPriceUseCase: makeLatestPriceUseCase(),
+            sessionRepository: sessionRepository
         )
     }
 
@@ -268,7 +320,8 @@ public final class DependencyContainer {
             repository: dashboardRepository,
             sessionRepository: sessionRepository,
             syncPrices: makeSyncPricesUseCase(),
-            reachability: networkReachability
+            reachability: networkReachability,
+            exchangeRateRepository: exchangeRateRepository
         )
     }
 

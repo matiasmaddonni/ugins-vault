@@ -38,6 +38,7 @@ public struct CardDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .task {
             await viewModel.refreshCardIfStale()
+            await viewModel.loadPricing()
             await viewModel.loadOtherPrintings()
             await viewModel.loadAvailableStacks()
         }
@@ -261,8 +262,14 @@ public struct CardDetailView: View {
 
     private var pricesBlock: some View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
-            Text("Prices")
-                .uvSectionLabel()
+            HStack {
+                Text("Prices")
+                    .uvSectionLabel()
+                Spacer()
+                Text(priceSourceLabel)
+                    .font(.uv.mono(10))
+                    .foregroundStyle(Color.uv.muted)
+            }
 
             VStack(spacing: 0) {
                 ForEach(Array(priceRows.enumerated()), id: \.offset) { index, row in
@@ -295,6 +302,8 @@ public struct CardDetailView: View {
                             .strokeBorder(Color.uv.stroke, lineWidth: 1)
                     )
             )
+
+            historyBlock
         }
     }
 
@@ -303,7 +312,25 @@ public struct CardDetailView: View {
         let value: String
     }
 
+    private var priceSourceLabel: String {
+        guard let resolved = viewModel.resolvedPrice else {
+            return "via Scryfall"
+        }
+        switch resolved.source {
+        case .marketplace(let source): return "via \(source.displayName)"
+        case .scryfall:                return "via Scryfall"
+        }
+    }
+
     private var priceRows: [PriceRow] {
+        if let resolved = viewModel.resolvedPrice {
+            return [
+                PriceRow(
+                    label: "Retail",
+                    value: CurrencyFormatter.format(resolved.amount, currency: resolved.currency)
+                )
+            ]
+        }
         var rows: [PriceRow] = []
         if let usd = card.prices.usd {
             rows.append(.init(label: "Nonfoil", value: CurrencyFormatter.format(usd, currency: displayCurrency)))
@@ -318,6 +345,50 @@ public struct CardDetailView: View {
             rows.append(.init(label: "Nonfoil", value: "—"))
         }
         return rows
+    }
+
+    // MARK: - 30-day price history sparkline
+
+    @ViewBuilder
+    private var historyBlock: some View {
+        if viewModel.priceHistory.count >= 2 {
+            VStack(alignment: .leading, spacing: Spacing.xs) {
+                HStack {
+                    Text("30-day trend")
+                        .uvSectionLabel()
+                    Spacer()
+                    if let delta = priceDelta {
+                        Text(delta.formatted)
+                            .font(.uv.mono(11, weight: .semibold))
+                            .foregroundStyle(delta.isUp ? Color.uv.up : Color.uv.down)
+                    }
+                }
+                SparklineView(points: viewModel.priceHistory.map(\.retail))
+                    .frame(height: Layout.dashboardSparklineHeight)
+            }
+            .padding(.top, Spacing.sm)
+        }
+    }
+
+    private struct Delta {
+        let formatted: String
+        let isUp: Bool
+    }
+
+    private var priceDelta: Delta? {
+        guard let first = viewModel.priceHistory.first?.retail,
+              let last = viewModel.priceHistory.last?.retail,
+              first > 0
+        else { return nil }
+        let change = last - first
+        let isUp = change >= 0
+        let pct = (NSDecimalNumber(decimal: change).doubleValue
+                 / NSDecimalNumber(decimal: first).doubleValue) * 100
+        let prefix = isUp ? "+" : ""
+        return Delta(
+            formatted: "\(prefix)\(String(format: "%.1f", pct))%",
+            isUp: isUp
+        )
     }
 
     // MARK: - Other printings

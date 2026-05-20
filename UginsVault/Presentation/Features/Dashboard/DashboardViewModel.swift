@@ -36,6 +36,7 @@ public final class DashboardViewModel {
     @ObservationIgnored private let sessionRepository: SessionRepository
     @ObservationIgnored private let syncPrices: SyncPricesUseCase?
     @ObservationIgnored private let reachability: NetworkReachability?
+    @ObservationIgnored private let exchangeRateRepository: ExchangeRateRepository?
 
     // MARK: - Init
 
@@ -43,13 +44,23 @@ public final class DashboardViewModel {
         repository: DashboardRepository,
         sessionRepository: SessionRepository,
         syncPrices: SyncPricesUseCase? = nil,
-        reachability: NetworkReachability? = nil
+        reachability: NetworkReachability? = nil,
+        exchangeRateRepository: ExchangeRateRepository? = nil
     ) {
         self.repository = repository
         self.sessionRepository = sessionRepository
         self.syncPrices = syncPrices
         self.reachability = reachability
+        self.exchangeRateRepository = exchangeRateRepository
         self.currency = sessionRepository.currency
+    }
+
+    /// Latest exchange rate from USD to the active display currency.
+    /// View passes it to `CurrencyFormatter.format(_:currency:rate:)`
+    /// so ARS / EUR values render with real conversion instead of a
+    /// symbol swap.
+    public var exchangeRate: ExchangeRate? {
+        exchangeRateRepository?.rate(toQuote: currency)
     }
 
     // MARK: - Derived
@@ -65,6 +76,11 @@ public final class DashboardViewModel {
         currency = sessionRepository.currency
         if snapshot == nil {
             await load()
+        }
+        // Fire-and-forget FX refresh — view re-reads `exchangeRate`
+        // once the repo bumps its cache.
+        if let exchangeRateRepository {
+            Task { try? await exchangeRateRepository.refresh() }
         }
     }
 

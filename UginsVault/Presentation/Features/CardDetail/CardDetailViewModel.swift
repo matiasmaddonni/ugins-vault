@@ -31,12 +31,27 @@ public final class CardDetailViewModel {
     public private(set) var lastAddedStackName: String?
     public let displayCurrency: Currency
 
+    /// Resolved price for the hero block — picks a value from the
+    /// MTGJSON cache when present, else falls back to Scryfall.
+    public private(set) var resolvedPrice: LatestPriceUseCase.Resolved?
+
+    /// 30-day rolling history for the preferred source. Drives the
+    /// mini sparkline on Card Detail. Oldest first.
+    public private(set) var priceHistory: [PriceSnapshot] = []
+
+    /// Source the user picked in Settings — mirrored here so reads
+    /// are observable without a separate hop into SessionRepository.
+    public private(set) var preferredSource: PriceSource
+
     // MARK: - Dependencies
 
     @ObservationIgnored private let client: any ScryfallClientProtocol
     @ObservationIgnored private let stackRepository: StackRepository?
     @ObservationIgnored private let addCardToStack: AddCardToStackUseCase?
     @ObservationIgnored private let cardRepository: CardRepository?
+    @ObservationIgnored private let priceRepository: PriceRepository?
+    @ObservationIgnored private let latestPriceUseCase: LatestPriceUseCase?
+    @ObservationIgnored private let sessionRepository: SessionRepository?
 
     // MARK: - Init
 
@@ -46,7 +61,10 @@ public final class CardDetailViewModel {
         client: any ScryfallClientProtocol,
         stackRepository: StackRepository? = nil,
         addCardToStack: AddCardToStackUseCase? = nil,
-        cardRepository: CardRepository? = nil
+        cardRepository: CardRepository? = nil,
+        priceRepository: PriceRepository? = nil,
+        latestPriceUseCase: LatestPriceUseCase? = nil,
+        sessionRepository: SessionRepository? = nil
     ) {
         self.card = card
         self.displayCurrency = displayCurrency
@@ -54,6 +72,37 @@ public final class CardDetailViewModel {
         self.stackRepository = stackRepository
         self.addCardToStack = addCardToStack
         self.cardRepository = cardRepository
+        self.priceRepository = priceRepository
+        self.latestPriceUseCase = latestPriceUseCase
+        self.sessionRepository = sessionRepository
+        self.preferredSource = sessionRepository?.preferredPriceSource ?? .cardkingdom
+    }
+
+    // MARK: - Pricing
+
+    /// Resolves the best available retail price + pulls 30-day
+    /// history for the preferred source. Fires from the view's
+    /// `.task` block alongside `refreshCardIfStale` and
+    /// `loadOtherPrintings`.
+    public func loadPricing() async {
+        if let session = sessionRepository {
+            preferredSource = session.preferredPriceSource
+        }
+        if let useCase = latestPriceUseCase {
+            resolvedPrice = await useCase.execute(
+                card: card,
+                preferred: preferredSource,
+                finish: .nonfoil
+            )
+        }
+        if let repo = priceRepository {
+            let cutoff = Date().addingTimeInterval(-30 * 24 * 60 * 60)
+            priceHistory = (try? await repo.history(
+                cardID: card.id,
+                source: preferredSource,
+                since: cutoff
+            )) ?? []
+        }
     }
 
     // MARK: - Stale-data backfill
@@ -110,13 +159,16 @@ public final class CardDetailViewModel {
     }
 
     /// Swaps the displayed printing without pushing a new navigation.
-    /// Triggers a fresh load of the other-printings list.
+    /// Triggers a fresh load of the other-printings list + pricing.
     public func switchTo(_ printing: Card) {
         guard printing.id != card.id else { return }
         card = printing
         otherPrintings = []
         status = .idle
+        resolvedPrice = nil
+        priceHistory = []
         Task { await loadOtherPrintings() }
+        Task { await loadPricing() }
     }
 
     // MARK: - Add to stack

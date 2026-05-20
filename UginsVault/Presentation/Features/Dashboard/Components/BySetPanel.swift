@@ -13,12 +13,14 @@ public struct BySetPanel: View {
 
     public let bars: [SetBar]
     public let currency: Currency
+    public let rate: ExchangeRate?
 
     @State private var animateProgress: Bool = false
 
-    public init(bars: [SetBar], currency: Currency) {
+    public init(bars: [SetBar], currency: Currency, rate: ExchangeRate? = nil) {
         self.bars = bars
         self.currency = currency
+        self.rate = rate
     }
 
     public var body: some View {
@@ -52,7 +54,7 @@ public struct BySetPanel: View {
                         .foregroundStyle(Color.uv.text)
                 }
                 Spacer()
-                Text(CurrencyFormatter.format(bar.valueUSD, currency: currency))
+                Text(CurrencyFormatter.format(bar.valueUSD, currency: currency, rate: rate))
                     .font(.uv.mono(11.5, weight: .medium))
                     .foregroundStyle(Color.uv.text2)
             }

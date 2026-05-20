@@ -74,13 +74,25 @@ public struct DashboardView: View {
             VStack(spacing: Layout.dashboardSectionSpacing) {
                 heroRow(snapshot: snapshot)
                 moversRow(snapshot: snapshot)
-                ByFormatPanel(slices: snapshot.byFormat, currency: viewModel.currency)
-                BySetPanel(bars: snapshot.bySet, currency: viewModel.currency)
+                ByFormatPanel(
+                    slices: snapshot.byFormat,
+                    currency: viewModel.currency,
+                    rate: viewModel.exchangeRate
+                )
+                BySetPanel(
+                    bars: snapshot.bySet,
+                    currency: viewModel.currency,
+                    rate: viewModel.exchangeRate
+                )
                 WishlistTeaser(
                     trackedCount: snapshot.wishlistTrackedCount,
                     readyToBuyCount: snapshot.wishlistReadyToBuyCount
                 )
-                QuickStatsRow(stats: snapshot.stats, currency: viewModel.currency)
+                QuickStatsRow(
+                    stats: snapshot.stats,
+                    currency: viewModel.currency,
+                    rate: viewModel.exchangeRate
+                )
             }
             .padding(.horizontal, Layout.dashboardSidePadding)
             .padding(.top, Spacing.md)
@@ -100,7 +112,8 @@ public struct DashboardView: View {
                 weekDeltaUSD: snapshot.weekDeltaUSD,
                 weekDeltaPct: snapshot.weekDeltaPct,
                 monthSparkline: snapshot.monthSparkline,
-                currency: viewModel.currency
+                currency: viewModel.currency,
+                rate: viewModel.exchangeRate
             )
             .frame(maxWidth: .infinity)
 

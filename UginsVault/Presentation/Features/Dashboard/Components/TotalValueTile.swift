@@ -16,19 +16,22 @@ public struct TotalValueTile: View {
     public let weekDeltaPct: Double
     public let monthSparkline: [Decimal]
     public let currency: Currency
+    public let rate: ExchangeRate?
 
     public init(
         totalValueUSD: Decimal,
         weekDeltaUSD: Decimal,
         weekDeltaPct: Double,
         monthSparkline: [Decimal],
-        currency: Currency
+        currency: Currency,
+        rate: ExchangeRate? = nil
     ) {
         self.totalValueUSD = totalValueUSD
         self.weekDeltaUSD = weekDeltaUSD
         self.weekDeltaPct = weekDeltaPct
         self.monthSparkline = monthSparkline
         self.currency = currency
+        self.rate = rate
     }
 
     public var body: some View {
@@ -76,7 +79,7 @@ public struct TotalValueTile: View {
     }
 
     private var valueText: some View {
-        Text(CurrencyFormatter.format(totalValueUSD, currency: currency))
+        Text(CurrencyFormatter.format(totalValueUSD, currency: currency, rate: rate))
             .font(.uv.display(34, weight: .bold))
             .foregroundStyle(Color.uv.text)
             .tracking(-0.8)
@@ -126,7 +129,7 @@ public struct TotalValueTile: View {
         if absoluteValue < 0 {
             absoluteValue *= -1
         }
-        let body = CurrencyFormatter.format(absoluteValue, currency: currency)
+        let body = CurrencyFormatter.format(absoluteValue, currency: currency, rate: rate)
         let prefix = weekDeltaUSD >= 0 ? "+" : "-"
         return "\(prefix)\(body)"
     }

@@ -39,11 +39,18 @@ public struct SettingsView: View {
                 VStack(spacing: Spacing.xl) {
                     ProfileHeroCard(
                         profile: viewModel.profile,
+                        cardCount: viewModel.catalogueCount > 0 ? viewModel.catalogueCount : nil,
+                        avatarImage: viewModel.profile.avatarFilename.flatMap(
+                            DependencyContainer.shared.avatarStorage.loadImage
+                        ),
                         onTap: { isEditingProfile = true }
                     )
 
                     displayGroup
                     privacyGroup
+                    PricingSettingsGroup(
+                        sessionRepository: DependencyContainer.shared.sessionRepository
+                    )
                     dataGroup
                     aboutGroup
                 }
@@ -70,7 +77,10 @@ public struct SettingsView: View {
                 Text("Wipes every card stored locally and re-downloads the seed set from Scryfall. Your preferences are not affected.")
             }
             .sheet(isPresented: $isEditingProfile) {
-                EditProfileSheet(profile: viewModel.profile) { updated in
+                EditProfileSheet(
+                    profile: viewModel.profile,
+                    avatarStorage: DependencyContainer.shared.avatarStorage
+                ) { updated in
                     viewModel.updateProfile(updated)
                 }
             }

@@ -16,22 +16,28 @@ public final class UserDefaultsSessionRepository: SessionRepository {
     // MARK: - Keys
 
     private enum Key {
-        static let phase        = "uv.session.phase"
-        static let theme        = "uv.session.theme"
-        static let currency     = "uv.session.currency"
-        static let language     = "uv.session.language"
-        static let reduceMotion = "uv.session.reduceMotion"
-        static let faceIDLock   = "uv.session.faceIDLock"
+        static let phase                  = "uv.session.phase"
+        static let theme                  = "uv.session.theme"
+        static let currency               = "uv.session.currency"
+        static let language               = "uv.session.language"
+        static let reduceMotion           = "uv.session.reduceMotion"
+        static let faceIDLock             = "uv.session.faceIDLock"
+        static let preferredPriceSource   = "uv.session.preferredPriceSource"
+        static let moverThreshold         = "uv.session.dashboardMoverThreshold"
+        static let manualARSRate          = "uv.session.manualARSRate"
     }
 
     // MARK: - Observable state
 
-    public private(set) var phase:        AppPhase
-    public private(set) var theme:        AppTheme
-    public private(set) var currency:     Currency
-    public private(set) var language:     Language
-    public private(set) var reduceMotion: Bool
-    public private(set) var faceIDLock:   Bool
+    public private(set) var phase:                  AppPhase
+    public private(set) var theme:                  AppTheme
+    public private(set) var currency:               Currency
+    public private(set) var language:               Language
+    public private(set) var reduceMotion:           Bool
+    public private(set) var faceIDLock:             Bool
+    public private(set) var preferredPriceSource:   PriceSource
+    public private(set) var dashboardMoverThreshold: Decimal
+    public private(set) var manualARSRate:          Decimal?
 
     // MARK: - Dependencies
 
@@ -52,6 +58,22 @@ public final class UserDefaultsSessionRepository: SessionRepository {
             ?? .system
         self.reduceMotion = storage.string(forKey: Key.reduceMotion) == "1"
         self.faceIDLock = (storage.string(forKey: Key.faceIDLock) ?? "1") == "1"
+        self.preferredPriceSource = PriceSource(
+            rawValue: storage.string(forKey: Key.preferredPriceSource) ?? ""
+        ) ?? .cardkingdom
+        if let raw = storage.string(forKey: Key.moverThreshold),
+           let value = Decimal(string: raw) {
+            self.dashboardMoverThreshold = value
+        } else {
+            self.dashboardMoverThreshold = Decimal(string: "1.00")!
+        }
+        if let raw = storage.string(forKey: Key.manualARSRate),
+           let value = Decimal(string: raw),
+           value > 0 {
+            self.manualARSRate = value
+        } else {
+            self.manualARSRate = nil
+        }
     }
 
     // MARK: - Mutations
@@ -84,5 +106,24 @@ public final class UserDefaultsSessionRepository: SessionRepository {
     public func saveFaceIDLock(_ enabled: Bool) {
         self.faceIDLock = enabled
         storage.set(enabled ? "1" : "0", forKey: Key.faceIDLock)
+    }
+
+    public func savePreferredPriceSource(_ source: PriceSource) {
+        self.preferredPriceSource = source
+        storage.set(source.rawValue, forKey: Key.preferredPriceSource)
+    }
+
+    public func saveDashboardMoverThreshold(_ threshold: Decimal) {
+        self.dashboardMoverThreshold = threshold
+        storage.set("\(threshold)", forKey: Key.moverThreshold)
+    }
+
+    public func saveManualARSRate(_ rate: Decimal?) {
+        self.manualARSRate = rate
+        if let rate {
+            storage.set("\(rate)", forKey: Key.manualARSRate)
+        } else {
+            storage.set(nil, forKey: Key.manualARSRate)
+        }
     }
 }

@@ -2,11 +2,15 @@
 //  EditProfileSheet.swift
 //  UginsVault — Presentation: Settings
 //
-//  Modal editor for the local user's name + monogram tint. Avatar upload
-//  is deferred to v0.2 — for now the avatar is always a monogram letter.
+//  Modal editor for the local user's name, monogram tint, and (v0.8)
+//  avatar photo. Avatar can come from the photo library (PhotosPicker)
+//  or the device camera (`UIImagePickerController`). Falls back to the
+//  monogram circle when no photo is set.
 //
 
 import SwiftUI
+import PhotosUI
+import UIKit
 
 public struct EditProfileSheet: View {
 
@@ -14,17 +18,29 @@ public struct EditProfileSheet: View {
 
     @State private var name: String
     @State private var monogramTint: MonogramTint
+    @State private var avatarFilename: String?
+    @State private var avatarPreview: UIImage?
+
+    @State private var pickerItem: PhotosPickerItem?
+    @State private var isPresentingCamera: Bool = false
 
     private let memberSince: Int
+    private let avatarStorage: AvatarStorage
     private let onSave: (UserProfile) -> Void
 
     public init(
         profile: UserProfile,
+        avatarStorage: AvatarStorage,
         onSave: @escaping (UserProfile) -> Void
     ) {
         self._name = State(initialValue: profile.name)
         self._monogramTint = State(initialValue: profile.monogramTint)
+        self._avatarFilename = State(initialValue: profile.avatarFilename)
+        self._avatarPreview = State(
+            initialValue: profile.avatarFilename.flatMap(avatarStorage.loadImage)
+        )
         self.memberSince = profile.memberSince
+        self.avatarStorage = avatarStorage
         self.onSave = onSave
     }
 
@@ -32,6 +48,7 @@ public struct EditProfileSheet: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: Spacing.xl) {
+                    avatarBlock
                     nameField
                     tintPicker
                 }
@@ -52,7 +69,8 @@ public struct EditProfileSheet: View {
                         onSave(UserProfile(
                             name: name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Vaultkeeper" : name,
                             monogramTint: monogramTint,
-                            memberSince: memberSince
+                            memberSince: memberSince,
+                            avatarFilename: avatarFilename
                         ))
                         dismiss()
                     }
@@ -61,13 +79,104 @@ public struct EditProfileSheet: View {
                     .accessibilityIdentifier(SettingsAccessibilityFields.editProfileSave)
                 }
             }
+            .onChange(of: pickerItem) { _, item in
+                guard let item else { return }
+                Task {
+                    if let data = try? await item.loadTransferable(type: Data.self),
+                       let image = UIImage(data: data) {
+                        await persistAvatar(image)
+                    }
+                }
+            }
+            .fullScreenCover(isPresented: $isPresentingCamera) {
+                CameraCaptureSheet(
+                    onCapture: { image in
+                        Task { await persistAvatar(image) }
+                        isPresentingCamera = false
+                    },
+                    onCancel: { isPresentingCamera = false }
+                )
+                .ignoresSafeArea()
+            }
         }
-        .presentationDetents([.medium])
+        .presentationDetents([.large])
         .presentationDragIndicator(.visible)
         .presentationBackground(Color.uv.bg)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier(SettingsAccessibilityFields.editProfileSheet)
     }
+
+    // MARK: - Avatar
+
+    private var avatarBlock: some View {
+        VStack(alignment: .leading, spacing: Spacing.sm) {
+            Text("Avatar")
+                .uvSectionLabel()
+
+            HStack(spacing: Spacing.lg) {
+                avatarPreviewCircle
+
+                VStack(alignment: .leading, spacing: Spacing.xs) {
+                    AvatarPicker(
+                        pickerItem: $pickerItem,
+                        allowCamera: true,
+                        allowRemove: avatarFilename != nil,
+                        onCameraTap: { isPresentingCamera = true },
+                        onRemove: { removeAvatar() }
+                    )
+                }
+            }
+        }
+    }
+
+    private var avatarPreviewCircle: some View {
+        Group {
+            if let avatarPreview {
+                Image(uiImage: avatarPreview)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: Layout.profileAvatarDiameter, height: Layout.profileAvatarDiameter)
+                    .clipShape(Circle())
+            } else {
+                ZStack {
+                    Circle()
+                        .fill(Color.uv.gold.opacity(0.15))
+                    Text(monogramFallback)
+                        .font(.uv.mono(20, weight: .semibold))
+                        .foregroundStyle(Color.uv.gold)
+                }
+                .frame(width: Layout.profileAvatarDiameter, height: Layout.profileAvatarDiameter)
+            }
+        }
+        .overlay(Circle().strokeBorder(Color.uv.gold, lineWidth: 1.5))
+    }
+
+    private var monogramFallback: String {
+        let first = name.trimmingCharacters(in: .whitespacesAndNewlines).first.map(String.init) ?? "·"
+        return first.uppercased()
+    }
+
+    @MainActor
+    private func persistAvatar(_ image: UIImage) async {
+        if let oldFilename = avatarFilename {
+            avatarStorage.deleteImage(filename: oldFilename)
+        }
+        if let filename = try? avatarStorage.saveImage(image) {
+            avatarFilename = filename
+            avatarPreview = image
+        }
+    }
+
+    private func removeAvatar() {
+        if let oldFilename = avatarFilename {
+            avatarStorage.deleteImage(filename: oldFilename)
+        }
+        avatarFilename = nil
+        avatarPreview = nil
+        pickerItem = nil
+    }
+
+    // MARK: - Existing fields
 
     private var nameField: some View {
         VStack(alignment: .leading, spacing: Spacing.sm - 2) {

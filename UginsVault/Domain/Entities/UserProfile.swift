@@ -13,15 +13,18 @@ public struct UserProfile: Codable, Equatable, Sendable {
     public var name: String
     public var monogramTint: MonogramTint
     public var memberSince: Int      // 4-digit year, e.g. 2026
+    public var avatarFilename: String?
 
     public init(
         name: String,
         monogramTint: MonogramTint,
-        memberSince: Int
+        memberSince: Int,
+        avatarFilename: String? = nil
     ) {
         self.name = name
         self.monogramTint = monogramTint
         self.memberSince = memberSince
+        self.avatarFilename = avatarFilename
     }
 
     /// Single uppercase letter used for the avatar fallback.

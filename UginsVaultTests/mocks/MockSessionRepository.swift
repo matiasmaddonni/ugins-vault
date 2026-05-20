@@ -11,20 +11,26 @@ import Observation
 final class MockSessionRepository: SessionRepository, @unchecked Sendable {
 
     // Observable state (also doubles as stub setter)
-    var phase:        AppPhase  = .splash
-    var theme:        AppTheme  = .dark
-    var currency:     Currency  = .usd
-    var language:     Language  = .system
-    var reduceMotion: Bool      = false
-    var faceIDLock:   Bool      = true
+    var phase:                  AppPhase    = .splash
+    var theme:                  AppTheme    = .dark
+    var currency:               Currency    = .usd
+    var language:               Language    = .system
+    var reduceMotion:           Bool        = false
+    var faceIDLock:             Bool        = true
+    var preferredPriceSource:   PriceSource = .cardkingdom
+    var dashboardMoverThreshold: Decimal    = Decimal(string: "1.00")!
+    var manualARSRate:          Decimal?    = nil
 
     // Spies
-    @ObservationIgnored private(set) var savedPhase:        AppPhase?
-    @ObservationIgnored private(set) var savedTheme:        AppTheme?
-    @ObservationIgnored private(set) var savedCurrency:     Currency?
-    @ObservationIgnored private(set) var savedLanguage:     Language?
-    @ObservationIgnored private(set) var savedReduceMotion: Bool?
-    @ObservationIgnored private(set) var savedFaceIDLock:   Bool?
+    @ObservationIgnored private(set) var savedPhase:                AppPhase?
+    @ObservationIgnored private(set) var savedTheme:                AppTheme?
+    @ObservationIgnored private(set) var savedCurrency:             Currency?
+    @ObservationIgnored private(set) var savedLanguage:             Language?
+    @ObservationIgnored private(set) var savedReduceMotion:         Bool?
+    @ObservationIgnored private(set) var savedFaceIDLock:           Bool?
+    @ObservationIgnored private(set) var savedPreferredPriceSource: PriceSource?
+    @ObservationIgnored private(set) var savedMoverThreshold:       Decimal?
+    @ObservationIgnored private(set) var savedManualARSRate:        Decimal??
     @ObservationIgnored private(set) var savePhaseCallCount: Int = 0
 
     // Mutations
@@ -58,5 +64,20 @@ final class MockSessionRepository: SessionRepository, @unchecked Sendable {
     func saveFaceIDLock(_ enabled: Bool) {
         savedFaceIDLock = enabled
         self.faceIDLock = enabled
+    }
+
+    func savePreferredPriceSource(_ source: PriceSource) {
+        savedPreferredPriceSource = source
+        self.preferredPriceSource = source
+    }
+
+    func saveDashboardMoverThreshold(_ threshold: Decimal) {
+        savedMoverThreshold = threshold
+        self.dashboardMoverThreshold = threshold
+    }
+
+    func saveManualARSRate(_ rate: Decimal?) {
+        savedManualARSRate = rate
+        self.manualARSRate = rate
     }
 }

@@ -13,10 +13,12 @@ public struct QuickStatsRow: View {
 
     public let stats: CollectionStats
     public let currency: Currency
+    public let rate: ExchangeRate?
 
-    public init(stats: CollectionStats, currency: Currency) {
+    public init(stats: CollectionStats, currency: Currency, rate: ExchangeRate? = nil) {
         self.stats = stats
         self.currency = currency
+        self.rate = rate
     }
 
     public var body: some View {
@@ -43,7 +45,7 @@ public struct QuickStatsRow: View {
             QuickStatCard(
                 key: "avg",
                 label: "Avg",
-                value: CurrencyFormatter.format(stats.avgValueUSD, currency: currency),
+                value: CurrencyFormatter.format(stats.avgValueUSD, currency: currency, rate: rate),
                 sublabel: "per card"
             )
         }

@@ -25,6 +25,21 @@ public protocol SessionRepository: AnyObject, Observable {
     var reduceMotion: Bool      { get }
     var faceIDLock:   Bool      { get }
 
+    /// Which marketplace's retail prices we show by default on Card
+    /// Detail + use to feed the Dashboard aggregations. Default
+    /// `.cardkingdom` (the user's reference in AR).
+    var preferredPriceSource: PriceSource { get }
+
+    /// Minimum signed USD delta a card has to move in the last 7
+    /// days to qualify for the Dashboard gainers/losers lists. Lets
+    /// the user hide noise from $0.10 commons.
+    var dashboardMoverThreshold: Decimal { get }
+
+    /// Optional manual override for the USD → ARS rate. `nil` means
+    /// "use the dolarapi blue feed". When set, the FX layer skips the
+    /// network call entirely.
+    var manualARSRate: Decimal? { get }
+
     // MARK: - Mutations
 
     func savePhase(_ phase: AppPhase)
@@ -33,4 +48,7 @@ public protocol SessionRepository: AnyObject, Observable {
     func saveLanguage(_ language: Language)
     func saveReduceMotion(_ reduceMotion: Bool)
     func saveFaceIDLock(_ enabled: Bool)
+    func savePreferredPriceSource(_ source: PriceSource)
+    func saveDashboardMoverThreshold(_ threshold: Decimal)
+    func saveManualARSRate(_ rate: Decimal?)
 }
