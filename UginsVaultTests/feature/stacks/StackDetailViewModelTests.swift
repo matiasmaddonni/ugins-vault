@@ -161,6 +161,40 @@ struct StackDetailViewModelTests {
         #expect(sut.totalValue == .zero)
     }
 
+    @Test("totalValue sums the price store × quantity across items")
+    func totalValueSumsPrices() async throws {
+        let config = ModelConfiguration(isStoredInMemoryOnly: true)
+        let container = try ModelContainer(
+            for: SwiftDataStack.self, SwiftDataCollectionItem.self, SwiftDataPriceSnapshot.self,
+            configurations: config
+        )
+        let itemRepo = SwiftDataCollectionItemRepository(modelContainer: container)
+        let priceRepo = SwiftDataPriceRepository(modelContainer: container, lastSyncStorage: MockSessionStorage())
+        let session = MockSessionRepository() // preferredPriceSource defaults to .cardkingdom
+        let stack = makeDeck()
+
+        let cardA = UUID()
+        let cardB = UUID()
+        try await itemRepo.save(CollectionItem(cardID: cardA, stackID: stack.id, quantity: 2))
+        try await itemRepo.save(CollectionItem(cardID: cardB, stackID: stack.id, quantity: 1))
+
+        let day = Date()
+        try await priceRepo.upsert([
+            PriceSnapshot(cardID: cardA, source: .cardkingdom, date: day, currency: .usd, retail: 3),
+            PriceSnapshot(cardID: cardB, source: .cardkingdom, date: day, currency: .usd, retail: 5)
+        ], keepingSince: day.addingTimeInterval(-100_000))
+
+        let sut = StackDetailViewModel(
+            stack: stack,
+            itemRepository: itemRepo,
+            sessionRepository: session,
+            priceRepository: priceRepo
+        )
+        await sut.refresh()
+
+        #expect(sut.totalValue == 11)   // 3×2 + 5×1
+    }
+
     @Test("deleteStack wipes the stack + every CollectionItem it owned and flips didDelete")
     func deleteStackCascadesAndFlipsDidDelete() async throws {
         let stack = makeDeck()

@@ -2,13 +2,14 @@
 //  SyncPricesUseCase.swift
 //  UginsVault — Domain layer
 //
-//  Orchestrates a single end-to-end price refresh: intersect the
-//  remote source with the user's owned cards, persist the resulting
-//  `PriceSnapshot` batch through `PriceRepository`, prune anything
-//  older than the rolling window, and stamp the sync timestamp.
+//  One end-to-end price refresh against the backend (the single source of
+//  truth):
+//    1. push the owned list so the backend ingest covers those cards.
+//    2. fetch backend prices for the owned set.
+//    3. persist + prune the rolling window + stamp the sync clock.
 //
-//  Wi-Fi gating + background-task scheduling live a layer up — this
-//  use case assumes the caller has already decided it's safe to fetch.
+//  Cards the backend hasn't ingested yet simply have no price until its
+//  ingest runs. Wi-Fi gating + scheduling live a layer up.
 //
 
 import Foundation
@@ -21,10 +22,10 @@ public final class SyncPricesUseCase {
         public let importedCount: Int
 
         public enum Phase: Sendable, Equatable {
-            case fetching          // network in flight
-            case parsing           // decoding the JSON dump
-            case persisting        // writing into SwiftData
-            case pruning           // deleting stale rows
+            case fetching
+            case parsing
+            case persisting
+            case pruning
             case finished
         }
     }
@@ -46,78 +47,59 @@ public final class SyncPricesUseCase {
     // MARK: - Dependencies
 
     private let priceRepository: PriceRepository
-    private let cardRepository: CardRepository
-    private let priceSource: PriceCatalogueSource
+    private let collectionItemRepository: CollectionItemRepository
+    private let backendSource: PriceCatalogueSource
+    private let pushOwned: PushOwnedUseCase
     private let historyWindow: TimeInterval
 
     public init(
         priceRepository: PriceRepository,
-        cardRepository: CardRepository,
-        priceSource: PriceCatalogueSource,
+        collectionItemRepository: CollectionItemRepository,
+        backendSource: PriceCatalogueSource,
+        pushOwned: PushOwnedUseCase,
         historyWindow: TimeInterval = 35 * 24 * 60 * 60
     ) {
         self.priceRepository = priceRepository
-        self.cardRepository = cardRepository
-        self.priceSource = priceSource
+        self.collectionItemRepository = collectionItemRepository
+        self.backendSource = backendSource
+        self.pushOwned = pushOwned
         self.historyWindow = historyWindow
     }
 
     // MARK: - Execute
 
-    /// Runs one full sync. `progress` fires on every phase change so a
-    /// loading screen can show "Downloading…" → "Parsing…" → "Saving…".
-    /// Returns the total number of snapshots persisted.
+    /// Light refresh — current window from the backend.
     @discardableResult
-    public func execute(
-        progress: ((Progress) -> Void)? = nil
-    ) async throws -> Int {
-
-        // 1. Intersect with owned catalogue.
-        let owned = try await ownedCardIDs()
-        guard !owned.isEmpty else {
-            throw SyncError.noOwnedCards
-        }
-
-        // 2. Fetch + parse.
-        progress?(.init(phase: .fetching, importedCount: 0))
-        let snapshots: [PriceSnapshot]
-        do {
-            progress?(.init(phase: .parsing, importedCount: 0))
-            snapshots = try await priceSource.fetchSnapshots(ownedCardIDs: owned)
-        } catch {
-            throw SyncError.sourceFailed(message: error.localizedDescription)
-        }
-
-        // 3. Persist + prune.
-        progress?(.init(phase: .persisting, importedCount: snapshots.count))
-        let cutoff = Date().addingTimeInterval(-historyWindow)
-        try await priceRepository.upsert(snapshots, keepingSince: cutoff)
-
-        progress?(.init(phase: .pruning, importedCount: snapshots.count))
-        try await priceRepository.markSyncCompleted(at: Date())
-
-        progress?(.init(phase: .finished, importedCount: snapshots.count))
-        return snapshots.count
+    public func execute(progress: ((Progress) -> Void)? = nil) async throws -> Int {
+        try await run(fullHistory: false, progress: progress)
     }
 
-    /// First-launch / rebuild path: pulls the FULL price-history dump
-    /// (clamped to `historyWindow`) so the Dashboard sparkline + movers
-    /// have real data immediately instead of waiting for daily snapshots
-    /// to accrue. Same persist/prune as `execute()`.
+    /// First-launch bootstrap — wider backend window so the Dashboard has real
+    /// history immediately.
     @discardableResult
-    public func executeFullHistory(
-        progress: ((Progress) -> Void)? = nil
-    ) async throws -> Int {
+    public func executeFullHistory(progress: ((Progress) -> Void)? = nil) async throws -> Int {
+        try await run(fullHistory: true, progress: progress)
+    }
+
+    // MARK: - Orchestration
+
+    private func run(fullHistory: Bool, progress: ((Progress) -> Void)?) async throws -> Int {
         let owned = try await ownedCardIDs()
         guard !owned.isEmpty else { throw SyncError.noOwnedCards }
 
+        // Push owned so the backend ingest covers them. Best-effort: ingest is
+        // async server-side, and we still want to read whatever prices exist.
+        _ = try? await pushOwned.execute()
+
         let cutoff = Date().addingTimeInterval(-historyWindow)
 
         progress?(.init(phase: .fetching, importedCount: 0))
         let snapshots: [PriceSnapshot]
         do {
             progress?(.init(phase: .parsing, importedCount: 0))
-            snapshots = try await priceSource.fetchFullHistory(ownedCardIDs: owned, windowStart: cutoff)
+            snapshots = fullHistory
+                ? try await backendSource.fetchFullHistory(ownedCardIDs: owned, windowStart: cutoff)
+                : try await backendSource.fetchSnapshots(ownedCardIDs: owned)
         } catch {
             throw SyncError.sourceFailed(message: error.localizedDescription)
         }
@@ -135,13 +117,7 @@ public final class SyncPricesUseCase {
     // MARK: - Helpers
 
     private func ownedCardIDs() async throws -> Set<UUID> {
-        // We don't yet expose a "give me every id" call on
-        // `CardRepository` — for v0.5 use the existing
-        // `refresh(_:)` page-walker. 1K-card collections fit in a
-        // single page; >1K → grow this into a streaming `ids()`
-        // method on the repo.
-        let query = CardQuery(text: "", offset: 0, limit: 10_000)
-        let cards = try await cardRepository.refresh(query)
-        return Set(cards.map(\.id))
+        let owned = (try? await collectionItemRepository.allItems()) ?? []
+        return Set(owned.map(\.cardID))
     }
 }

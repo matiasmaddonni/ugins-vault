@@ -144,6 +144,7 @@ public struct LoginView: View {
                 .font(.uv.body(12))
                 .foregroundStyle(Color.uv.muted)
 
+            #if DEBUG
             Button {
                 viewModel.bypassAuthentication()
             } label: {
@@ -152,7 +153,9 @@ public struct LoginView: View {
                     .foregroundStyle(Color.uv.muted2)
                     .tracking(2.5)
             }
-            .padding(.top, 12)
+            .padding(.top, Spacing.md)
+            .accessibilityIdentifier(LoginAccessibilityFields.skipDevButton)
+            #endif
         }
     }
 

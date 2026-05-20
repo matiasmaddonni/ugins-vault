@@ -64,7 +64,7 @@ public extension WishlistItem {
             setName: card.setName,
             collectorNumber: card.collectorNumber,
             thumbnailURL: card.images.thumbnail,
-            usdPrice: card.prices.usdPrice(for: .nonfoil),
+            usdPrice: nil,
             addedAt: addedAt
         )
     }

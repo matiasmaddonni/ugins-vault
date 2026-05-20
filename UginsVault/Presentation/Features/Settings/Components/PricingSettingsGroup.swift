@@ -167,7 +167,7 @@ public struct PricingSettingsGroup: View {
         guard !isRefreshingRates else { return }
         isRefreshingRates = true
         Task { @MainActor in
-            try? await exchangeRateRepository.refresh()
+            _ = try? await exchangeRateRepository.refresh()
             isRefreshingRates = false
         }
     }

@@ -17,15 +17,13 @@ public final class RootViewModel {
 
     public private(set) var phase: AppPhase
 
-    // MARK: - Dependencies
-
-    @ObservationIgnored private let getCurrentPhaseUseCase: GetCurrentPhaseUseCase
-
     // MARK: - Init
 
-    public init(getCurrentPhaseUseCase: GetCurrentPhaseUseCase) {
-        self.getCurrentPhaseUseCase = getCurrentPhaseUseCase
-        self.phase = getCurrentPhaseUseCase.execute()
+    /// Always begins at `.splash`. The splash advance re-evaluates the account
+    /// + Face ID gates on every cold launch (so Face ID re-locks between runs),
+    /// which is why there is no persisted-phase fast path here.
+    public init() {
+        self.phase = .splash
     }
 
     // MARK: - Intents

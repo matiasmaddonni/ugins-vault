@@ -31,8 +31,8 @@ public final class CardDetailViewModel {
     public private(set) var lastAddedStackName: String?
     public let displayCurrency: Currency
 
-    /// Resolved price for the hero block — picks a value from the
-    /// MTGJSON cache when present, else falls back to Scryfall.
+    /// Resolved price for the hero block — from the local price store
+    /// (the backend). `nil` when the card isn't priced.
     public private(set) var resolvedPrice: LatestPriceUseCase.Resolved?
 
     /// 30-day rolling history for the preferred source. Drives the
@@ -91,8 +91,7 @@ public final class CardDetailViewModel {
         if let useCase = latestPriceUseCase {
             resolvedPrice = await useCase.execute(
                 card: card,
-                preferred: preferredSource,
-                finish: .nonfoil
+                preferred: preferredSource
             )
         }
         if let repo = priceRepository {

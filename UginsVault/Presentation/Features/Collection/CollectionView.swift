@@ -235,7 +235,7 @@ public struct CollectionView: View {
         List {
             ForEach(viewModel.cards) { card in
                 NavigationLink(value: card) {
-                    CardRowView(card: card, displayCurrency: viewModel.currency, rate: viewModel.exchangeRate)
+                    CardRowView(card: card, displayCurrency: viewModel.currency, rate: viewModel.exchangeRate, price: viewModel.price(for: card.id))
                 }
                 .listRowBackground(Color.uv.bg)
                 .listRowSeparatorTint(Color.uv.stroke.opacity(0.4))

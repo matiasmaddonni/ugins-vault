@@ -44,6 +44,12 @@ public final class CollectionViewModel {
     @ObservationIgnored private let cardRepository: CardRepository
     @ObservationIgnored private let seedCatalogue: SeedCatalogueUseCase
     @ObservationIgnored private let exchangeRateRepository: ExchangeRateRepository?
+    @ObservationIgnored private let priceRepository: PriceRepository?
+
+    /// Latest retail price per card from the local store (backend) for the
+    /// user's preferred source. Cards without a priced snapshot are absent —
+    /// they render with no price.
+    public private(set) var priceMap: [UUID: Decimal] = [:]
 
     /// Scryfall search to use when seeding an empty catalogue on first
     /// launch. Foundations ships ~310 cards.
@@ -59,6 +65,7 @@ public final class CollectionViewModel {
         cardRepository: CardRepository,
         seedCatalogue: SeedCatalogueUseCase,
         exchangeRateRepository: ExchangeRateRepository? = nil,
+        priceRepository: PriceRepository? = nil,
         seedQuery: String = "set:fdn",
         pageSize: Int = 50
     ) {
@@ -66,9 +73,15 @@ public final class CollectionViewModel {
         self.cardRepository = cardRepository
         self.seedCatalogue = seedCatalogue
         self.exchangeRateRepository = exchangeRateRepository
+        self.priceRepository = priceRepository
         self.seedQuery = seedQuery
         self.pageSize = pageSize
         self.currency = sessionRepository.currency
+    }
+
+    /// Price for a card from the local store, or `nil` when unpriced.
+    public func price(for cardID: UUID) -> Decimal? {
+        priceMap[cardID]
     }
 
     // MARK: - Derived
@@ -79,7 +92,7 @@ public final class CollectionViewModel {
 
     public var totalValueUSD: Decimal {
         cards.reduce(.zero) { partial, card in
-            partial + (card.prices.usdPrice(for: .nonfoil) ?? .zero)
+            partial + (priceMap[card.id] ?? .zero)
         }
     }
 
@@ -142,6 +155,16 @@ public final class CollectionViewModel {
         cards = loaded
         matchingCount = try await cardRepository.count(matching: query)
         totalCount = try await cardRepository.totalCount()
+        await loadPrices()
+    }
+
+    /// Loads the latest price per card for the preferred source. The map
+    /// covers the whole store, so paged-in rows are already priced.
+    private func loadPrices() async {
+        guard let priceRepository else { return }
+        let source = sessionRepository.preferredPriceSource
+        let latest = (try? await priceRepository.latestByCard(source: source)) ?? [:]
+        priceMap = latest.mapValues(\.retail)
     }
 
     /// Appends the next page to the existing card list. No-op when

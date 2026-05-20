@@ -35,8 +35,7 @@ struct SwiftDataCardRepositoryTests {
             setCode: "lea",
             setName: "Limited Edition Alpha",
             collectorNumber: "161",
-            finishes: [.nonfoil],
-            prices: CardPrices(usd: Decimal(string: "20.00"))
+            finishes: [.nonfoil]
         )
     }
 
@@ -153,21 +152,6 @@ struct SwiftDataCardRepositoryTests {
         #expect(loaded.map(\.name) == ["Ancestral Recall", "Brainstorm", "Counterspell"])
     }
 
-    @Test("Sort by price descending puts highest first, nil last")
-    func sortByPrice() async throws {
-        let repo = try makeRepository()
-        try await repo.save([
-            cardWithPrice(name: "Mid", usd: Decimal(string: "5.00")),
-            cardWithPrice(name: "High", usd: Decimal(string: "20.00")),
-            cardWithPrice(name: "None", usd: nil)
-        ])
-
-        let loaded = try await repo.refresh(CardQuery(sort: .priceDescending))
-
-        #expect(loaded.first?.name == "High")
-        #expect(loaded.last?.name == "None")
-    }
-
     @Test("Filter by rarity restricts results")
     func filterByRarity() async throws {
         let repo = try makeRepository()
@@ -249,19 +233,6 @@ struct SwiftDataCardRepositoryTests {
 
     // MARK: - Helpers continued
 
-    private func cardWithPrice(name: String, usd: Decimal?) -> Card {
-        Card(
-            id: UUID(),
-            oracleID: UUID(),
-            name: name,
-            typeLine: "Instant",
-            setCode: "tst",
-            setName: "Test",
-            collectorNumber: "1",
-            prices: CardPrices(usd: usd)
-        )
-    }
-
     private func cardWithRarity(name: String, rarity: Rarity) -> Card {
         Card(
             id: UUID(),
@@ -301,7 +272,7 @@ struct SwiftDataCardRepositoryTests {
         )
     }
 
-    @Test("Mapper round-trips colours, finishes, prices, and images")
+    @Test("Mapper round-trips colours, finishes, and images")
     func mapperRoundTrips() async throws {
         let repo = try makeRepository()
         let card = Card(
@@ -321,8 +292,7 @@ struct SwiftDataCardRepositoryTests {
             images: CardImages(
                 small: URL(string: "https://example.com/small.jpg"),
                 normal: URL(string: "https://example.com/normal.jpg")
-            ),
-            prices: CardPrices(usd: Decimal(string: "3.50"), usdFoil: Decimal(string: "12.00"))
+            )
         )
 
         try await repo.save([card])
@@ -331,7 +301,5 @@ struct SwiftDataCardRepositoryTests {
         #expect(loaded?.colors == [.blue])
         #expect(loaded?.finishes == [.nonfoil, .foil])
         #expect(loaded?.images.normal?.absoluteString == "https://example.com/normal.jpg")
-        #expect(loaded?.prices.usd == Decimal(string: "3.50"))
-        #expect(loaded?.prices.usdFoil == Decimal(string: "12.00"))
     }
 }

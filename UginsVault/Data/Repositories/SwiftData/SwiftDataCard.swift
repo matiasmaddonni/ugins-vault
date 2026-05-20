@@ -51,15 +51,6 @@ public final class SwiftDataCard {
     public var imageArtCrop:    URL?
     public var imageBorderCrop: URL?
 
-    // MARK: - Prices (USD-denominated; conversion in v0.3)
-
-    public var priceUSD:       Decimal?
-    public var priceUSDFoil:   Decimal?
-    public var priceUSDEtched: Decimal?
-    public var priceEUR:       Decimal?
-    public var priceEURFoil:   Decimal?
-    public var priceTix:       Decimal?
-
     // MARK: - Legalities + reserved list
 
     /// JSON-encoded `[String: String]` mapping `Format.rawValue` to
@@ -94,12 +85,6 @@ public final class SwiftDataCard {
         imagePNG: URL? = nil,
         imageArtCrop: URL? = nil,
         imageBorderCrop: URL? = nil,
-        priceUSD: Decimal? = nil,
-        priceUSDFoil: Decimal? = nil,
-        priceUSDEtched: Decimal? = nil,
-        priceEUR: Decimal? = nil,
-        priceEURFoil: Decimal? = nil,
-        priceTix: Decimal? = nil,
         legalitiesJSON: String = "",
         isReserved: Bool = false
     ) {
@@ -125,12 +110,6 @@ public final class SwiftDataCard {
         self.imagePNG = imagePNG
         self.imageArtCrop = imageArtCrop
         self.imageBorderCrop = imageBorderCrop
-        self.priceUSD = priceUSD
-        self.priceUSDFoil = priceUSDFoil
-        self.priceUSDEtched = priceUSDEtched
-        self.priceEUR = priceEUR
-        self.priceEURFoil = priceEURFoil
-        self.priceTix = priceTix
         self.legalitiesJSON = legalitiesJSON
         self.isReserved = isReserved
     }

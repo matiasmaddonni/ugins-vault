@@ -10,6 +10,9 @@ packages:
   Kingfisher:
     url: https://github.com/onevcat/Kingfisher
     from: "8.0.0"
+  supabase-swift:
+    url: https://github.com/supabase/supabase-swift
+    from: "2.46.0"
 settings:
   base:
     SWIFT_VERSION: "6.0"
@@ -50,6 +53,8 @@ targets:
           - "**/.keep"
     dependencies:
       - package: Kingfisher
+      - package: supabase-swift
+        product: Auth
     # Array-valued plist keys (UIBackgroundModes,
     # BGTaskSchedulerPermittedIdentifiers) must live in a real
     # Info.plist — Xcode's INFOPLIST_KEY_ generator silently drops

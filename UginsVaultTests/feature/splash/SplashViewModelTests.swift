@@ -10,10 +10,19 @@ import Testing
 @MainActor
 struct SplashViewModelTests {
 
-    @Test("start() flips didAppear and (after hold) calls onAdvance with .login")
+    private func makeUseCase(
+        session: MockSessionRepository,
+        signedIn: Bool
+    ) -> AdvanceFromSplashUseCase {
+        let account = MockAccountRepository()
+        account.restoresToSignedIn = signedIn
+        return AdvanceFromSplashUseCase(sessionRepository: session, accountRepository: account)
+    }
+
+    @Test("start() flips didAppear and (after hold) advances a signed-in user to .login")
     func startAdvances() async throws {
         let session = MockSessionRepository()
-        let useCase = AdvanceFromSplashUseCase(sessionRepository: session)
+        let useCase = makeUseCase(session: session, signedIn: true)
 
         var advancedTo: AppPhase?
         let sut = SplashViewModel(
@@ -27,16 +36,34 @@ struct SplashViewModelTests {
         sut.start()
         #expect(sut.didAppear == true)
 
-        try await Task.sleep(for: .milliseconds(150))
+        try await Task.sleep(for: .milliseconds(200))
 
         #expect(advancedTo == .login)
         #expect(session.savedPhase == .login)
     }
 
+    @Test("start() advances a signed-out user to .accountLogin")
+    func startAdvancesToAccountLogin() async throws {
+        let session = MockSessionRepository()
+        let useCase = makeUseCase(session: session, signedIn: false)
+
+        var advancedTo: AppPhase?
+        let sut = SplashViewModel(
+            advanceFromSplashUseCase: useCase,
+            onAdvance: { advancedTo = $0 },
+            holdDuration: .milliseconds(50)
+        )
+
+        sut.start()
+        try await Task.sleep(for: .milliseconds(200))
+
+        #expect(advancedTo == .accountLogin)
+    }
+
     @Test("start() is idempotent — second call doesn't fire onAdvance twice")
     func startIsIdempotent() async throws {
         let session = MockSessionRepository()
-        let useCase = AdvanceFromSplashUseCase(sessionRepository: session)
+        let useCase = makeUseCase(session: session, signedIn: true)
 
         var advanceCount = 0
         let sut = SplashViewModel(
@@ -49,7 +76,7 @@ struct SplashViewModelTests {
         sut.start()
         sut.start()
 
-        try await Task.sleep(for: .milliseconds(120))
+        try await Task.sleep(for: .milliseconds(150))
 
         #expect(advanceCount == 1)
     }

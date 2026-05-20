@@ -39,6 +39,15 @@ public final class DependencyContainer {
     public lazy var sessionRepository:     SessionRepository     = UserDefaultsSessionRepository(storage: sessionStorage)
     public lazy var userProfileRepository: UserProfileRepository = UserDefaultsUserProfileRepository(storage: sessionStorage)
 
+    /// One Supabase-backed instance, exposed under two protocol views: the
+    /// Domain identity API (`AccountRepository`) and the Data-layer token seam
+    /// (`AccessTokenProviding`) the backend API client consumes.
+    private lazy var supabaseAccountRepository = SupabaseAccountRepository(
+        gateway: LiveSupabaseAuthGateway()
+    )
+    public var accountRepository: AccountRepository { supabaseAccountRepository }
+    public var accessTokenProvider: AccessTokenProviding { supabaseAccountRepository }
+
     public lazy var modelContainer: ModelContainer = {
         // SwiftUI Previews don't share storage with the running simulator
         // and don't run schema migrations cleanly across edits — always
@@ -89,11 +98,21 @@ public final class DependencyContainer {
     )
     public lazy var wishlistRepository: WishlistRepository = SwiftDataWishlistRepository(modelContainer: modelContainer)
 
-    // MARK: - Pricing wiring (v0.5)
+    // MARK: - Pricing wiring
 
     public lazy var networkReachability: NetworkReachability = NWPathReachability()
-    public lazy var mtgjsonClient: MTGJSONClient = MTGJSONClient()
-    public lazy var priceCatalogueSource: PriceCatalogueSource = MTGJSONPriceCatalogueSource(client: mtgjsonClient)
+
+    /// Backend read API (prices / owned), authenticated with the Supabase token.
+    public lazy var apiClient: UginsVaultAPIClient = UginsVaultAPIClient(tokenProvider: accessTokenProvider)
+
+    /// Authoritative price source — the backend (single source of truth).
+    public lazy var backendPriceSource: PriceCatalogueSource = APIPriceCatalogueSource(
+        client: apiClient,
+        sessionRepository: sessionRepository
+    )
+
+    /// Pushes the owned list to the backend (`PUT /v1/owned`).
+    public lazy var remoteOwnedSync: RemoteOwnedSync = BackendOwnedSync(client: apiClient)
 
     // MARK: - FX wiring (v0.7)
 
@@ -127,16 +146,29 @@ public final class DependencyContainer {
         AuthenticateUseCase(authRepository: authRepository, sessionRepository: sessionRepository)
     }
 
-    public func makeGetCurrentPhaseUseCase() -> GetCurrentPhaseUseCase {
-        GetCurrentPhaseUseCase(sessionRepository: sessionRepository)
-    }
-
     public func makeAdvanceFromSplashUseCase() -> AdvanceFromSplashUseCase {
-        AdvanceFromSplashUseCase(sessionRepository: sessionRepository)
+        AdvanceFromSplashUseCase(
+            sessionRepository: sessionRepository,
+            accountRepository: accountRepository
+        )
     }
 
     public func makeSignOutUseCase() -> SignOutUseCase {
         SignOutUseCase(sessionRepository: sessionRepository)
+    }
+
+    // MARK: - Use case factories — account (Supabase)
+
+    public func makeSignInUseCase() -> SignInUseCase {
+        SignInUseCase(accountRepository: accountRepository)
+    }
+
+    public func makeSignOutAccountUseCase() -> SignOutAccountUseCase {
+        SignOutAccountUseCase(accountRepository: accountRepository)
+    }
+
+    public func makeRestoreSessionUseCase() -> RestoreSessionUseCase {
+        RestoreSessionUseCase(accountRepository: accountRepository)
     }
 
     // MARK: - Use case factories — preferences
@@ -261,11 +293,19 @@ public final class DependencyContainer {
 
     // MARK: - Use case factories — pricing
 
+    public func makePushOwnedUseCase() -> PushOwnedUseCase {
+        PushOwnedUseCase(
+            collectionItemRepository: collectionItemRepository,
+            remoteOwnedSync: remoteOwnedSync
+        )
+    }
+
     public func makeSyncPricesUseCase() -> SyncPricesUseCase {
         SyncPricesUseCase(
             priceRepository: priceRepository,
-            cardRepository: cardRepository,
-            priceSource: priceCatalogueSource
+            collectionItemRepository: collectionItemRepository,
+            backendSource: backendPriceSource,
+            pushOwned: makePushOwnedUseCase()
         )
     }
 
@@ -282,9 +322,7 @@ public final class DependencyContainer {
     // MARK: - ViewModel factories
 
     @MainActor public func makeRootViewModel() -> RootViewModel {
-        RootViewModel(
-            getCurrentPhaseUseCase: makeGetCurrentPhaseUseCase()
-        )
+        RootViewModel()
     }
 
     @MainActor public func makeSplashViewModel(onAdvance: @escaping (AppPhase) -> Void) -> SplashViewModel {
@@ -299,6 +337,13 @@ public final class DependencyContainer {
             authenticateUseCase: makeAuthenticateUseCase(),
             isBiometryAvailable: authRepository.isBiometryAvailable,
             onAuthenticated: onAuthenticated
+        )
+    }
+
+    @MainActor public func makeAccountLoginViewModel(onProceed: @escaping () -> Void) -> AccountLoginViewModel {
+        AccountLoginViewModel(
+            signInUseCase: makeSignInUseCase(),
+            onProceed: onProceed
         )
     }
 
@@ -342,7 +387,8 @@ public final class DependencyContainer {
             sessionRepository: sessionRepository,
             cardRepository: cardRepository,
             seedCatalogue: makeSeedCatalogueUseCase(),
-            exchangeRateRepository: exchangeRateRepository
+            exchangeRateRepository: exchangeRateRepository,
+            priceRepository: priceRepository
         )
     }
 
@@ -373,6 +419,7 @@ public final class DependencyContainer {
             cardRepository: cardRepository,
             stackRepository: stackRepository,
             exchangeRateRepository: exchangeRateRepository,
+            priceRepository: priceRepository,
             importDeckList: makeImportDeckListUseCase(),
             scryfallClient: scryfallClient
         )

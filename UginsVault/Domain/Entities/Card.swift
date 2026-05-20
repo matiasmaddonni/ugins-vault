@@ -43,7 +43,6 @@ public struct Card: Identifiable, Hashable, Codable, Sendable {
     public let releasedAt: Date?
     public let finishes: Set<Finish>
     public let images: CardImages
-    public let prices: CardPrices
 
     // MARK: - Legalities
 
@@ -68,7 +67,6 @@ public struct Card: Identifiable, Hashable, Codable, Sendable {
         releasedAt: Date? = nil,
         finishes: Set<Finish> = [.nonfoil],
         images: CardImages = CardImages(),
-        prices: CardPrices = .zero,
         legalities: [Format: Legality] = [:],
         isReserved: Bool = false
     ) {
@@ -89,7 +87,6 @@ public struct Card: Identifiable, Hashable, Codable, Sendable {
         self.releasedAt = releasedAt
         self.finishes = finishes
         self.images = images
-        self.prices = prices
         self.legalities = legalities
         self.isReserved = isReserved
     }

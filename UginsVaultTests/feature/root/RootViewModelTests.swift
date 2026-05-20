@@ -10,24 +10,18 @@ import Testing
 @MainActor
 struct RootViewModelTests {
 
-    @Test("Initial phase comes from the session via the use case")
+    @Test("Always starts at .splash so the launch gates re-run")
     func initialPhase() {
-        let session = MockSessionRepository()
-        session.phase = .login
-        let sut = RootViewModel(
-            getCurrentPhaseUseCase: GetCurrentPhaseUseCase(sessionRepository: session)
-        )
-
-        #expect(sut.phase == .login)
+        let sut = RootViewModel()
+        #expect(sut.phase == .splash)
     }
 
-    @Test("transition(to:) updates the published phase")
+    @Test("transition(to:) updates the phase")
     func transitionUpdates() {
-        let session = MockSessionRepository()
-        session.phase = .splash
-        let sut = RootViewModel(
-            getCurrentPhaseUseCase: GetCurrentPhaseUseCase(sessionRepository: session)
-        )
+        let sut = RootViewModel()
+
+        sut.transition(to: .accountLogin)
+        #expect(sut.phase == .accountLogin)
 
         sut.transition(to: .login)
         #expect(sut.phase == .login)
@@ -38,11 +32,10 @@ struct RootViewModelTests {
 
     @Test("transition(to:) is a no-op when the phase is unchanged")
     func transitionIdempotent() {
-        let session = MockSessionRepository()
-        session.phase = .home
-        let sut = RootViewModel(
-            getCurrentPhaseUseCase: GetCurrentPhaseUseCase(sessionRepository: session)
-        )
+        let sut = RootViewModel()
+
+        sut.transition(to: .home)
+        #expect(sut.phase == .home)
 
         sut.transition(to: .home)
         #expect(sut.phase == .home)

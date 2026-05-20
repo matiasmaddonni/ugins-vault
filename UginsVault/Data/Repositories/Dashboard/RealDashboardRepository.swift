@@ -140,7 +140,7 @@ public final class RealDashboardRepository: DashboardRepository {
             if item.finish != .nonfoil { foilQuantity += item.quantity }
 
             guard let card = cardsByID[item.cardID] else { continue }
-            let unitPrice = resolver.price(for: card, finish: item.finish) ?? .zero
+            let unitPrice = resolver.price(for: card) ?? .zero
             let rowValue = unitPrice * Decimal(item.quantity)
             totalValue += rowValue
 
@@ -255,7 +255,7 @@ public final class RealDashboardRepository: DashboardRepository {
                 if let priced = priceOnDay(cardID, target) {
                     unit = priced
                 } else if let card = cardsByID[cardID],
-                          let fallback = resolver.price(for: card, finish: .nonfoil) {
+                          let fallback = resolver.price(for: card) {
                     unit = fallback
                 } else {
                     unit = .zero
@@ -344,7 +344,7 @@ private struct PriceResolver {
     let preferredLatest: [UUID: PriceSnapshot]
     let fallbackLatest: [PriceSource: [UUID: PriceSnapshot]]
 
-    func price(for card: Card, finish: Finish) -> Decimal? {
+    func price(for card: Card) -> Decimal? {
         if let snapshot = preferredLatest[card.id], snapshot.retail > 0 {
             return snapshot.retail
         }
@@ -352,9 +352,6 @@ private struct PriceResolver {
             if let snapshot = fallbackLatest[source]?[card.id], snapshot.retail > 0 {
                 return snapshot.retail
             }
-        }
-        if let usd = card.prices.usdPrice(for: finish), usd > 0 {
-            return usd
         }
         return nil
     }

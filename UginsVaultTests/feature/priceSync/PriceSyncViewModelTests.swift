@@ -31,6 +31,10 @@ struct PriceSyncViewModelTests {
         }
     }
 
+    struct NoopOwnedSync: RemoteOwnedSync {
+        func push(_ cards: [OwnedCardCount]) async throws {}
+    }
+
     final class InMemoryStorage: SessionStorageDataSource, @unchecked Sendable {
         private var bag: [String: String] = [:]
         func string(forKey key: String) -> String? { bag[key] }
@@ -39,31 +43,47 @@ struct PriceSyncViewModelTests {
         }
     }
 
-    /// Spins up a full real-stack VM with in-memory SwiftData containers
-    /// for both Card + Price, plus a fake source we control.
+    /// Returns an empty catalogue page so the seed step doesn't hit Scryfall.
+    final class NoopCatalogueSource: CardCatalogueSource, @unchecked Sendable {
+        func fetchCards(query: String, page: Int) async throws -> CardCataloguePage {
+            CardCataloguePage(cards: [], hasMore: false)
+        }
+    }
+
+    /// Spins up a full real-stack VM with an in-memory SwiftData container and
+    /// a controllable backend source. The MTGJSON fallback is a stub returning
+    /// nothing so behaviour stays deterministic.
     private func makeSUT() throws -> (
         PriceSyncViewModel,
-        SwiftDataCardRepository,
+        SwiftDataCollectionItemRepository,
         SwiftDataPriceRepository,
         StubSource,
         StubReachability
     ) {
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
         let container = try ModelContainer(
-            for: SwiftDataCard.self, SwiftDataPriceSnapshot.self,
+            for: SwiftDataCard.self,
+            SwiftDataPriceSnapshot.self,
+            SwiftDataCollectionItem.self,
+            SwiftDataWishlistItem.self,
             configurations: config
         )
         let cardRepo = SwiftDataCardRepository(modelContainer: container)
+        let itemRepo = SwiftDataCollectionItemRepository(modelContainer: container)
         let priceRepo = SwiftDataPriceRepository(
             modelContainer: container,
             lastSyncStorage: InMemoryStorage()
         )
-        let source = StubSource()
+        let backend = StubSource()
         let reach = StubReachability()
         let useCase = SyncPricesUseCase(
             priceRepository: priceRepo,
-            cardRepository: cardRepo,
-            priceSource: source
+            collectionItemRepository: itemRepo,
+            backendSource: backend,
+            pushOwned: PushOwnedUseCase(
+                collectionItemRepository: itemRepo,
+                remoteOwnedSync: NoopOwnedSync()
+            )
         )
         let seed = SeedCatalogueUseCase(
             source: NoopCatalogueSource(),
@@ -75,27 +95,11 @@ struct PriceSyncViewModelTests {
             cardRepository: cardRepo,
             reachability: reach
         )
-        return (sut, cardRepo, priceRepo, source, reach)
+        return (sut, itemRepo, priceRepo, backend, reach)
     }
 
-    /// Returns an empty catalogue page — used by the seed step so
-    /// the tests don't hit the real Scryfall API.
-    final class NoopCatalogueSource: CardCatalogueSource, @unchecked Sendable {
-        func fetchCards(query: String, page: Int) async throws -> CardCataloguePage {
-            CardCataloguePage(cards: [], hasMore: false)
-        }
-    }
-
-    private func makeCard(id: UUID = UUID()) -> Card {
-        Card(
-            id: id,
-            oracleID: UUID(),
-            name: "Test",
-            typeLine: "Instant",
-            setCode: "tst",
-            setName: "Test Set",
-            collectorNumber: "1"
-        )
+    private func addOwned(_ cardID: UUID, to itemRepo: SwiftDataCollectionItemRepository) async throws {
+        try await itemRepo.save(CollectionItem(cardID: cardID, stackID: UUID()))
     }
 
     @Test("No Wi-Fi → status .waitingForWiFi + alert flag flipped on")
@@ -109,8 +113,8 @@ struct PriceSyncViewModelTests {
         #expect(sut.isWiFiAlertPresented)
     }
 
-    @Test("Empty catalogue → status .failed with no-owned-cards message")
-    func emptyCatalogueFailure() async throws {
+    @Test("No owned cards → status .failed with no-owned-cards message")
+    func noOwnedFailure() async throws {
         let (sut, _, _, _, _) = try makeSUT()
         await sut.sync()
         if case .failed(let message) = sut.status {
@@ -122,12 +126,12 @@ struct PriceSyncViewModelTests {
 
     @Test("Happy path → status .finished + count, snapshots persisted")
     func happyPath() async throws {
-        let (sut, cardRepo, priceRepo, source, _) = try makeSUT()
-        let card = makeCard()
-        try await cardRepo.save([card])
-        source.queued = .success([
+        let (sut, itemRepo, priceRepo, backend, _) = try makeSUT()
+        let cardID = UUID()
+        try await addOwned(cardID, to: itemRepo)
+        backend.queued = .success([
             PriceSnapshot(
-                cardID: card.id, source: .cardkingdom, date: Date(),
+                cardID: cardID, source: .cardkingdom, date: Date(),
                 currency: .usd, retail: 1.5
             )
         ])
@@ -139,18 +143,18 @@ struct PriceSyncViewModelTests {
         } else {
             Issue.record("Expected .finished, got \(sut.status)")
         }
-        #expect(try await priceRepo.latest(cardID: card.id, source: .cardkingdom) != nil)
+        #expect(try await priceRepo.latest(cardID: cardID, source: .cardkingdom) != nil)
         #expect(priceRepo.lastSyncedAt != nil)
     }
 
-    @Test("Source failure → status .failed, no timestamp stamped")
+    @Test("Backend failure → status .failed, no timestamp stamped")
     func sourceFailurePath() async throws {
         struct DummyError: Error, LocalizedError {
             var errorDescription: String? { "boom" }
         }
-        let (sut, cardRepo, priceRepo, source, _) = try makeSUT()
-        try await cardRepo.save([makeCard()])
-        source.queued = .failure(DummyError())
+        let (sut, itemRepo, priceRepo, backend, _) = try makeSUT()
+        try await addOwned(UUID(), to: itemRepo)
+        backend.queued = .failure(DummyError())
 
         await sut.sync()
 

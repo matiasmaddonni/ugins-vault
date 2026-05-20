@@ -44,7 +44,6 @@ public struct CardQuery: Equatable, Sendable {
 
 public enum CardSortOption: String, CaseIterable, Codable, Sendable, Identifiable {
     case nameAscending
-    case priceDescending
     case releasedAtDescending
     case setCodeAscending
 
@@ -53,7 +52,6 @@ public enum CardSortOption: String, CaseIterable, Codable, Sendable, Identifiabl
     public var displayName: String {
         switch self {
         case .nameAscending:         return String(localized: "Name (A–Z)")
-        case .priceDescending:       return String(localized: "Price (high → low)")
         case .releasedAtDescending:  return String(localized: "Newest first")
         case .setCodeAscending:      return String(localized: "Set")
         }

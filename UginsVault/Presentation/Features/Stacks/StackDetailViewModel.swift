@@ -36,6 +36,10 @@ public final class StackDetailViewModel {
     public private(set) var uniqueCount: Int = 0
     public private(set) var status: Status = .idle
 
+    /// Latest retail price per card from the local store (backend) for the
+    /// preferred source. Cards without data don't contribute.
+    public private(set) var priceMap: [UUID: Decimal] = [:]
+
     // MARK: - Import sheet
 
     public var isPresentingImport: Bool = false
@@ -59,6 +63,7 @@ public final class StackDetailViewModel {
     @ObservationIgnored private let stackRepository: StackRepository?
     @ObservationIgnored private let sessionRepository: SessionRepository
     @ObservationIgnored private let exchangeRateRepository: ExchangeRateRepository?
+    @ObservationIgnored private let priceRepository: PriceRepository?
     @ObservationIgnored private let importDeckList: ImportDeckListUseCase?
     @ObservationIgnored private let scryfallClient: (any ScryfallClientProtocol)?
 
@@ -71,6 +76,7 @@ public final class StackDetailViewModel {
         cardRepository: CardRepository? = nil,
         stackRepository: StackRepository? = nil,
         exchangeRateRepository: ExchangeRateRepository? = nil,
+        priceRepository: PriceRepository? = nil,
         importDeckList: ImportDeckListUseCase? = nil,
         scryfallClient: (any ScryfallClientProtocol)? = nil
     ) {
@@ -80,6 +86,7 @@ public final class StackDetailViewModel {
         self.stackRepository = stackRepository
         self.sessionRepository = sessionRepository
         self.exchangeRateRepository = exchangeRateRepository
+        self.priceRepository = priceRepository
         self.importDeckList = importDeckList
         self.scryfallClient = scryfallClient
     }
@@ -156,9 +163,7 @@ public final class StackDetailViewModel {
     /// Card or without prices simply don't contribute.
     public var totalValue: Decimal {
         items.reduce(.zero) { running, item in
-            guard let card = cardsByID[item.cardID],
-                  let price = card.prices.usdPrice(for: item.finish)
-            else { return running }
+            guard let price = priceMap[item.cardID] else { return running }
             return running + (price * Decimal(item.quantity))
         }
     }
@@ -233,10 +238,18 @@ public final class StackDetailViewModel {
             self.cardCount   = try await itemRepository.cardCount(in: stack.id)
             self.uniqueCount = try await itemRepository.uniqueCount(in: stack.id)
             await hydrateCards(for: loaded)
+            await loadPrices()
             self.status = .idle
         } catch {
             self.status = .error(message: error.localizedDescription)
         }
+    }
+
+    private func loadPrices() async {
+        guard let priceRepository else { return }
+        let source = sessionRepository.preferredPriceSource
+        let latest = (try? await priceRepository.latestByCard(source: source)) ?? [:]
+        priceMap = latest.mapValues(\.retail)
     }
 
     private func hydrateCards(for items: [CollectionItem]) async {

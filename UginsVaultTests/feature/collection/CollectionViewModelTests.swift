@@ -14,10 +14,24 @@ struct CollectionViewModelTests {
 
     // MARK: - Helpers
 
-    private func makeRepo() throws -> SwiftDataCardRepository {
+    final class InMemoryStorage: SessionStorageDataSource, @unchecked Sendable {
+        private var bag: [String: String] = [:]
+        func string(forKey key: String) -> String? { bag[key] }
+        func set(_ value: String?, forKey key: String) {
+            if let value { bag[key] = value } else { bag.removeValue(forKey: key) }
+        }
+    }
+
+    private func makeRepos() throws -> (SwiftDataCardRepository, SwiftDataPriceRepository) {
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
-        let container = try ModelContainer(for: SwiftDataCard.self, configurations: config)
-        return SwiftDataCardRepository(modelContainer: container)
+        let container = try ModelContainer(
+            for: SwiftDataCard.self, SwiftDataPriceSnapshot.self,
+            configurations: config
+        )
+        return (
+            SwiftDataCardRepository(modelContainer: container),
+            SwiftDataPriceRepository(modelContainer: container, lastSyncStorage: InMemoryStorage())
+        )
     }
 
     private func makeCard(name: String) -> Card {
@@ -28,18 +42,17 @@ struct CollectionViewModelTests {
             typeLine: "Instant",
             setCode: "fdn",
             setName: "Foundations",
-            collectorNumber: "1",
-            prices: CardPrices(usd: Decimal(string: "1.50"))
+            collectorNumber: "1"
         )
     }
 
     private func makeSUT(
         sessionCurrency: Currency = .usd,
         seedPages: [CardCataloguePage] = []
-    ) throws -> (CollectionViewModel, SwiftDataCardRepository, MockSessionRepository, MockCardCatalogueSource) {
+    ) throws -> (CollectionViewModel, SwiftDataCardRepository, SwiftDataPriceRepository, MockSessionRepository, MockCardCatalogueSource) {
         let session = MockSessionRepository()
         session.currency = sessionCurrency
-        let repo = try makeRepo()
+        let (repo, priceRepo) = try makeRepos()
         let source = MockCardCatalogueSource()
         source.queuedPages = seedPages
         let useCase = SeedCatalogueUseCase(source: source, repository: repo)
@@ -47,22 +60,23 @@ struct CollectionViewModelTests {
             sessionRepository: session,
             cardRepository: repo,
             seedCatalogue: useCase,
+            priceRepository: priceRepo,
             seedQuery: "set:test"
         )
-        return (vm, repo, session, source)
+        return (vm, repo, priceRepo, session, source)
     }
 
     // MARK: - Tests
 
     @Test("Init reads the currency preference from the session repository")
     func initReadsCurrency() throws {
-        let (sut, _, _, _) = try makeSUT(sessionCurrency: .eur)
+        let (sut, _, _, _, _) = try makeSUT(sessionCurrency: .eur)
         #expect(sut.currency == .eur)
     }
 
     @Test("Defaults: empty cards, zero count, idle status")
     func defaultsAreEmpty() throws {
-        let (sut, _, _, _) = try makeSUT()
+        let (sut, _, _, _, _) = try makeSUT()
         #expect(sut.cards.isEmpty)
         #expect(sut.matchingCount == 0)
         #expect(sut.searchQuery == "")
@@ -71,7 +85,7 @@ struct CollectionViewModelTests {
 
     @Test("loadOrSeed pulls existing cards when the repo isn't empty")
     func loadsExistingCards() async throws {
-        let (sut, repo, _, source) = try makeSUT()
+        let (sut, repo, _, _, source) = try makeSUT()
         try await repo.save([makeCard(name: "Bolt"), makeCard(name: "Counterspell")])
 
         await sut.loadOrSeed()
@@ -84,7 +98,7 @@ struct CollectionViewModelTests {
 
     @Test("loadOrSeed seeds an empty catalogue via the SeedCatalogue use case")
     func seedsEmptyCatalogue() async throws {
-        let (sut, _, _, source) = try makeSUT(
+        let (sut, _, _, _, source) = try makeSUT(
             seedPages: [
                 CardCataloguePage(cards: [makeCard(name: "A"), makeCard(name: "B")], hasMore: false)
             ]
@@ -101,7 +115,7 @@ struct CollectionViewModelTests {
 
     @Test("loadOrSeed surfaces seeding errors as .error status")
     func errorOnSeedFailure() async throws {
-        let (sut, _, _, source) = try makeSUT()
+        let (sut, _, _, _, source) = try makeSUT()
         source.nextError = ScryfallError.transport(underlying: URLError(.notConnectedToInternet))
 
         await sut.loadOrSeed()
@@ -114,7 +128,7 @@ struct CollectionViewModelTests {
 
     @Test("search filters cards by query through the repository")
     func searchFilters() async throws {
-        let (sut, repo, _, _) = try makeSUT()
+        let (sut, repo, _, _, _) = try makeSUT()
         try await repo.save([
             makeCard(name: "Lightning Bolt"),
             makeCard(name: "Lightning Helix"),
@@ -129,13 +143,19 @@ struct CollectionViewModelTests {
         #expect(sut.cards.allSatisfy { $0.name.lowercased().contains("lightning") })
     }
 
-    @Test("totalValueUSD sums non-foil USD prices across loaded cards")
+    @Test("totalValueUSD sums priced cards from the local store")
     func totalValueSums() async throws {
-        let (sut, repo, _, _) = try makeSUT()
-        try await repo.save([
-            makeCard(name: "A"),
-            makeCard(name: "B")
-        ])
+        let (sut, repo, priceRepo, _, _) = try makeSUT()
+        let a = makeCard(name: "A")
+        let b = makeCard(name: "B")
+        try await repo.save([a, b])
+
+        let day = Date()
+        try await priceRepo.upsert([
+            PriceSnapshot(cardID: a.id, source: .cardkingdom, date: day, currency: .usd, retail: Decimal(string: "1.50")!),
+            PriceSnapshot(cardID: b.id, source: .cardkingdom, date: day, currency: .usd, retail: Decimal(string: "1.50")!)
+        ], keepingSince: day.addingTimeInterval(-100_000))
+
         await sut.loadOrSeed()
 
         #expect(sut.totalValueUSD == Decimal(string: "3.00"))
@@ -143,7 +163,7 @@ struct CollectionViewModelTests {
 
     @Test("setSort updates sort + reruns the search")
     func setSortReorders() async throws {
-        let (sut, repo, _, _) = try makeSUT()
+        let (sut, repo, _, _, _) = try makeSUT()
         try await repo.save([
             makeCard(name: "Counterspell"),
             makeCard(name: "Ancestral Recall")
@@ -159,7 +179,7 @@ struct CollectionViewModelTests {
 
     @Test("applyFilter narrows the result set + advertises hasActiveFilter")
     func applyFilterNarrows() async throws {
-        let (sut, repo, _, _) = try makeSUT()
+        let (sut, repo, _, _, _) = try makeSUT()
         try await repo.save([
             makeCard(name: "A"),
             makeCard(name: "B"),
@@ -176,7 +196,7 @@ struct CollectionViewModelTests {
 
     @Test("removeCard(id:) deletes from repo + drops the row + updates count")
     func removeCardPulls() async throws {
-        let (sut, repo, _, _) = try makeSUT()
+        let (sut, repo, _, _, _) = try makeSUT()
         let a = makeCard(name: "A")
         let b = makeCard(name: "B")
         try await repo.save([a, b])
@@ -194,7 +214,7 @@ struct CollectionViewModelTests {
     @Test("loadMoreIfNeeded appends the next page until hasMore is false")
     func paginationLoadsMore() async throws {
         let session = MockSessionRepository()
-        let repo = try makeRepo()
+        let (repo, priceRepo) = try makeRepos()
         let cards = (0..<10).map { makeCard(name: String(format: "Card %02d", $0)) }
         try await repo.save(cards)
 
@@ -206,6 +226,7 @@ struct CollectionViewModelTests {
             sessionRepository: session,
             cardRepository: repo,
             seedCatalogue: useCase,
+            priceRepository: priceRepo,
             seedQuery: "set:test",
             pageSize: 4
         )

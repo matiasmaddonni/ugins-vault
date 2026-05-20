@@ -2,18 +2,10 @@
 //  LatestPriceUseCase.swift
 //  UginsVault — Domain layer
 //
-//  Resolves a per-card retail price with a layered fallback:
-//
-//   1. `PriceRepository.latest(cardID: source: preferred)` — what
-//      MTGJSON had for this card the last time we synced.
-//   2. Any other `PriceSource` MTGJSON shipped — the data is already
-//      on-device, no extra network hit.
-//   3. The Scryfall `Card.prices` snapshot baked into the local
-//      catalogue (always present after a Scryfall sync but only one
-//      data point, no history).
-//
-//  Returns both the value and the source it came from so the view
-//  can credit "via Card Kingdom" or "via Scryfall" honestly.
+//  Resolves a per-card retail price from the local price store (backend
+//  snapshots). Prefers the user's chosen source, then
+//  any other source the store has. Returns `nil` when nothing is priced —
+//  there is no Scryfall fallback: the backend is the single source of truth.
 //
 
 import Foundation
@@ -28,7 +20,6 @@ public final class LatestPriceUseCase {
 
         public enum Source: Equatable, Sendable {
             case marketplace(PriceSource)
-            case scryfall
         }
     }
 
@@ -38,15 +29,9 @@ public final class LatestPriceUseCase {
         self.priceRepository = priceRepository
     }
 
-    /// Resolves the best available price for `card` with the user's
-    /// preferred source taking priority. Returns `nil` when neither
-    /// the local MTGJSON cache nor the Scryfall fallback has data.
-    public func execute(
-        card: Card,
-        preferred: PriceSource,
-        finish: Finish = .nonfoil
-    ) async -> Resolved? {
-
+    /// Best available price for `card`, preferring `preferred`. `nil` when the
+    /// store has no priced snapshot for the card in any source.
+    public func execute(card: Card, preferred: PriceSource) async -> Resolved? {
         if let snapshot = try? await priceRepository.latest(cardID: card.id, source: preferred),
            snapshot.retail > 0 {
             return Resolved(
@@ -67,9 +52,6 @@ public final class LatestPriceUseCase {
             }
         }
 
-        if let usd = card.prices.usdPrice(for: finish), usd > 0 {
-            return Resolved(amount: usd, currency: .usd, source: .scryfall)
-        }
         return nil
     }
 }

@@ -18,6 +18,11 @@ public enum Layout {
     public static let primaryButtonHeight: CGFloat = 48
     public static let secondaryButtonHeight: CGFloat = 40
 
+    // MARK: - Account login
+
+    /// Brand mark size on the account-login screen.
+    public static let accountLoginMarkSize: CGFloat = 72
+
     // MARK: - Settings primitives
 
     /// Width reserved for the leading icon in a SettingsRow.

@@ -34,16 +34,29 @@ public struct RootView: View {
                 )
                 .transition(.opacity)
 
+            case .accountLogin:
+                AccountLoginView(
+                    viewModel: container.makeAccountLoginViewModel(
+                        onProceed: {
+                            // After account sign-in, apply the local Face ID
+                            // gate (or enter the app directly when it's off).
+                            if container.sessionRepository.faceIDLock {
+                                viewModel.transition(to: .login)
+                            } else {
+                                viewModel.transition(to: appEntryPhase())
+                            }
+                        }
+                    )
+                )
+                .transition(.opacity)
+
             case .login:
                 LoginView(
                     viewModel: container.makeLoginViewModel(
                         onAuthenticated: {
                             // First launch (no prior sync) routes through
                             // PriceSyncView. Returning users skip to home.
-                            let next: AppPhase = container.priceRepository.lastSyncedAt == nil
-                                ? .priceSync
-                                : .home
-                            viewModel.transition(to: next)
+                            viewModel.transition(to: appEntryPhase())
                         }
                     )
                 )
@@ -67,6 +80,14 @@ public struct RootView: View {
         .animation(.easeInOut(duration: 0.25), value: viewModel.phase)
         .preferredColorScheme(container.sessionRepository.theme.colorScheme)
         .environment(\.locale, container.sessionRepository.language.locale ?? Locale.autoupdatingCurrent)
+    }
+
+    // MARK: - Helpers
+
+    /// First launch (no prior sync) routes through PriceSync; returning users
+    /// skip straight to home.
+    private func appEntryPhase() -> AppPhase {
+        container.priceRepository.lastSyncedAt == nil ? .priceSync : .home
     }
 }
 

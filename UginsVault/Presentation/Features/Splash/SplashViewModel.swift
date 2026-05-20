@@ -53,7 +53,7 @@ public final class SplashViewModel {
         Task { [weak self] in
             guard let self else { return }
             try? await Task.sleep(for: self.holdDuration)
-            let next = self.advanceFromSplashUseCase.execute()
+            let next = await self.advanceFromSplashUseCase.execute()
             self.onAdvance(next)
         }
     }

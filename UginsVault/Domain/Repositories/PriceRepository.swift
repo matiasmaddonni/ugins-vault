@@ -43,8 +43,8 @@ public protocol PriceRepository: AnyObject, Observable {
 
     // MARK: - Writes
 
-    /// Upserts the batch by `(cardID, source, date)` and prunes rows
-    /// older than `keepingSince`.
+    /// Upserts the batch by `(cardID, source, date)` and prunes rows older
+    /// than `keepingSince`.
     func upsert(
         _ snapshots: [PriceSnapshot],
         keepingSince: Date

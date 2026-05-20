@@ -314,37 +314,23 @@ public struct CardDetailView: View {
 
     private var priceSourceLabel: String {
         guard let resolved = viewModel.resolvedPrice else {
-            return "via Scryfall"
+            return ""
         }
         switch resolved.source {
         case .marketplace(let source): return "via \(source.displayName)"
-        case .scryfall:                return "via Scryfall"
         }
     }
 
     private var priceRows: [PriceRow] {
-        if let resolved = viewModel.resolvedPrice {
-            return [
-                PriceRow(
-                    label: "Retail",
-                    value: CurrencyFormatter.format(resolved.amount, currency: resolved.currency)
-                )
-            ]
+        guard let resolved = viewModel.resolvedPrice else {
+            return [PriceRow(label: "Retail", value: "—")]
         }
-        var rows: [PriceRow] = []
-        if let usd = card.prices.usd {
-            rows.append(.init(label: "Nonfoil", value: CurrencyFormatter.format(usd, currency: displayCurrency)))
-        }
-        if let foil = card.prices.usdFoil {
-            rows.append(.init(label: "Foil", value: CurrencyFormatter.format(foil, currency: displayCurrency)))
-        }
-        if let etched = card.prices.usdEtched {
-            rows.append(.init(label: "Etched", value: CurrencyFormatter.format(etched, currency: displayCurrency)))
-        }
-        if rows.isEmpty {
-            rows.append(.init(label: "Nonfoil", value: "—"))
-        }
-        return rows
+        return [
+            PriceRow(
+                label: "Retail",
+                value: CurrencyFormatter.format(resolved.amount, currency: resolved.currency)
+            )
+        ]
     }
 
     // MARK: - 30-day price history sparkline

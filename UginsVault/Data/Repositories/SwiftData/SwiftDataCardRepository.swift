@@ -233,12 +233,6 @@ public final class SwiftDataCardRepository: CardRepository {
         case .nameAscending:
             return [SortDescriptor(\.name, order: .forward)]
 
-        case .priceDescending:
-            return [
-                SortDescriptor(\.priceUSD, order: .reverse),
-                SortDescriptor(\.name, order: .forward)
-            ]
-
         case .releasedAtDescending:
             return [
                 SortDescriptor(\.releasedAt, order: .reverse),

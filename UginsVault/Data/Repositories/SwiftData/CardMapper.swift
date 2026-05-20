@@ -39,14 +39,6 @@ extension Card {
                 artCrop: model.imageArtCrop,
                 borderCrop: model.imageBorderCrop
             ),
-            prices: CardPrices(
-                usd: model.priceUSD,
-                usdFoil: model.priceUSDFoil,
-                usdEtched: model.priceUSDEtched,
-                eur: model.priceEUR,
-                eurFoil: model.priceEURFoil,
-                tix: model.priceTix
-            ),
             legalities: Card.parseLegalities(model.legalitiesJSON),
             isReserved: model.isReserved
         )
@@ -120,12 +112,6 @@ extension SwiftDataCard {
             imagePNG: card.images.png,
             imageArtCrop: card.images.artCrop,
             imageBorderCrop: card.images.borderCrop,
-            priceUSD: card.prices.usd,
-            priceUSDFoil: card.prices.usdFoil,
-            priceUSDEtched: card.prices.usdEtched,
-            priceEUR: card.prices.eur,
-            priceEURFoil: card.prices.eurFoil,
-            priceTix: card.prices.tix,
             legalitiesJSON: Card.encodeLegalities(card.legalities),
             isReserved: card.isReserved
         )
@@ -156,12 +142,6 @@ extension SwiftDataCard {
         imagePNG         = card.images.png
         imageArtCrop     = card.images.artCrop
         imageBorderCrop  = card.images.borderCrop
-        priceUSD         = card.prices.usd
-        priceUSDFoil     = card.prices.usdFoil
-        priceUSDEtched   = card.prices.usdEtched
-        priceEUR         = card.prices.eur
-        priceEURFoil     = card.prices.eurFoil
-        priceTix         = card.prices.tix
         legalitiesJSON   = Card.encodeLegalities(card.legalities)
         isReserved       = card.isReserved
     }

@@ -9,6 +9,9 @@ import Foundation
 
 public enum AppPhase: String, Codable, Sendable, CaseIterable {
     case splash
+    /// Backend account sign-in (Supabase email/password). Shown when no
+    /// session can be restored. Precedes the local `.login` Face ID gate.
+    case accountLogin
     case login
     /// First-launch (or manually triggered) pricing-data sync. Displayed
     /// between `.login` and `.home`. Skipped once the user has at least

@@ -3,7 +3,7 @@
 //  UginsVault — Domain layer
 //
 //  Remote source the `SyncPricesUseCase` pulls from. The Data layer
-//  ships an MTGJSON-backed implementation; tests inject a stub.
+//  ships a backend (API) implementation; tests inject a stub.
 //
 
 import Foundation

@@ -48,14 +48,6 @@ extension Card {
                 artCrop:    dto.imageURIs?.artCrop    ?? dto.cardFaces?.first?.imageURIs?.artCrop,
                 borderCrop: dto.imageURIs?.borderCrop ?? dto.cardFaces?.first?.imageURIs?.borderCrop
             ),
-            prices: CardPrices(
-                usd:       dto.prices?.usd.flatMap { Decimal(string: $0) },
-                usdFoil:   dto.prices?.usdFoil.flatMap { Decimal(string: $0) },
-                usdEtched: dto.prices?.usdEtched.flatMap { Decimal(string: $0) },
-                eur:       dto.prices?.eur.flatMap { Decimal(string: $0) },
-                eurFoil:   dto.prices?.eurFoil.flatMap { Decimal(string: $0) },
-                tix:       dto.prices?.tix.flatMap { Decimal(string: $0) }
-            ),
             legalities: Self.parseLegalities(dto.legalities),
             isReserved: dto.reserved ?? false
         )
