@@ -269,7 +269,7 @@ public final class DependencyContainer {
         )
     }
 
-    @MainActor public func makePriceSyncViewModel(fullHistory: Bool = true) -> PriceSyncViewModel {
+    @MainActor public func makePriceSyncViewModel(fullHistory: Bool = false) -> PriceSyncViewModel {
         PriceSyncViewModel(
             useCase: makeSyncPricesUseCase(),
             seedCatalogue: makeSeedCatalogueUseCase(),

@@ -51,7 +51,10 @@ public struct RootView: View {
 
             case .priceSync:
                 PriceSyncView(
-                    viewModel: container.makePriceSyncViewModel(),
+                    // First launch bootstraps the FULL price history so the
+                    // Dashboard has real movers immediately; Settings'
+                    // "Refresh prices" stays on the light daily path.
+                    viewModel: container.makePriceSyncViewModel(fullHistory: true),
                     onFinish: { viewModel.transition(to: .home) }
                 )
                 .transition(.opacity)
