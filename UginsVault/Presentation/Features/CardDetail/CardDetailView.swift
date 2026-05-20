@@ -313,12 +313,13 @@ public struct CardDetailView: View {
     }
 
     private var priceSourceLabel: String {
-        guard let resolved = viewModel.resolvedPrice else {
-            return ""
+        let source: PriceSource
+        if case .marketplace(let resolvedSource) = viewModel.resolvedPrice?.source {
+            source = resolvedSource
+        } else {
+            source = viewModel.preferredSource
         }
-        switch resolved.source {
-        case .marketplace(let source): return "via \(source.displayName)"
-        }
+        return "via MTGJSON · \(source.displayName)"
     }
 
     private var priceRows: [PriceRow] {

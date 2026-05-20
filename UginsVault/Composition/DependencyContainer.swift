@@ -462,6 +462,7 @@ public final class DependencyContainer {
             updateUserProfileUseCase:    makeUpdateUserProfileUseCase(),
             resetCatalogueUseCase:       makeResetCatalogueUseCase(),
             signOutAccount:              makeSignOutAccountUseCase(),
+            accountRepository:           accountRepository,
             onSignedOut:                 onSignedOut
         )
     }

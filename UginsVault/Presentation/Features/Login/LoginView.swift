@@ -143,19 +143,6 @@ public struct LoginView: View {
             Text("Face ID · or use PIN")
                 .font(.uv.body(12))
                 .foregroundStyle(Color.uv.muted)
-
-            #if DEBUG
-            Button {
-                viewModel.bypassAuthentication()
-            } label: {
-                Text("SKIP (DEV)")
-                    .font(.uv.mono(11, weight: .medium))
-                    .foregroundStyle(Color.uv.muted2)
-                    .tracking(2.5)
-            }
-            .padding(.top, Spacing.md)
-            .accessibilityIdentifier(LoginAccessibilityFields.skipDevButton)
-            #endif
         }
     }
 

@@ -28,7 +28,6 @@ public struct AccountLoginView: View {
             header
             form(viewModel: viewModel)
             Spacer()
-            footer
         }
         .padding(.horizontal, Spacing.screenEdge)
         .padding(.vertical, Spacing.huge)
@@ -156,22 +155,4 @@ public struct AccountLoginView: View {
         .accessibilityIdentifier(AccountLoginAccessibilityFields.signInButton)
     }
 
-    // MARK: - Footer
-
-    @ViewBuilder
-    private var footer: some View {
-        #if DEBUG
-        Button {
-            viewModel.skipForDev()
-        } label: {
-            Text("SKIP (DEV)")
-                .font(.uv.mono(11, weight: .medium))
-                .foregroundStyle(Color.uv.muted2)
-                .tracking(2.5)
-        }
-        .accessibilityIdentifier(AccountLoginAccessibilityFields.skipDevButton)
-        #else
-        EmptyView()
-        #endif
-    }
 }

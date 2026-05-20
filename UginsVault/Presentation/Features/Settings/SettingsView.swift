@@ -335,6 +335,17 @@ public struct SettingsView: View {
     private var accountGroup: some View {
         SettingsGroup("Account") {
             SettingsRow(
+                icon: "person.crop.circle",
+                title: "Signed in as"
+            ) {
+                Text(viewModel.accountEmail ?? String(localized: "Not signed in"))
+                    .font(.uv.mono(13, weight: .medium))
+                    .foregroundStyle(Color.uv.muted)
+                    .lineLimit(1)
+            }
+            .accessibilityIdentifier(SettingsAccessibilityFields.accountEmailRow)
+
+            SettingsRow(
                 icon: "rectangle.portrait.and.arrow.right",
                 title: "Sign out",
                 subtitle: String(localized: "Disconnect this device from your account"),

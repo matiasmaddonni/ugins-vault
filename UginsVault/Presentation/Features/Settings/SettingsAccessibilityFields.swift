@@ -63,6 +63,7 @@ public enum SettingsAccessibilityFields {
 
     // MARK: - Account group
 
+    public static let accountEmailRow      = "lbl_settings_account_email"
     public static let signOutRow           = "btn_settings_sign_out"
     public static let signOutConfirmButton = "btn_settings_sign_out_confirm"
 

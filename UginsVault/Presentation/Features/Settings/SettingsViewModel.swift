@@ -57,6 +57,7 @@ public final class SettingsViewModel {
     @ObservationIgnored private let resetCatalogue:       ResetCatalogueUseCase
     @ObservationIgnored private let signOutAccount:       SignOutAccountUseCase
     @ObservationIgnored private let onSignedOut:          () -> Void
+    @ObservationIgnored private let accountRepository:    AccountRepository
 
     /// Seed query used when the user taps "Reset catalogue". Matches the
     /// CollectionViewModel default so the reset lands on the same set.
@@ -85,6 +86,7 @@ public final class SettingsViewModel {
         updateUserProfileUseCase: UpdateUserProfileUseCase,
         resetCatalogueUseCase: ResetCatalogueUseCase,
         signOutAccount: SignOutAccountUseCase,
+        accountRepository: AccountRepository,
         onSignedOut: @escaping () -> Void = {},
         seedQuery: String = "set:fdn"
     ) {
@@ -109,8 +111,12 @@ public final class SettingsViewModel {
         self.resetCatalogue       = resetCatalogueUseCase
         self.signOutAccount       = signOutAccount
         self.onSignedOut          = onSignedOut
+        self.accountRepository    = accountRepository
         self.seedQuery            = seedQuery
     }
+
+    /// Email of the signed-in backend account, or `nil` in local-only mode.
+    public var accountEmail: String? { accountRepository.userEmail }
 
     // MARK: - Account
 
