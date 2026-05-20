@@ -61,6 +61,11 @@ public enum SettingsAccessibilityFields {
     public static let resetCatalogueRow  = "btn_settings_reset_catalogue"
     public static let resetConfirmButton = "btn_settings_reset_confirm"
 
+    // MARK: - Account group
+
+    public static let signOutRow           = "btn_settings_sign_out"
+    public static let signOutConfirmButton = "btn_settings_sign_out_confirm"
+
     // MARK: - About group
 
     public static let versionRow         = "lbl_settings_version"

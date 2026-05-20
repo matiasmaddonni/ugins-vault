@@ -55,6 +55,8 @@ public final class SettingsViewModel {
     @ObservationIgnored private let getProfileUseCase:    GetUserProfileUseCase
     @ObservationIgnored private let updateProfileUseCase: UpdateUserProfileUseCase
     @ObservationIgnored private let resetCatalogue:       ResetCatalogueUseCase
+    @ObservationIgnored private let signOutAccount:       SignOutAccountUseCase
+    @ObservationIgnored private let onSignedOut:          () -> Void
 
     /// Seed query used when the user taps "Reset catalogue". Matches the
     /// CollectionViewModel default so the reset lands on the same set.
@@ -82,6 +84,8 @@ public final class SettingsViewModel {
         getUserProfileUseCase: GetUserProfileUseCase,
         updateUserProfileUseCase: UpdateUserProfileUseCase,
         resetCatalogueUseCase: ResetCatalogueUseCase,
+        signOutAccount: SignOutAccountUseCase,
+        onSignedOut: @escaping () -> Void = {},
         seedQuery: String = "set:fdn"
     ) {
         self.sessionRepository    = sessionRepository
@@ -103,7 +107,18 @@ public final class SettingsViewModel {
         self.getProfileUseCase    = getUserProfileUseCase
         self.updateProfileUseCase = updateUserProfileUseCase
         self.resetCatalogue       = resetCatalogueUseCase
+        self.signOutAccount       = signOutAccount
+        self.onSignedOut          = onSignedOut
         self.seedQuery            = seedQuery
+    }
+
+    // MARK: - Account
+
+    /// Clears the backend session, then asks the root router to return to the
+    /// account-login screen.
+    public func signOut() async {
+        await signOutAccount.execute()
+        onSignedOut()
     }
 
     // MARK: - Derived state (reads observable repos directly)

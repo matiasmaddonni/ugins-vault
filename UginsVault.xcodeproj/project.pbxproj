@@ -49,6 +49,7 @@
 		2A9326BBA4E823D5B72988AC /* WishlistAccessibilityFields.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D8C6F361E4167B5CE7B41E5 /* WishlistAccessibilityFields.swift */; };
 		2C1FCC2B55F672AD0318D4BA /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29FE62A06758BFD04C2FFBE1 /* SplashView.swift */; };
 		2D06F55FA32A90725CBC26F5 /* UginsVaultAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99D2D1F257365DA42BFF09D7 /* UginsVaultAPIClient.swift */; };
+		3052211A1ADAC60457D1D59F /* PriceSourceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = E52E8CB756823001C4B62E77 /* PriceSourceError.swift */; };
 		30D744219D96F9401D182A80 /* MockSessionRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB67F41E9C8D32886C0CFDC5 /* MockSessionRepository.swift */; };
 		31FF8332ED146FD022E0C5BD /* AddCardToStackUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C7B5E6AF9C56DF5D2B08E /* AddCardToStackUseCaseTests.swift */; };
 		3373136A53DCB0F7E9CCB19C /* UserProfileUseCasesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C4E3587E66EFD5E5ABF1CC3 /* UserProfileUseCasesTests.swift */; };
@@ -525,6 +526,7 @@
 		E2F3C829887DF430EB6FAE40 /* ReduceMotionUseCasesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReduceMotionUseCasesTests.swift; sourceTree = "<group>"; };
 		E321F1E9F53754CA8D94A644 /* WishlistItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishlistItem.swift; sourceTree = "<group>"; };
 		E3640EB69183473536EB61D1 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		E52E8CB756823001C4B62E77 /* PriceSourceError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceSourceError.swift; sourceTree = "<group>"; };
 		E53760C16635CFD8AA56E1AB /* SwiftDataWishlistRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataWishlistRepository.swift; sourceTree = "<group>"; };
 		E53902A1BA13EF9708B53E04 /* CurrencyFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyFormatter.swift; sourceTree = "<group>"; };
 		E5F10A249CDA08CC7F88898B /* DashboardMoverThresholdUseCases.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardMoverThresholdUseCases.swift; sourceTree = "<group>"; };
@@ -854,6 +856,7 @@
 			children = (
 				8FEBD1AFB83D963DD6742795 /* PriceSnapshot.swift */,
 				9AE0806BBD399EE95B18468B /* PriceSource.swift */,
+				E52E8CB756823001C4B62E77 /* PriceSourceError.swift */,
 			);
 			path = Pricing;
 			sourceTree = "<group>";
@@ -1657,6 +1660,7 @@
 				1207C31188AEA4B00C09E307 /* PriceSnapshot.swift in Sources */,
 				E4F75F56DB57D9DC5DA79290 /* PriceSnapshotMapper.swift in Sources */,
 				805ED46895559DE3E063431B /* PriceSource.swift in Sources */,
+				3052211A1ADAC60457D1D59F /* PriceSourceError.swift in Sources */,
 				0D4ED5B34BCCE157ABD47338 /* PriceSyncAccessibilityFields.swift in Sources */,
 				FAD645A2D85CBE224E157CE9 /* PriceSyncScheduler.swift in Sources */,
 				7AB87EAE223814983A369CBF /* PriceSyncView.swift in Sources */,

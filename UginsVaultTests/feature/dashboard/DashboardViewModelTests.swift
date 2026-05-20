@@ -5,6 +5,7 @@
 
 import Foundation
 import Observation
+import SwiftData
 import Testing
 @testable import UginsVault
 
@@ -141,5 +142,90 @@ struct DashboardViewModelTests {
         #expect(repo.fetchCallCount == 2)
         #expect(sut.snapshot != nil)
         #expect(sut.snapshot == initialSnapshot) // mock returns the same seed
+    }
+
+    // MARK: - Sync behaviour
+
+    @MainActor
+    final class StubReach: NetworkReachability {
+        var isOnWiFi: Bool = true
+    }
+
+    @MainActor
+    final class CaptureSource: PriceCatalogueSource {
+        var error: Error?
+        func fetchSnapshots(ownedCardIDs: Set<UUID>) async throws -> [PriceSnapshot] {
+            if let error { throw error }
+            return []
+        }
+    }
+
+    struct NoopOwnedSync: RemoteOwnedSync {
+        func push(_ cards: [OwnedCardCount]) async throws {}
+    }
+
+    /// Builds a Dashboard VM whose price sync hits a controllable backend
+    /// source. Seeds one owned card so the sync reaches the backend fetch.
+    private func makeSyncSUT(
+        sourceError: Error?,
+        onRequireSignIn: @escaping () -> Void = {}
+    ) async throws -> (DashboardViewModel, MockRepo) {
+        let config = ModelConfiguration(isStoredInMemoryOnly: true)
+        let container = try ModelContainer(for: SwiftDataCollectionItem.self, configurations: config)
+        let items = SwiftDataCollectionItemRepository(modelContainer: container)
+        try await items.save(CollectionItem(cardID: UUID(), stackID: UUID()))
+
+        let backend = CaptureSource()
+        backend.error = sourceError
+        let sync = SyncPricesUseCase(
+            priceRepository: MockPriceRepository(),
+            collectionItemRepository: items,
+            backendSource: backend,
+            pushOwned: PushOwnedUseCase(collectionItemRepository: items, remoteOwnedSync: NoopOwnedSync())
+        )
+        let repo = MockRepo()
+        let sut = DashboardViewModel(
+            repository: repo,
+            sessionRepository: MockSessionRepository(),
+            syncPrices: sync,
+            reachability: StubReach(),
+            signOutAccount: SignOutAccountUseCase(accountRepository: MockAccountRepository()),
+            onRequireSignIn: onRequireSignIn
+        )
+        return (sut, repo)
+    }
+
+    @Test("auto-sync on first appear runs a sync + reloads")
+    func autoSyncOnAppear() async throws {
+        let (sut, repo) = try await makeSyncSUT(sourceError: nil)
+
+        await sut.onAppear()
+
+        // initial load (snapshot nil) + post-sync reload
+        #expect(repo.fetchCallCount == 2)
+        #expect(sut.syncFailed == false)
+    }
+
+    @Test("expired session during sync routes to sign-in")
+    func unauthorizedRoutesToLogin() async throws {
+        var routed = false
+        let (sut, _) = try await makeSyncSUT(
+            sourceError: PriceSourceError.unauthorized,
+            onRequireSignIn: { routed = true }
+        )
+
+        await sut.refresh()
+
+        #expect(routed)
+        #expect(sut.syncFailed == false)
+    }
+
+    @Test("network/server error during sync flags syncFailed")
+    func syncFailureFlag() async throws {
+        let (sut, _) = try await makeSyncSUT(sourceError: DummyError())
+
+        await sut.refresh()
+
+        #expect(sut.syncFailed)
     }
 }

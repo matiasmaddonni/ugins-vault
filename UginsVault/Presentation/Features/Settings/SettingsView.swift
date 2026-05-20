@@ -16,6 +16,7 @@ public struct SettingsView: View {
     @State private var isPresentingAcknowledgements: Bool = false
     @State private var presentedSheet: ActiveSheet?
     @State private var isConfirmingReset: Bool = false
+    @State private var isConfirmingSignOut: Bool = false
     @State private var isShowingWishlist: Bool = false
     @State private var languageChangePending: Bool = false
     @State private var isShowingLanguageRestart: Bool = false
@@ -60,6 +61,7 @@ public struct SettingsView: View {
                     )
                     dataGroup
                     aboutGroup
+                    accountGroup
                 }
                 .padding(.horizontal, Spacing.screenEdge)
                 .padding(.top, Spacing.sm)
@@ -85,6 +87,20 @@ public struct SettingsView: View {
                 Button("Cancel", role: .cancel) {}
             } message: {
                 Text("Wipes every card stored locally and re-downloads the seed set from Scryfall. Your preferences are not affected.")
+            }
+            .confirmationDialog(
+                "Sign out?",
+                isPresented: $isConfirmingSignOut,
+                titleVisibility: .visible
+            ) {
+                Button("Sign out", role: .destructive) {
+                    Task { await viewModel.signOut() }
+                }
+                .accessibilityIdentifier(SettingsAccessibilityFields.signOutConfirmButton)
+
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("You'll need to sign in again to sync prices. Your local collection stays on this device.")
             }
             .sheet(isPresented: $isEditingProfile) {
                 EditProfileSheet(
@@ -312,6 +328,25 @@ public struct SettingsView: View {
             return "1 card"
         }
         return "\(viewModel.catalogueCount) cards"
+    }
+
+    // MARK: - Account
+
+    private var accountGroup: some View {
+        SettingsGroup("Account") {
+            SettingsRow(
+                icon: "rectangle.portrait.and.arrow.right",
+                title: "Sign out",
+                subtitle: String(localized: "Disconnect this device from your account"),
+                isDestructive: true,
+                action: { isConfirmingSignOut = true }
+            ) {
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(Color.uv.muted)
+            }
+            .accessibilityIdentifier(SettingsAccessibilityFields.signOutRow)
+        }
     }
 
     // MARK: - About

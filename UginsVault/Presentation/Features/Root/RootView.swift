@@ -73,8 +73,11 @@ public struct RootView: View {
                 .transition(.opacity)
 
             case .home:
-                MainTabView(container: container)
-                    .transition(.opacity)
+                MainTabView(
+                    container: container,
+                    onRequireSignIn: { viewModel.transition(to: .accountLogin) }
+                )
+                .transition(.opacity)
             }
         }
         .animation(.easeInOut(duration: 0.25), value: viewModel.phase)

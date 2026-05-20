@@ -11,6 +11,7 @@ import Foundation
 
 public enum BackendAPIError: Error, LocalizedError {
     case notAuthenticated
+    case unauthorized
     case invalidEndpoint(path: String)
     case transport(underlying: Error)
     case unexpectedStatus(status: Int)
@@ -19,6 +20,7 @@ public enum BackendAPIError: Error, LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .notAuthenticated:       return "You're signed out — sign in to sync prices."
+        case .unauthorized:           return "Your session expired — sign in again."
         case .invalidEndpoint(let p): return "Bad endpoint: \(p)"
         case .transport(let e):       return e.localizedDescription
         case .unexpectedStatus(let s): return "Backend returned HTTP \(s)"
@@ -122,6 +124,7 @@ public actor UginsVaultAPIClient {
         }
 
         if let http = response as? HTTPURLResponse, !(200..<300).contains(http.statusCode) {
+            if http.statusCode == 401 { throw BackendAPIError.unauthorized }
             throw BackendAPIError.unexpectedStatus(status: http.statusCode)
         }
 

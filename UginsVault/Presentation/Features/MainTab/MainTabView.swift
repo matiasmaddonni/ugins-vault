@@ -20,9 +20,14 @@ public struct MainTabView: View {
 
     @State private var selectedTab: TabSelection = .collection
     private let container: DependencyContainer
+    private let onRequireSignIn: () -> Void
 
-    public init(container: DependencyContainer = .shared) {
+    public init(
+        container: DependencyContainer = .shared,
+        onRequireSignIn: @escaping () -> Void = {}
+    ) {
         self.container = container
+        self.onRequireSignIn = onRequireSignIn
     }
 
     public var body: some View {
@@ -38,12 +43,12 @@ public struct MainTabView: View {
             }
 
             Tab("Dashboard", systemImage: "chart.bar.fill", value: .dashboard) {
-                DashboardView(viewModel: container.makeDashboardViewModel())
+                DashboardView(viewModel: container.makeDashboardViewModel(onRequireSignIn: onRequireSignIn))
                     .accessibilityIdentifier(MainTabAccessibilityFields.dashboardTab)
             }
 
             Tab("Settings", systemImage: "gearshape.fill", value: .settings) {
-                SettingsView(viewModel: container.makeSettingsViewModel())
+                SettingsView(viewModel: container.makeSettingsViewModel(onSignedOut: onRequireSignIn))
                     .accessibilityIdentifier(MainTabAccessibilityFields.settingsTab)
             }
         }

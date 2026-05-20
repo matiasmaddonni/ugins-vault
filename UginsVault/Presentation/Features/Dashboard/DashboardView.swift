@@ -52,9 +52,31 @@ public struct DashboardView: View {
 
     // MARK: - Loaded
 
+    private var syncFailedBanner: some View {
+        HStack(spacing: Spacing.sm) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundStyle(Color.uv.down)
+            Text("Couldn't refresh prices — pull to retry.")
+                .font(.uv.body(13))
+                .foregroundStyle(Color.uv.muted)
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, Spacing.rowHorizontal)
+        .padding(.vertical, Spacing.sm)
+        .background(
+            RoundedRectangle(cornerRadius: UVRadius.md)
+                .fill(Color.uv.panel)
+        )
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier(DashboardAccessibilityFields.syncFailedBanner)
+    }
+
     private func loadedScroll(snapshot: DashboardSnapshot) -> some View {
         ScrollView {
             VStack(spacing: Layout.dashboardSectionSpacing) {
+                if viewModel.syncFailed {
+                    syncFailedBanner
+                }
                 heroRow(snapshot: snapshot)
                 moversRow(snapshot: snapshot)
                 ByFormatPanel(

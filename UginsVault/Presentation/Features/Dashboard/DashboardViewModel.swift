@@ -30,6 +30,10 @@ public final class DashboardViewModel {
     public private(set) var status: Status = .idle
     public private(set) var currency: Currency
 
+    /// `true` when the last price sync failed for a reason worth showing the
+    /// user (network / server). Auth expiry routes to login instead.
+    public private(set) var syncFailed: Bool = false
+
     // MARK: - Dependencies
 
     @ObservationIgnored private let repository: DashboardRepository
@@ -37,6 +41,10 @@ public final class DashboardViewModel {
     @ObservationIgnored private let syncPrices: SyncPricesUseCase?
     @ObservationIgnored private let reachability: NetworkReachability?
     @ObservationIgnored private let exchangeRateRepository: ExchangeRateRepository?
+    @ObservationIgnored private let signOutAccount: SignOutAccountUseCase?
+    @ObservationIgnored private let onRequireSignIn: () -> Void
+
+    @ObservationIgnored private var hasAutoSynced = false
 
     // MARK: - Init
 
@@ -45,13 +53,17 @@ public final class DashboardViewModel {
         sessionRepository: SessionRepository,
         syncPrices: SyncPricesUseCase? = nil,
         reachability: NetworkReachability? = nil,
-        exchangeRateRepository: ExchangeRateRepository? = nil
+        exchangeRateRepository: ExchangeRateRepository? = nil,
+        signOutAccount: SignOutAccountUseCase? = nil,
+        onRequireSignIn: @escaping () -> Void = {}
     ) {
         self.repository = repository
         self.sessionRepository = sessionRepository
         self.syncPrices = syncPrices
         self.reachability = reachability
         self.exchangeRateRepository = exchangeRateRepository
+        self.signOutAccount = signOutAccount
+        self.onRequireSignIn = onRequireSignIn
         self.currency = sessionRepository.currency
     }
 
@@ -77,6 +89,12 @@ public final class DashboardViewModel {
         if snapshot == nil {
             await load()
         }
+        // Auto-sync once per Dashboard lifetime so prices refresh after sign-in
+        // without a manual pull. Gated on Wi-Fi inside `runSync`.
+        if !hasAutoSynced {
+            hasAutoSynced = true
+            if await runSync() { await load() }
+        }
         // Fire-and-forget FX refresh — view re-reads `exchangeRate`
         // once the repo bumps its cache.
         if let exchangeRateRepository {
@@ -101,16 +119,31 @@ public final class DashboardViewModel {
     /// snapshot consumes locally-persisted price data, not the
     /// remote response.
     public func refresh() async {
-        if let syncPrices, reachability?.isOnWiFi == true {
-            _ = try? await syncPrices.execute(progress: nil)
-        }
+        await runSync()
+        await load()
+    }
+
+    /// Runs a price sync (Wi-Fi-gated). Expired session → sign out + route to
+    /// login; network/server failure → flag `syncFailed`; no-owned-cards is
+    /// benign. Never throws — the snapshot reads local data regardless.
+    /// - Returns: `true` when a sync was attempted (so the caller knows whether
+    ///   re-reading the snapshot is worthwhile).
+    @discardableResult
+    private func runSync() async -> Bool {
+        guard let syncPrices, reachability?.isOnWiFi == true else { return false }
         do {
-            let result = try await repository.fetch()
-            self.snapshot = result
-            self.status = .loaded
+            _ = try await syncPrices.execute(progress: nil)
+            syncFailed = false
+        } catch SyncPricesUseCase.SyncError.unauthorized {
+            syncFailed = false
+            await signOutAccount?.execute()
+            onRequireSignIn()
+        } catch SyncPricesUseCase.SyncError.noOwnedCards {
+            syncFailed = false
         } catch {
-            self.status = .error(message: error.localizedDescription)
+            syncFailed = true
         }
+        return true
     }
 
     /// Switching currency at the app level must update every number

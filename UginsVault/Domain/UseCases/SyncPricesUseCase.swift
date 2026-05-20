@@ -32,12 +32,15 @@ public final class SyncPricesUseCase {
 
     public enum SyncError: Error, Equatable, LocalizedError {
         case noOwnedCards
+        case unauthorized
         case sourceFailed(message: String)
 
         public var errorDescription: String? {
             switch self {
             case .noOwnedCards:
                 return "Your catalogue is empty — nothing to price."
+            case .unauthorized:
+                return "Your session expired — sign in again."
             case .sourceFailed(let message):
                 return message
             }
@@ -100,6 +103,8 @@ public final class SyncPricesUseCase {
             snapshots = fullHistory
                 ? try await backendSource.fetchFullHistory(ownedCardIDs: owned, windowStart: cutoff)
                 : try await backendSource.fetchSnapshots(ownedCardIDs: owned)
+        } catch PriceSourceError.unauthorized {
+            throw SyncError.unauthorized
         } catch {
             throw SyncError.sourceFailed(message: error.localizedDescription)
         }

@@ -50,8 +50,12 @@ public final class APIPriceCatalogueSource: PriceCatalogueSource {
     private func fetch(window: Int, ownedCardIDs: Set<UUID>) async throws -> [PriceSnapshot] {
         guard !ownedCardIDs.isEmpty else { return [] }
         let source = sessionRepository.preferredPriceSource
-        let response = try await client.prices(window: window, source: source.rawValue)
-        return Self.map(response, allowList: ownedCardIDs)
+        do {
+            let response = try await client.prices(window: window, source: source.rawValue)
+            return Self.map(response, allowList: ownedCardIDs)
+        } catch BackendAPIError.unauthorized {
+            throw PriceSourceError.unauthorized
+        }
     }
 
     // MARK: - Mapping

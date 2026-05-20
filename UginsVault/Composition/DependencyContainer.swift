@@ -401,13 +401,17 @@ public final class DependencyContainer {
         )
     }
 
-    @MainActor public func makeDashboardViewModel() -> DashboardViewModel {
+    @MainActor public func makeDashboardViewModel(
+        onRequireSignIn: @escaping () -> Void = {}
+    ) -> DashboardViewModel {
         DashboardViewModel(
             repository: dashboardRepository,
             sessionRepository: sessionRepository,
             syncPrices: makeSyncPricesUseCase(),
             reachability: networkReachability,
-            exchangeRateRepository: exchangeRateRepository
+            exchangeRateRepository: exchangeRateRepository,
+            signOutAccount: makeSignOutAccountUseCase(),
+            onRequireSignIn: onRequireSignIn
         )
     }
 
@@ -434,7 +438,9 @@ public final class DependencyContainer {
         )
     }
 
-    @MainActor public func makeSettingsViewModel() -> SettingsViewModel {
+    @MainActor public func makeSettingsViewModel(
+        onSignedOut: @escaping () -> Void = {}
+    ) -> SettingsViewModel {
         SettingsViewModel(
             sessionRepository:           sessionRepository,
             userProfileRepository:       userProfileRepository,
@@ -454,7 +460,9 @@ public final class DependencyContainer {
             setFaceIDLockUseCase:        makeSetFaceIDLockUseCase(),
             getUserProfileUseCase:       makeGetUserProfileUseCase(),
             updateUserProfileUseCase:    makeUpdateUserProfileUseCase(),
-            resetCatalogueUseCase:       makeResetCatalogueUseCase()
+            resetCatalogueUseCase:       makeResetCatalogueUseCase(),
+            signOutAccount:              makeSignOutAccountUseCase(),
+            onSignedOut:                 onSignedOut
         )
     }
 }
