@@ -24,7 +24,7 @@ public struct BySetPanel: View {
     }
 
     public var body: some View {
-        SectionPanel(title: "Value by set") {
+        SectionPanel(title: String(localized: "Value by set")) {
             VStack(alignment: .leading, spacing: Spacing.md - 2) {
                 ForEach(Array(bars.enumerated()), id: \.element.id) { index, bar in
                     barRow(index: index, bar: bar)

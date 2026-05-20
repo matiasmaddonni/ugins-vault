@@ -10,12 +10,12 @@ import SwiftUI
 
 public struct SettingsGroup<Content: View>: View {
 
-    private let title: String
+    private let title: LocalizedStringKey
     private let footer: String?
     private let content: Content
 
     public init(
-        _ title: String,
+        _ title: LocalizedStringKey,
         footer: String? = nil,
         @ViewBuilder content: () -> Content
     ) {

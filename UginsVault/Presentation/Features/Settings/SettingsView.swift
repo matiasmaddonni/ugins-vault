@@ -17,6 +17,8 @@ public struct SettingsView: View {
     @State private var presentedSheet: ActiveSheet?
     @State private var isConfirmingReset: Bool = false
     @State private var isShowingWishlist: Bool = false
+    @State private var languageChangePending: Bool = false
+    @State private var isShowingLanguageRestart: Bool = false
 
     private enum ActiveSheet: Identifiable {
         case language
@@ -95,20 +97,29 @@ public struct SettingsView: View {
             .sheet(isPresented: $isPresentingAcknowledgements) {
                 AcknowledgementsSheet()
             }
-            .sheet(item: $presentedSheet) { sheet in
+            .sheet(item: $presentedSheet, onDismiss: {
+                if languageChangePending {
+                    languageChangePending = false
+                    isShowingLanguageRestart = true
+                }
+            }) { sheet in
                 switch sheet {
                 case .language:
                     SheetPicker(
-                        title: "Language",
+                        title: String(localized: "Language"),
                         options: languageOptions,
                         selection: viewModel.language,
-                        onSelect: { viewModel.setLanguage($0) }
+                        onSelect: { newLanguage in
+                            guard newLanguage != viewModel.language else { return }
+                            viewModel.setLanguage(newLanguage)
+                            languageChangePending = true
+                        }
                     )
                     .accessibilityElement(children: .contain)
                     .accessibilityIdentifier(SettingsAccessibilityFields.languageSheet)
                 case .currency:
                     SheetPicker(
-                        title: "Display currency",
+                        title: String(localized: "Display currency"),
                         options: currencyOptions,
                         selection: viewModel.currency,
                         onSelect: { viewModel.setCurrency($0) }
@@ -117,6 +128,14 @@ public struct SettingsView: View {
                     .accessibilityIdentifier(SettingsAccessibilityFields.currencySheet)
                 }
             }
+        }
+        .alert("Restart to apply language", isPresented: $isShowingLanguageRestart) {
+            Button("Restart now", role: .destructive) {
+                UginsVaultApp.applyLanguageOverride(viewModel.language)
+                exit(EXIT_SUCCESS)
+            }
+        } message: {
+            Text("UginsVault will close so the new language applies everywhere. Tap its icon to reopen.")
         }
         .accessibilityIdentifier(SettingsAccessibilityFields.screen)
     }
@@ -187,7 +206,7 @@ public struct SettingsView: View {
         SettingsRow(
             icon: "dollarsign.circle",
             title: "Display currency",
-            subtitle: "Convert with live blue-dollar / ECB rates",
+            subtitle: String(localized: "Convert with live blue-dollar / ECB rates"),
             value: viewModel.currency.rawValue
         ) {
             presentedSheet = .currency
@@ -265,7 +284,7 @@ public struct SettingsView: View {
             SettingsRow(
                 icon: "arrow.triangle.2.circlepath",
                 title: "Reset catalogue",
-                subtitle: "Wipe local cards + re-download the seed set",
+                subtitle: String(localized: "Wipe local cards + re-download the seed set"),
                 isDestructive: true,
                 action: { isConfirmingReset = true }
             ) {
@@ -356,25 +375,25 @@ public struct SettingsView: View {
 
     private var languageOptions: [SheetPicker<Language>.Option] {
         [
-            .init(id: .system,  label: "System",   detail: "Follow device"),
-            .init(id: .english, label: "English"),
-            .init(id: .spanish, label: "Español")
+            .init(id: .system,  label: String(localized: "System"), detail: String(localized: "Follow device")),
+            .init(id: .english, label: String(localized: "English")),
+            .init(id: .spanish, label: String(localized: "Español"))
         ]
     }
 
     private var currencyOptions: [SheetPicker<Currency>.Option] {
         [
-            .init(id: .usd, label: "USD", detail: "US Dollar"),
-            .init(id: .eur, label: "EUR", detail: "Euro"),
-            .init(id: .ars, label: "ARS", detail: "Argentine Peso")
+            .init(id: .usd, label: "USD", detail: String(localized: "US Dollar")),
+            .init(id: .eur, label: "EUR", detail: String(localized: "Euro")),
+            .init(id: .ars, label: "ARS", detail: String(localized: "Argentine Peso"))
         ]
     }
 
     private func languageLabel(for language: Language) -> String {
         switch language {
-        case .system:  return "System"
-        case .english: return "English"
-        case .spanish: return "Español"
+        case .system:  return String(localized: "System")
+        case .english: return String(localized: "English")
+        case .spanish: return String(localized: "Español")
         }
     }
 

@@ -373,13 +373,13 @@ public struct CollectionView: View {
     private var filterSummary: String {
         var parts: [String] = []
         if !viewModel.filter.sets.isEmpty {
-            parts.append("Sets: \(viewModel.filter.sets.map { $0.uppercased() }.sorted().joined(separator: ", "))")
+            parts.append("\(String(localized: "Sets")): \(viewModel.filter.sets.map { $0.uppercased() }.sorted().joined(separator: ", "))")
         }
         if !viewModel.filter.colors.isEmpty {
-            parts.append("Colours: \(viewModel.filter.colors.map(\.displayName).sorted().joined(separator: ", "))")
+            parts.append("\(String(localized: "Colours")): \(viewModel.filter.colors.map(\.displayName).sorted().joined(separator: ", "))")
         }
         if !viewModel.filter.rarities.isEmpty {
-            parts.append("Rarity: \(viewModel.filter.rarities.map { $0.rawValue.capitalized }.sorted().joined(separator: ", "))")
+            parts.append("\(String(localized: "Rarity")): \(viewModel.filter.rarities.map(\.displayName).sorted().joined(separator: ", "))")
         }
         return parts.joined(separator: " · ")
     }

@@ -138,7 +138,7 @@ public struct ProfileHeroCard: View {
         )
     }
 
-    private func statCell(label: String, value: String) -> some View {
+    private func statCell(label: LocalizedStringKey, value: String) -> some View {
         VStack(spacing: Spacing.xs / 2) {
             Text(value)
                 .font(.uv.mono(14, weight: .semibold))

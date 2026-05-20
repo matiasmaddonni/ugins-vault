@@ -57,9 +57,9 @@ public struct WishlistTeaser: View {
 
     private var subtitle: String {
         switch trackedCount {
-        case 0:  return "Track cards you want"
-        case 1:  return "1 card tracked"
-        default: return "\(trackedCount) cards tracked"
+        case 0:  return String(localized: "Track cards you want")
+        case 1:  return String(localized: "1 card tracked")
+        default: return String(localized: "\(trackedCount) cards tracked")
         }
     }
 

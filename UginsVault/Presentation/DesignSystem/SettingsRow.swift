@@ -16,7 +16,7 @@ import SwiftUI
 public struct SettingsRow<Trailing: View>: View {
 
     private let icon: String
-    private let title: String
+    private let title: LocalizedStringKey
     private let subtitle: String?
     private let isDestructive: Bool
     private let action: (() -> Void)?
@@ -24,7 +24,7 @@ public struct SettingsRow<Trailing: View>: View {
 
     public init(
         icon: String,
-        title: String,
+        title: LocalizedStringKey,
         subtitle: String? = nil,
         isDestructive: Bool = false,
         action: (() -> Void)? = nil,
@@ -86,7 +86,7 @@ extension SettingsRow where Trailing == _SettingsRowChevron {
     /// Push row: shows the value as right-aligned mono text + chevron.
     public init(
         icon: String,
-        title: String,
+        title: LocalizedStringKey,
         subtitle: String? = nil,
         value: String?,
         action: @escaping () -> Void
@@ -107,7 +107,7 @@ extension SettingsRow where Trailing == EmptyView {
     /// Read-only / static row. No trailing element, no tap action.
     public init(
         icon: String,
-        title: String,
+        title: LocalizedStringKey,
         subtitle: String? = nil
     ) {
         self.init(

@@ -19,12 +19,12 @@ public enum ManaColor: String, Codable, CaseIterable, Sendable {
 
     public var displayName: String {
         switch self {
-        case .white:     return "White"
-        case .blue:      return "Blue"
-        case .black:     return "Black"
-        case .red:       return "Red"
-        case .green:     return "Green"
-        case .colorless: return "Colorless"
+        case .white:     return String(localized: "White")
+        case .blue:      return String(localized: "Blue")
+        case .black:     return String(localized: "Black")
+        case .red:       return String(localized: "Red")
+        case .green:     return String(localized: "Green")
+        case .colorless: return String(localized: "Colorless")
         }
     }
 }

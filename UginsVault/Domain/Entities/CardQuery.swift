@@ -52,10 +52,10 @@ public enum CardSortOption: String, CaseIterable, Codable, Sendable, Identifiabl
 
     public var displayName: String {
         switch self {
-        case .nameAscending:         return "Name (A–Z)"
-        case .priceDescending:       return "Price (high → low)"
-        case .releasedAtDescending:  return "Newest first"
-        case .setCodeAscending:      return "Set"
+        case .nameAscending:         return String(localized: "Name (A–Z)")
+        case .priceDescending:       return String(localized: "Price (high → low)")
+        case .releasedAtDescending:  return String(localized: "Newest first")
+        case .setCodeAscending:      return String(localized: "Set")
         }
     }
 }

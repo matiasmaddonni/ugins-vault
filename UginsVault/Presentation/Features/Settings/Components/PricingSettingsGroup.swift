@@ -49,7 +49,7 @@ public struct PricingSettingsGroup: View {
         }
         .sheet(isPresented: $isPresentingSourcePicker) {
             SheetPicker(
-                title: "Price source",
+                title: String(localized: "Price source"),
                 options: PriceSource.allCases.map {
                     SheetPicker<PriceSource>.Option(
                         id: $0,
@@ -63,8 +63,8 @@ public struct PricingSettingsGroup: View {
         }
         .sheet(isPresented: $isPresentingThresholdEditor) {
             decimalEditorSheet(
-                title: "Mover threshold",
-                helper: "Minimum 7-day USD delta a card has to hit to appear in the Dashboard gainers / losers.",
+                title: String(localized: "Mover threshold"),
+                helper: String(localized: "Minimum 7-day USD delta a card has to hit to appear in the Dashboard gainers / losers."),
                 placeholder: "1.00",
                 input: $thresholdInput,
                 onSave: {
@@ -78,8 +78,8 @@ public struct PricingSettingsGroup: View {
         }
         .sheet(isPresented: $isPresentingARSEditor) {
             decimalEditorSheet(
-                title: "Manual USD → ARS",
-                helper: "Pin your own exchange rate (e.g. 1400). Leave blank or tap Clear to use the dolarapi blue feed.",
+                title: String(localized: "Manual USD → ARS"),
+                helper: String(localized: "Pin your own exchange rate (e.g. 1400). Leave blank or tap Clear to use the dolarapi blue feed."),
                 placeholder: "1400",
                 input: $arsInput,
                 onSave: {
@@ -128,7 +128,7 @@ public struct PricingSettingsGroup: View {
         SettingsRow(
             icon: "argentinianpesosign.circle",
             title: "Manual USD → ARS",
-            value: sessionRepository.manualARSRate.map(formatDecimal) ?? "Auto"
+            value: sessionRepository.manualARSRate.map(formatDecimal) ?? String(localized: "Auto")
         ) {
             arsInput = sessionRepository.manualARSRate.map(formatDecimal) ?? ""
             isPresentingARSEditor = true
@@ -156,11 +156,11 @@ public struct PricingSettingsGroup: View {
 
     private var ratesSubtitle: String {
         guard let date = exchangeRateRepository.lastRefreshedAt else {
-            return "Fetch the latest USD → ARS / EUR rates"
+            return String(localized: "Fetch the latest USD → ARS / EUR rates")
         }
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .full
-        return "Updated \(formatter.localizedString(for: date, relativeTo: Date()))"
+        return String(localized: "Updated \(formatter.localizedString(for: date, relativeTo: Date()))")
     }
 
     private func refreshRates() {
@@ -181,9 +181,9 @@ public struct PricingSettingsGroup: View {
 
     private func priceSourceDetail(for source: PriceSource) -> String {
         switch source {
-        case .cardkingdom: return "USD · default source"
-        case .tcgplayer:   return "USD · US marketplace"
-        case .cardmarket:  return "EUR · European marketplace"
+        case .cardkingdom: return String(localized: "USD · default source")
+        case .tcgplayer:   return String(localized: "USD · US marketplace")
+        case .cardmarket:  return String(localized: "EUR · European marketplace")
         }
     }
 

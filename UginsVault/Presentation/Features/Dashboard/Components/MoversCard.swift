@@ -19,11 +19,11 @@ public enum MoverTone {
 
 public struct MoversCard: View {
 
-    public let title: String
+    public let title: LocalizedStringKey
     public let tone: MoverTone
     public let items: [Mover]
 
-    public init(title: String, tone: MoverTone, items: [Mover]) {
+    public init(title: LocalizedStringKey, tone: MoverTone, items: [Mover]) {
         self.title = title
         self.tone = tone
         self.items = items

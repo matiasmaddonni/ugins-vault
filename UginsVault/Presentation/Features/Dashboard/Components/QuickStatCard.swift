@@ -12,11 +12,11 @@ import SwiftUI
 public struct QuickStatCard: View {
 
     public let key: String              // accessibility key
-    public let label: String            // uppercase label
+    public let label: LocalizedStringKey // uppercase label
     public let value: String            // big number
-    public let sublabel: String         // sub copy under the value
+    public let sublabel: LocalizedStringKey // sub copy under the value
 
-    public init(key: String, label: String, value: String, sublabel: String) {
+    public init(key: String, label: LocalizedStringKey, value: String, sublabel: LocalizedStringKey) {
         self.key = key
         self.label = label
         self.value = value

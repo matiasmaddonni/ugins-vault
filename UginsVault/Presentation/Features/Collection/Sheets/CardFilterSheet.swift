@@ -104,7 +104,7 @@ public struct CardFilterSheet: View {
         section(title: "Rarity") {
             FlowChips(values: Rarity.allCases.filter { $0 != .unknown }.map(\.rawValue)) { raw in
                 let rarity = Rarity(rawValue: raw) ?? .common
-                chip(label: rarity.rawValue.capitalized, isOn: rarities.contains(rarity)) {
+                chip(label: rarity.displayName, isOn: rarities.contains(rarity)) {
                     toggleRarity(rarity)
                 }
             }
@@ -114,7 +114,7 @@ public struct CardFilterSheet: View {
     // MARK: - Helpers
 
     private func section<Content: View>(
-        title: String,
+        title: LocalizedStringKey,
         @ViewBuilder content: () -> Content
     ) -> some View {
         VStack(alignment: .leading, spacing: Spacing.sm) {

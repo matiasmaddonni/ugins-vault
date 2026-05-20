@@ -98,6 +98,47 @@
         }
       }
     },
+    "%lld cards tracked": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld card tracked"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld cards tracked"
+                }
+              }
+            }
+          }
+        },
+        "es": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld carta seguida"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld cartas seguidas"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld unresolved": {
       "extractionState": "manual",
       "localizations": {
@@ -120,6 +161,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "1 carta"
+          }
+        }
+      }
+    },
+    "1 card tracked": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 carta seguida"
           }
         }
       }
@@ -168,6 +220,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Créditos"
+          }
+        }
+      }
+    },
+    "Add a card": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Añadir una carta"
           }
         }
       }
@@ -227,6 +290,17 @@
         }
       }
     },
+    "Add to wishlist": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Añadir a la lista de deseos"
+          }
+        }
+      }
+    },
     "Add your first card or import a CSV from ManaBox, Moxfield, or Archidekt.": {
       "extractionState": "manual",
       "localizations": {
@@ -278,6 +352,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Aplicar"
+          }
+        }
+      }
+    },
+    "Argentine Peso": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Peso argentino"
           }
         }
       }
@@ -366,6 +451,39 @@
           "stringUnit": {
             "state": "translated",
             "value": "Biometría no disponible en este dispositivo"
+          }
+        }
+      }
+    },
+    "Black": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Negro"
+          }
+        }
+      }
+    },
+    "Blue": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Azul"
+          }
+        }
+      }
+    },
+    "Bonus": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bonus"
           }
         }
       }
@@ -503,6 +621,17 @@
         }
       }
     },
+    "Colorless": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Incoloro"
+          }
+        }
+      }
+    },
     "Colors": {
       "extractionState": "manual",
       "localizations": {
@@ -558,6 +687,17 @@
         }
       }
     },
+    "Common": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Común"
+          }
+        }
+      }
+    },
     "Connect to Wi-Fi to download the pricing catalogue. Mobile data is disabled for this sync to keep your data plan safe.": {
       "extractionState": "manual",
       "localizations": {
@@ -576,6 +716,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Contactar"
+          }
+        }
+      }
+    },
+    "Convert with live blue-dollar / ECB rates": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Convierte con cotización dólar blue / BCE en vivo"
           }
         }
       }
@@ -873,6 +1024,17 @@
         }
       }
     },
+    "Euro": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Euro"
+          }
+        }
+      }
+    },
     "Export": {
       "extractionState": "manual",
       "localizations": {
@@ -902,6 +1064,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Face ID · o usar PIN"
+          }
+        }
+      }
+    },
+    "Fetch the latest USD → ARS / EUR rates": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Obtén las últimas cotizaciones USD → ARS / EUR"
           }
         }
       }
@@ -979,6 +1152,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Subidas"
+          }
+        }
+      }
+    },
+    "Green": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verde"
           }
         }
       }
@@ -1285,6 +1469,17 @@
         }
       }
     },
+    "Mythic": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mítica"
+          }
+        }
+      }
+    },
     "Name": {
       "extractionState": "manual",
       "localizations": {
@@ -1363,6 +1558,17 @@
       }
     },
     "No matches": {},
+    "No matches.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sin resultados."
+          }
+        }
+      }
+    },
     "No stacks match this filter.": {
       "extractionState": "manual",
       "localizations": {
@@ -1662,6 +1868,17 @@
         }
       }
     },
+    "Rare": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rara"
+          }
+        }
+      }
+    },
     "Rarity": {
       "extractionState": "manual",
       "localizations": {
@@ -1702,6 +1919,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Recibo"
+          }
+        }
+      }
+    },
+    "Red": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rojo"
           }
         }
       }
@@ -1883,6 +2111,28 @@
         }
       }
     },
+    "Restart now": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reiniciar ahora"
+          }
+        }
+      }
+    },
+    "Restart to apply language": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reiniciar para aplicar idioma"
+          }
+        }
+      }
+    },
     "Restricted": {
       "extractionState": "manual",
       "localizations": {
@@ -1984,6 +2234,17 @@
         }
       }
     },
+    "Search by card name to add to your wishlist.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Busca por nombre de carta para añadirla a tu lista de deseos."
+          }
+        }
+      }
+    },
     "Search cards…": {
       "extractionState": "manual",
       "localizations": {
@@ -2002,6 +2263,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Buscar en la colección…"
+          }
+        }
+      }
+    },
+    "Search for cards you want and add them to track their price.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Busca las cartas que quieras y agrégalas para seguir su precio."
+          }
+        }
+      }
+    },
+    "Search Scryfall…": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buscar en Scryfall…"
           }
         }
       }
@@ -2134,6 +2417,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mini gráficos, subidas, bajadas y valor por formato llegan aquí en la v0.6."
+          }
+        }
+      }
+    },
+    "Special": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Especial"
           }
         }
       }
@@ -2292,6 +2586,17 @@
         }
       }
     },
+    "Track cards you want": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sigue las cartas que quieras"
+          }
+        }
+      }
+    },
     "Try a different name or clear the filter.": {
       "extractionState": "manual",
       "localizations": {
@@ -2329,6 +2634,28 @@
       "comment": "The title of the app.",
       "isCommentAutoGenerated": true
     },
+    "UginsVault will close so the new language applies everywhere. Tap its icon to reopen.": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "UginsVault se cerrará para aplicar el nuevo idioma en todos lados. Tocá su ícono para volver a abrir."
+          }
+        }
+      }
+    },
+    "Uncommon": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Infrecuente"
+          }
+        }
+      }
+    },
     "Undo": {
       "extractionState": "manual",
       "localizations": {
@@ -2347,6 +2674,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Únicas"
+          }
+        }
+      }
+    },
+    "Unknown": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Desconocida"
           }
         }
       }
@@ -2395,6 +2733,28 @@
         }
       }
     },
+    "Updated %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actualizado %@"
+          }
+        }
+      }
+    },
+    "US Dollar": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dólar estadounidense"
+          }
+        }
+      }
+    },
     "USD · Argentina's reference": {
       "extractionState": "manual",
       "localizations": {
@@ -2402,6 +2762,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "USD · referencia en Argentina"
+          }
+        }
+      }
+    },
+    "USD · default source": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "USD · fuente predeterminada"
           }
         }
       }
@@ -2516,6 +2887,17 @@
         }
       }
     },
+    "White": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blanco"
+          }
+        }
+      }
+    },
     "Wi-Fi required": {
       "extractionState": "manual",
       "localizations": {
@@ -2589,6 +2971,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tu santuario está vacío"
+          }
+        }
+      }
+    },
+    "Your wishlist is empty": {
+      "extractionState": "manual",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu lista de deseos está vacía"
           }
         }
       }

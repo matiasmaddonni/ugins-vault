@@ -32,7 +32,7 @@ struct UginsVaultApp: App {
     /// override so the device language wins again. Takes full effect on
     /// the next launch after a change (the live session still gets the
     /// SwiftUI-`Text` half from the environment locale).
-    private static func applyLanguageOverride(_ language: Language) {
+    static func applyLanguageOverride(_ language: Language) {
         let defaults = UserDefaults.standard
         switch language {
         case .system:  defaults.removeObject(forKey: "AppleLanguages")

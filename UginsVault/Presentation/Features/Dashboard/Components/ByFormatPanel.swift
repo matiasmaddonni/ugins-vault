@@ -20,7 +20,7 @@ public struct ByFormatPanel: View {
     }
 
     public var body: some View {
-        SectionPanel(title: "Value by format") {
+        SectionPanel(title: String(localized: "Value by format")) {
             HStack(spacing: Spacing.md + 2) {
                 DonutChartView(
                     slices: slices,
