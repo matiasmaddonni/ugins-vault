@@ -91,7 +91,16 @@ public final class DependencyContainer {
 
     public lazy var cardRepository: CardRepository = SwiftDataCardRepository(modelContainer: modelContainer)
     public lazy var stackRepository: StackRepository = SwiftDataStackRepository(modelContainer: modelContainer)
-    public lazy var collectionItemRepository: CollectionItemRepository = SwiftDataCollectionItemRepository(modelContainer: modelContainer)
+    private lazy var baseCollectionItemRepository = SwiftDataCollectionItemRepository(modelContainer: modelContainer)
+    /// Wraps the SwiftData repo so every owned-collection write debounce-pushes
+    /// the owned list to the backend (`PUT /v1/owned`).
+    public lazy var collectionItemRepository: CollectionItemRepository = OwnedSyncingCollectionItemRepository(
+        wrapped: baseCollectionItemRepository,
+        pushOwned: PushOwnedUseCase(
+            collectionItemRepository: baseCollectionItemRepository,
+            remoteOwnedSync: remoteOwnedSync
+        )
+    )
     public lazy var priceRepository: PriceRepository = SwiftDataPriceRepository(
         modelContainer: modelContainer,
         lastSyncStorage: sessionStorage

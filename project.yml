@@ -51,6 +51,9 @@ targets:
       - path: UginsVault
         excludes:
           - "**/.keep"
+          # Base Info.plist is referenced via INFOPLIST_FILE, not globbed as a
+          # resource (globbing it makes the bundle root come out as an array).
+          - "Info.plist"
     dependencies:
       - package: Kingfisher
       - package: supabase-swift
@@ -76,15 +79,13 @@ targets:
         INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: "YES"
         INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
         INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
-        # NOTE: BGTaskScheduler weekly sync needs
-        # `BGTaskSchedulerPermittedIdentifiers` (array) + `UIBackgroundModes`
-        # in the plist. Xcode's INFOPLIST_KEY_ generator silently drops
-        # array keys, and a custom Info.plist file collided with the
-        # globbed sources (root came out as an array → on-device crash).
-        # Background sync is deferred until that's set up cleanly via a
-        # dedicated Info.plist target config; `PriceSyncScheduler`
-        # already guards on the plist so registration safely no-ops in
-        # the meantime. Manual + pull-to-refresh sync still work.
+        # BGTaskScheduler weekly sync needs the array-valued keys
+        # `UIBackgroundModes` + `BGTaskSchedulerPermittedIdentifiers`, which the
+        # INFOPLIST_KEY_ generator can't express. They live in the base
+        # `UginsVault/Info.plist`; GENERATE_INFOPLIST_FILE merges the scalar
+        # keys above on top of it at build time. `PriceSyncScheduler` registers
+        # only when the identifier is present in the bundle.
+        INFOPLIST_FILE: UginsVault/Info.plist
         GENERATE_INFOPLIST_FILE: "YES"
         DEVELOPMENT_ASSET_PATHS: "\"UginsVault/Preview Content\""
         ENABLE_PREVIEWS: "YES"

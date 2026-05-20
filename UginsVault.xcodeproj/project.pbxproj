@@ -78,6 +78,7 @@
 		4CC2E8D20CC584A14984E674 /* UVTypography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1EAF33F9FA817C0BA176C4 /* UVTypography.swift */; };
 		4D48C4803105E63691A1EFB3 /* SkeletonBlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48E4D2C458A5C01AD7912626 /* SkeletonBlock.swift */; };
 		4E9B785E1FCB1A896D1D1012 /* SettingsPriceSyncRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72D9D8A3C23DA8436E6708EA /* SettingsPriceSyncRow.swift */; };
+		4EDDD5D5DA02D735750E017B /* OwnedSyncingCollectionItemRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7ABA9F68260A1E932AFEA18 /* OwnedSyncingCollectionItemRepository.swift */; };
 		508E0014DF0E9D2E05EA3F47 /* UVColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C33F74A36AF89DA5A2AD6AA /* UVColors.swift */; };
 		524054B3A6BE2A904B13136E /* CardImages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 992C5BC04B97F7EEE386EEE2 /* CardImages.swift */; };
 		54944E23AACB90264E5ECF37 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573BCA1AC5BFAE9E4BC99792 /* SettingsView.swift */; };
@@ -207,6 +208,7 @@
 		C02015C1E54C620E8683EC6B /* AuthRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE279253848B6EE8FB725726 /* AuthRepositoryTests.swift */; };
 		C319EB8EB8A0C340550252EF /* SupabaseAccountRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42B68DB52F6AF93154B5DE0D /* SupabaseAccountRepository.swift */; };
 		C3C39F11306D3EF0C1D634FD /* AuthenticateUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = C85847DB0B39B77E5902CA34 /* AuthenticateUseCase.swift */; };
+		C3CA78F00E6661C8743A4E1B /* OwnedSyncingCollectionItemRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEAF9DC83F24BE9F376FAA0 /* OwnedSyncingCollectionItemRepositoryTests.swift */; };
 		C66E047F0AAAE576812D5C8A /* CardRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC85113313DC87A6A0D60E6F /* CardRowView.swift */; };
 		C7505F75A788B647AC2528F1 /* StacksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8516481E2E452207F8C2666 /* StacksView.swift */; };
 		C842D25C8FC83C2BFDFF1C56 /* DashboardViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7806F31729CA23A9722BC104 /* DashboardViewModelTests.swift */; };
@@ -298,6 +300,7 @@
 		0859CFC3F0D332AB5400A693 /* BySetPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BySetPanel.swift; sourceTree = "<group>"; };
 		09F4AA64B7BACDA38D2A315E /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
 		0A3B286D185C14A9700C6FAE /* CardDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardDetailView.swift; sourceTree = "<group>"; };
+		0AEAF9DC83F24BE9F376FAA0 /* OwnedSyncingCollectionItemRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OwnedSyncingCollectionItemRepositoryTests.swift; sourceTree = "<group>"; };
 		0B67234F9C7EAF676DC391A8 /* RealDashboardRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealDashboardRepository.swift; sourceTree = "<group>"; };
 		0C09D4DCC82D719D39D6E543 /* ScryfallBulkData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScryfallBulkData.swift; sourceTree = "<group>"; };
 		0C5D6C6B5B006A5E374BC00B /* StacksAccessibilityFields.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StacksAccessibilityFields.swift; sourceTree = "<group>"; };
@@ -466,6 +469,7 @@
 		B25179043A976B8DE4E3D8DE /* UpdateUserProfileUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateUserProfileUseCase.swift; sourceTree = "<group>"; };
 		B2B8B13A7AA89596C255A2A7 /* StackMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackMapper.swift; sourceTree = "<group>"; };
 		B791894E0C9094E6B5C48663 /* WishlistUseCases.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishlistUseCases.swift; sourceTree = "<group>"; };
+		B7ABA9F68260A1E932AFEA18 /* OwnedSyncingCollectionItemRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OwnedSyncingCollectionItemRepository.swift; sourceTree = "<group>"; };
 		B92D111F4B3A0371B180D37B /* FormatSlice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormatSlice.swift; sourceTree = "<group>"; };
 		B9D66ED7BC76F68D0CAD56FE /* Format.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Format.swift; sourceTree = "<group>"; };
 		BAEA17D6FEB580C3957F9EBD /* UserDefaultsUserProfileRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsUserProfileRepository.swift; sourceTree = "<group>"; };
@@ -687,6 +691,7 @@
 			isa = PBXGroup;
 			children = (
 				BE279253848B6EE8FB725726 /* AuthRepositoryTests.swift */,
+				0AEAF9DC83F24BE9F376FAA0 /* OwnedSyncingCollectionItemRepositoryTests.swift */,
 				65E36B52668540EAF2505692 /* SessionRepositoryTests.swift */,
 				1E61D9313A292ED336E2A03A /* SupabaseAccountRepositoryTests.swift */,
 				CA5CAF902F7401F1573386F6 /* SwiftDataCardRepositoryTests.swift */,
@@ -1373,6 +1378,7 @@
 			children = (
 				F25E99F06EEA5612603F45FB /* BackendOwnedSync.swift */,
 				7140589A3B2F92B6620CD235 /* LocalAuthRepository.swift */,
+				B7ABA9F68260A1E932AFEA18 /* OwnedSyncingCollectionItemRepository.swift */,
 				2FC489A173FA731F1F695F49 /* RemoteExchangeRateRepository.swift */,
 				42B68DB52F6AF93154B5DE0D /* SupabaseAccountRepository.swift */,
 				5A3C7C2C422CCFA85708E2CF /* UserDefaultsSessionRepository.swift */,
@@ -1517,6 +1523,7 @@
 				DB2583067962632F2E7F44EE /* MockURLProtocol.swift in Sources */,
 				8DC62661088B629DEB01FEE7 /* MockUserProfileRepository.swift in Sources */,
 				FAB4CE119594808D52046890 /* MoveCollectionItemUseCaseTests.swift in Sources */,
+				C3CA78F00E6661C8743A4E1B /* OwnedSyncingCollectionItemRepositoryTests.swift in Sources */,
 				AAD48163466E9D03FE0B6091 /* PriceSyncViewModelTests.swift in Sources */,
 				BFB26FB72163C2958F7B0202 /* PushOwnedUseCaseTests.swift in Sources */,
 				1236E427EA0F62D5E4C35C25 /* ReduceMotionUseCasesTests.swift in Sources */,
@@ -1642,6 +1649,7 @@
 				3E45A8705FED54F453A76444 /* MoversCard.swift in Sources */,
 				1310CF8F772C17F5A479BD4E /* NetworkReachability.swift in Sources */,
 				E0C01741F191D59C5B9055DA /* OwnedCardCount.swift in Sources */,
+				4EDDD5D5DA02D735750E017B /* OwnedSyncingCollectionItemRepository.swift in Sources */,
 				9670EB8DA6D84E5D9FAFF5A5 /* PreferredPriceSourceUseCases.swift in Sources */,
 				17DB16F2AC3071AEC443B5B8 /* PressableButtonStyle.swift in Sources */,
 				2947E1ED0EB4C50EA230606B /* PriceCatalogueSource.swift in Sources */,
@@ -1778,6 +1786,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"UginsVault/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = UginsVault/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Take a photo for your vault profile avatar.";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "Unlock your vault with Face ID.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Pick a photo from your library for your vault profile avatar.";
@@ -1807,6 +1816,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"UginsVault/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = UginsVault/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Take a photo for your vault profile avatar.";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "Unlock your vault with Face ID.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Pick a photo from your library for your vault profile avatar.";
