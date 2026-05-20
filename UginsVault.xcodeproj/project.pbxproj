@@ -1602,11 +1602,11 @@
 				DEVELOPMENT_ASSET_PATHS = "\"UginsVault/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_BGTaskSchedulerPermittedIdentifiers = com.matiasmaddonni.uginsvault.priceSync;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Take a photo for your vault profile avatar.";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "Unlock your vault with Face ID.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Pick a photo from your library for your vault profile avatar.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UIBackgroundModes = "fetch processing";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -1631,11 +1631,11 @@
 				DEVELOPMENT_ASSET_PATHS = "\"UginsVault/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_BGTaskSchedulerPermittedIdentifiers = com.matiasmaddonni.uginsvault.priceSync;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Take a photo for your vault profile avatar.";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "Unlock your vault with Face ID.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Pick a photo from your library for your vault profile avatar.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UIBackgroundModes = "fetch processing";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";

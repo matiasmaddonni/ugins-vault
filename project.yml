@@ -50,6 +50,13 @@ targets:
           - "**/.keep"
     dependencies:
       - package: Kingfisher
+    # Array-valued plist keys (UIBackgroundModes,
+    # BGTaskSchedulerPermittedIdentifiers) must live in a real
+    # Info.plist — Xcode's INFOPLIST_KEY_ generator silently drops
+    # keys it doesn't recognise, which left BGTaskScheduler.register
+    # crashing on-device (the identifier wasn't in the bundle). The
+    # scalar keys below still come from GENERATE_INFOPLIST_FILE and
+    # merge on top of this base plist at build time.
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.matiasmaddonni.uginsvault
@@ -58,12 +65,21 @@ targets:
         SUPPORTS_MACCATALYST: "NO"
         INFOPLIST_KEY_UILaunchScreen_Generation: "YES"
         INFOPLIST_KEY_NSFaceIDUsageDescription: "Unlock your vault with Face ID."
+        INFOPLIST_KEY_NSCameraUsageDescription: "Take a photo for your vault profile avatar."
+        INFOPLIST_KEY_NSPhotoLibraryUsageDescription: "Pick a photo from your library for your vault profile avatar."
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: "YES"
         INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: "YES"
         INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
         INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
-        INFOPLIST_KEY_UIBackgroundModes: "fetch processing"
-        INFOPLIST_KEY_BGTaskSchedulerPermittedIdentifiers: "com.matiasmaddonni.uginsvault.priceSync"
+        # NOTE: BGTaskScheduler weekly sync needs
+        # `BGTaskSchedulerPermittedIdentifiers` (array) + `UIBackgroundModes`
+        # in the plist. Xcode's INFOPLIST_KEY_ generator silently drops
+        # array keys, and a custom Info.plist file collided with the
+        # globbed sources (root came out as an array → on-device crash).
+        # Background sync is deferred until that's set up cleanly via a
+        # dedicated Info.plist target config; `PriceSyncScheduler`
+        # already guards on the plist so registration safely no-ops in
+        # the meantime. Manual + pull-to-refresh sync still work.
         GENERATE_INFOPLIST_FILE: "YES"
         DEVELOPMENT_ASSET_PATHS: "\"UginsVault/Preview Content\""
         ENABLE_PREVIEWS: "YES"

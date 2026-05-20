@@ -19,7 +19,14 @@ public enum PriceSyncScheduler {
     /// Called once at app launch — wires the BGTaskScheduler handler.
     /// Invoking the handler from iOS does NOT require the app to be
     /// foreground; we run the sync, then re-schedule for next week.
+    /// IMPORTANT: `BGTaskScheduler.register` raises an unrecoverable
+    /// Objective-C exception (not a Swift error) when `identifier`
+    /// isn't listed in the bundle's `BGTaskSchedulerPermittedIdentifiers`
+    /// — that crashes the app on-device before the first frame. We
+    /// guard on the plist so a mis-configured build degrades to "no
+    /// background sync" instead of a black-screen crash on launch.
     public static func registerTaskHandler(container: DependencyContainer = .shared) {
+        guard isIdentifierPermitted else { return }
         BGTaskScheduler.shared.register(
             forTaskWithIdentifier: identifier,
             using: nil
@@ -38,6 +45,7 @@ public enum PriceSyncScheduler {
     /// Call when the app backgrounds (and after a manual sync, so the
     /// week clock resets).
     public static func scheduleNextRun() {
+        guard isIdentifierPermitted else { return }
         let request = BGAppRefreshTaskRequest(identifier: identifier)
         request.earliestBeginDate = Date().addingTimeInterval(7 * 24 * 60 * 60)
         do {
@@ -46,6 +54,15 @@ public enum PriceSyncScheduler {
             // Simulator + dev builds often refuse the submit ("BGTaskScheduler
             // permission denied"); production devices handle it fine.
         }
+    }
+
+    /// `true` when our identifier is declared in the bundle's
+    /// `BGTaskSchedulerPermittedIdentifiers` array.
+    private static var isIdentifierPermitted: Bool {
+        let permitted = Bundle.main.object(
+            forInfoDictionaryKey: "BGTaskSchedulerPermittedIdentifiers"
+        ) as? [String] ?? []
+        return permitted.contains(identifier)
     }
 
     // MARK: - Private
