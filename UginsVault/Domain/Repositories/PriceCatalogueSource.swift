@@ -23,4 +23,19 @@ public protocol PriceCatalogueSource: AnyObject {
     /// - Returns: every snapshot the source has, across each
     ///   `PriceSource` × every date present in the payload.
     func fetchSnapshots(ownedCardIDs: Set<UUID>) async throws -> [PriceSnapshot]
+
+    /// Pulls the FULL price history (every day available, optionally
+    /// clamped to `windowStart`) for the owned allow-list. Backs the
+    /// first-launch bootstrap so the Dashboard has real history at once.
+    func fetchFullHistory(ownedCardIDs: Set<UUID>, windowStart: Date?) async throws -> [PriceSnapshot]
+}
+
+public extension PriceCatalogueSource {
+
+    /// Default: fall back to the lighter today-only fetch. The MTGJSON
+    /// implementation overrides this with the streamed full dump; test
+    /// stubs inherit the cheap default.
+    func fetchFullHistory(ownedCardIDs: Set<UUID>, windowStart: Date?) async throws -> [PriceSnapshot] {
+        try await fetchSnapshots(ownedCardIDs: ownedCardIDs)
+    }
 }

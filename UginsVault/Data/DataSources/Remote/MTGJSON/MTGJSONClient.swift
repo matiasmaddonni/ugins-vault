@@ -75,6 +75,41 @@ public actor MTGJSONClient {
         try FileManager.default.moveItem(at: tempURL, to: stable)
         return stable
     }
+
+    /// Downloads the FULL `AllPrices.json` history dump (~1.2 GB
+    /// uncompressed; the server gzip-encodes it in transit, so the wire
+    /// transfer is ~140 MB). Streamed to disk via `URLSession.download`
+    /// — never held in memory. Caller cleans the file up. Backs the
+    /// first-launch price-history bootstrap so the Dashboard sparkline +
+    /// movers have real data immediately.
+    public func downloadAllPrices() async throws -> URL {
+        let path = "AllPrices.json"
+        guard let url = URL(string: path, relativeTo: configuration.baseURL) else {
+            throw MTGJSONError.invalidEndpoint(path: path)
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue(configuration.userAgent, forHTTPHeaderField: "User-Agent")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+
+        let (tempURL, response): (URL, URLResponse)
+        do {
+            (tempURL, response) = try await session.download(for: request)
+        } catch {
+            throw MTGJSONError.transport(underlying: error)
+        }
+
+        if let http = response as? HTTPURLResponse, !(200..<300).contains(http.statusCode) {
+            throw MTGJSONError.unexpectedStatus(status: http.statusCode)
+        }
+
+        let stable = FileManager.default.temporaryDirectory
+            .appendingPathComponent("uv-mtgjson-all-\(UUID().uuidString).json")
+        try? FileManager.default.removeItem(at: stable)
+        try FileManager.default.moveItem(at: tempURL, to: stable)
+        return stable
+    }
 }
 
 public enum MTGJSONError: Error, LocalizedError, Equatable {

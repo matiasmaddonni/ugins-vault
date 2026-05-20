@@ -47,6 +47,10 @@ public enum SettingsAccessibilityFields {
         "btn_settings_currency_option_\(currency.rawValue.lowercased())"
     }
 
+    // MARK: - Collection group
+
+    public static let wishlistRow        = "btn_settings_wishlist"
+
     // MARK: - Privacy group
 
     public static let faceIDLockToggle   = "btn_settings_face_id_lock"

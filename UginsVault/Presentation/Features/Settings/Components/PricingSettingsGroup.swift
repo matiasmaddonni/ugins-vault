@@ -14,6 +14,7 @@ import SwiftUI
 public struct PricingSettingsGroup: View {
 
     private let sessionRepository: SessionRepository
+    private let exchangeRateRepository: ExchangeRateRepository
 
     @State private var isPresentingSourcePicker: Bool = false
     @State private var isPresentingThresholdEditor: Bool = false
@@ -22,8 +23,16 @@ public struct PricingSettingsGroup: View {
     @State private var thresholdInput: String = ""
     @State private var arsInput: String = ""
 
-    public init(sessionRepository: SessionRepository) {
+    @FocusState private var isAmountFocused: Bool
+
+    @State private var isRefreshingRates: Bool = false
+
+    public init(
+        sessionRepository: SessionRepository,
+        exchangeRateRepository: ExchangeRateRepository
+    ) {
         self.sessionRepository = sessionRepository
+        self.exchangeRateRepository = exchangeRateRepository
     }
 
     public var body: some View {
@@ -35,6 +44,8 @@ public struct PricingSettingsGroup: View {
             thresholdRow
             divider
             arsRateRow
+            divider
+            refreshRatesRow
         }
         .sheet(isPresented: $isPresentingSourcePicker) {
             SheetPicker(
@@ -124,6 +135,43 @@ public struct PricingSettingsGroup: View {
         }
     }
 
+    private var refreshRatesRow: some View {
+        SettingsRow(
+            icon: "arrow.triangle.2.circlepath",
+            title: "Refresh rates",
+            subtitle: ratesSubtitle,
+            action: { refreshRates() }
+        ) {
+            if isRefreshingRates {
+                ProgressView()
+                    .tint(Color.uv.gold)
+            } else {
+                Image(systemName: "arrow.clockwise")
+                    .font(.system(size: Layout.smallIcon, weight: .semibold))
+                    .foregroundStyle(Color.uv.gold)
+            }
+        }
+        .disabled(isRefreshingRates)
+    }
+
+    private var ratesSubtitle: String {
+        guard let date = exchangeRateRepository.lastRefreshedAt else {
+            return "Fetch the latest USD → ARS / EUR rates"
+        }
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .full
+        return "Updated \(formatter.localizedString(for: date, relativeTo: Date()))"
+    }
+
+    private func refreshRates() {
+        guard !isRefreshingRates else { return }
+        isRefreshingRates = true
+        Task { @MainActor in
+            try? await exchangeRateRepository.refresh()
+            isRefreshingRates = false
+        }
+    }
+
     private var divider: some View {
         Rectangle()
             .fill(Color.uv.stroke.opacity(0.4))
@@ -133,7 +181,7 @@ public struct PricingSettingsGroup: View {
 
     private func priceSourceDetail(for source: PriceSource) -> String {
         switch source {
-        case .cardkingdom: return "USD · Argentina's reference"
+        case .cardkingdom: return "USD · default source"
         case .tcgplayer:   return "USD · US marketplace"
         case .cardmarket:  return "EUR · European marketplace"
         }
@@ -163,6 +211,7 @@ public struct PricingSettingsGroup: View {
                     .foregroundStyle(Color.uv.muted)
 
                 TextField(placeholder, text: input)
+                    .focused($isAmountFocused)
                     .keyboardType(.decimalPad)
                     .padding(.horizontal, Spacing.rowHorizontal)
                     .padding(.vertical, Spacing.rowVertical)
@@ -185,6 +234,12 @@ public struct PricingSettingsGroup: View {
             .padding(.horizontal, Spacing.screenEdge)
             .padding(.top, Spacing.lg)
             .background(Color.uv.bg.ignoresSafeArea())
+            .task {
+                // Drop the cursor straight into the amount field so the
+                // user edits the number immediately — no second tap.
+                try? await Task.sleep(for: .milliseconds(250))
+                isAmountFocused = true
+            }
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

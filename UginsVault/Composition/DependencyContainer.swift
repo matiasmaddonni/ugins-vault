@@ -52,7 +52,8 @@ public final class DependencyContainer {
                 for: SwiftDataCard.self,
                 SwiftDataStack.self,
                 SwiftDataCollectionItem.self,
-                SwiftDataPriceSnapshot.self
+                SwiftDataPriceSnapshot.self,
+                SwiftDataWishlistItem.self
             )
         } catch {
             // On-disk store failed to open (most often a lightweight
@@ -71,6 +72,7 @@ public final class DependencyContainer {
                 SwiftDataStack.self,
                 SwiftDataCollectionItem.self,
                 SwiftDataPriceSnapshot.self,
+                SwiftDataWishlistItem.self,
                 configurations: config
             )
         } catch {
@@ -85,6 +87,7 @@ public final class DependencyContainer {
         modelContainer: modelContainer,
         lastSyncStorage: sessionStorage
     )
+    public lazy var wishlistRepository: WishlistRepository = SwiftDataWishlistRepository(modelContainer: modelContainer)
 
     // MARK: - Pricing wiring (v0.5)
 
@@ -114,7 +117,8 @@ public final class DependencyContainer {
         collectionItemRepository: collectionItemRepository,
         stackRepository: stackRepository,
         priceRepository: priceRepository,
-        sessionRepository: sessionRepository
+        sessionRepository: sessionRepository,
+        wishlistRepository: wishlistRepository
     )
 
     // MARK: - Use case factories — auth
@@ -230,6 +234,31 @@ public final class DependencyContainer {
         LatestPriceUseCase(priceRepository: priceRepository)
     }
 
+    // MARK: - Use case factories — wishlist
+
+    public func makeGetWishlistUseCase() -> GetWishlistUseCase {
+        GetWishlistUseCase(repository: wishlistRepository)
+    }
+
+    public func makeAddToWishlistUseCase() -> AddToWishlistUseCase {
+        AddToWishlistUseCase(repository: wishlistRepository)
+    }
+
+    public func makeRemoveFromWishlistUseCase() -> RemoveFromWishlistUseCase {
+        RemoveFromWishlistUseCase(repository: wishlistRepository)
+    }
+
+    @MainActor public func makeWishlistViewModel() -> WishlistViewModel {
+        WishlistViewModel(
+            getWishlist: makeGetWishlistUseCase(),
+            addToWishlist: makeAddToWishlistUseCase(),
+            removeFromWishlist: makeRemoveFromWishlistUseCase(),
+            scryfallClient: scryfallClient,
+            sessionRepository: sessionRepository,
+            exchangeRateRepository: exchangeRateRepository
+        )
+    }
+
     // MARK: - Use case factories — pricing
 
     public func makeSyncPricesUseCase() -> SyncPricesUseCase {
@@ -240,12 +269,13 @@ public final class DependencyContainer {
         )
     }
 
-    @MainActor public func makePriceSyncViewModel() -> PriceSyncViewModel {
+    @MainActor public func makePriceSyncViewModel(fullHistory: Bool = true) -> PriceSyncViewModel {
         PriceSyncViewModel(
             useCase: makeSyncPricesUseCase(),
             seedCatalogue: makeSeedCatalogueUseCase(),
             cardRepository: cardRepository,
-            reachability: networkReachability
+            reachability: networkReachability,
+            fullHistory: fullHistory
         )
     }
 
@@ -311,7 +341,8 @@ public final class DependencyContainer {
         CollectionViewModel(
             sessionRepository: sessionRepository,
             cardRepository: cardRepository,
-            seedCatalogue: makeSeedCatalogueUseCase()
+            seedCatalogue: makeSeedCatalogueUseCase(),
+            exchangeRateRepository: exchangeRateRepository
         )
     }
 
@@ -341,6 +372,7 @@ public final class DependencyContainer {
             sessionRepository: sessionRepository,
             cardRepository: cardRepository,
             stackRepository: stackRepository,
+            exchangeRateRepository: exchangeRateRepository,
             importDeckList: makeImportDeckListUseCase(),
             scryfallClient: scryfallClient
         )
@@ -351,6 +383,9 @@ public final class DependencyContainer {
             sessionRepository:           sessionRepository,
             userProfileRepository:       userProfileRepository,
             cardRepository:              cardRepository,
+            dashboardRepository:         dashboardRepository,
+            stackRepository:             stackRepository,
+            exchangeRateRepository:      exchangeRateRepository,
             getThemeUseCase:             makeGetThemeUseCase(),
             setThemeUseCase:             makeSetThemeUseCase(),
             getPreferredLanguageUseCase: makeGetPreferredLanguageUseCase(),

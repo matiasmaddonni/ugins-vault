@@ -56,4 +56,17 @@ public protocol PriceRepository: AnyObject, Observable {
     /// Wipes every snapshot + clears the sync timestamp. Used by
     /// Settings → Data → Reset.
     func deleteAll() async throws
+
+    /// Every snapshot for `source` on/after `since`, oldest first. One
+    /// fetch for the whole window — powers the Dashboard sparkline +
+    /// movers without an N-per-card round trip.
+    func allSince(source: PriceSource, since: Date) async throws -> [PriceSnapshot]
+}
+
+public extension PriceRepository {
+
+    /// Default no-history implementation so lightweight test doubles
+    /// don't have to implement it. The SwiftData repo overrides with a
+    /// real windowed fetch.
+    func allSince(source: PriceSource, since: Date) async throws -> [PriceSnapshot] { [] }
 }

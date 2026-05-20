@@ -235,7 +235,7 @@ public struct CollectionView: View {
         List {
             ForEach(viewModel.cards) { card in
                 NavigationLink(value: card) {
-                    CardRowView(card: card, displayCurrency: viewModel.currency)
+                    CardRowView(card: card, displayCurrency: viewModel.currency, rate: viewModel.exchangeRate)
                 }
                 .listRowBackground(Color.uv.bg)
                 .listRowSeparatorTint(Color.uv.stroke.opacity(0.4))
@@ -326,7 +326,7 @@ public struct CollectionView: View {
                     .fill(Color.uv.muted.opacity(0.5))
                     .frame(width: 3, height: 3)
 
-                Text(CurrencyFormatter.format(viewModel.totalValueUSD, currency: viewModel.currency))
+                Text(CurrencyFormatter.format(viewModel.totalValueUSD, currency: viewModel.currency, rate: viewModel.exchangeRate))
                     .font(.uv.mono(12, weight: .semibold))
                     .foregroundStyle(Color.uv.gold)
                     .accessibilityIdentifier(CollectionAccessibilityFields.totalValueLabel)

@@ -68,17 +68,38 @@ extension DashboardSnapshot {
         public var byFormat: [FormatSlice]?
         public var bySet: [SetBar]?
         public var stats: CollectionStats?
+        public var wishlistTrackedCount: Int?
+        public var wishlistReadyToBuyCount: Int?
+        public var weekDeltaUSD: Decimal?
+        public var weekDeltaPct: Double?
+        public var monthSparkline: [Decimal]?
+        public var gainers: [Mover]?
+        public var losers: [Mover]?
 
         public init(
             totalValueUSD: Decimal? = nil,
             byFormat: [FormatSlice]? = nil,
             bySet: [SetBar]? = nil,
-            stats: CollectionStats? = nil
+            stats: CollectionStats? = nil,
+            wishlistTrackedCount: Int? = nil,
+            wishlistReadyToBuyCount: Int? = nil,
+            weekDeltaUSD: Decimal? = nil,
+            weekDeltaPct: Double? = nil,
+            monthSparkline: [Decimal]? = nil,
+            gainers: [Mover]? = nil,
+            losers: [Mover]? = nil
         ) {
             self.totalValueUSD = totalValueUSD
             self.byFormat      = byFormat
             self.bySet         = bySet
             self.stats         = stats
+            self.wishlistTrackedCount = wishlistTrackedCount
+            self.wishlistReadyToBuyCount = wishlistReadyToBuyCount
+            self.weekDeltaUSD   = weekDeltaUSD
+            self.weekDeltaPct   = weekDeltaPct
+            self.monthSparkline = monthSparkline
+            self.gainers        = gainers
+            self.losers         = losers
         }
     }
 
@@ -134,16 +155,16 @@ extension DashboardSnapshot {
     ) -> DashboardSnapshot {
         DashboardSnapshot(
             totalValueUSD:           realStats.totalValueUSD ?? mockedHistory.totalValueUSD,
-            weekDeltaUSD:            mockedHistory.weekDeltaUSD,
-            weekDeltaPct:            mockedHistory.weekDeltaPct,
-            monthSparkline:          mockedHistory.monthSparkline,
-            gainers:                 mockedHistory.gainers,
-            losers:                  mockedHistory.losers,
+            weekDeltaUSD:            realStats.weekDeltaUSD ?? mockedHistory.weekDeltaUSD,
+            weekDeltaPct:            realStats.weekDeltaPct ?? mockedHistory.weekDeltaPct,
+            monthSparkline:          realStats.monthSparkline ?? mockedHistory.monthSparkline,
+            gainers:                 realStats.gainers ?? mockedHistory.gainers,
+            losers:                  realStats.losers ?? mockedHistory.losers,
             byFormat:                realStats.byFormat ?? mockedHistory.byFormat,
             bySet:                   realStats.bySet ?? mockedHistory.bySet,
             stats:                   realStats.stats ?? mockedHistory.stats,
-            wishlistTrackedCount:    mockedHistory.wishlistTrackedCount,
-            wishlistReadyToBuyCount: mockedHistory.wishlistReadyToBuyCount
+            wishlistTrackedCount:    realStats.wishlistTrackedCount ?? mockedHistory.wishlistTrackedCount,
+            wishlistReadyToBuyCount: realStats.wishlistReadyToBuyCount ?? mockedHistory.wishlistReadyToBuyCount
         )
     }
 }

@@ -23,7 +23,6 @@ public struct DashboardView: View {
                 .background(Color.uv.bg.ignoresSafeArea())
                 .navigationTitle("Dashboard")
                 .navigationBarTitleDisplayMode(.large)
-                .toolbar { toolbar }
                 .task {
                     viewModel.refreshCurrencyIfNeeded()
                     await viewModel.onAppear()
@@ -31,22 +30,6 @@ public struct DashboardView: View {
                 .refreshable { await viewModel.refresh() }
         }
         .accessibilityIdentifier(DashboardAccessibilityFields.screen)
-    }
-
-    @ToolbarContentBuilder
-    private var toolbar: some ToolbarContent {
-        ToolbarItem(placement: .topBarTrailing) {
-            Button {
-                // TODO: range picker (out of scope per brief §20).
-            } label: {
-                Image(systemName: "globe")
-                    .font(.system(size: Layout.mediumIcon - 1, weight: .semibold))
-                    .foregroundStyle(Color.uv.muted.opacity(0.6))
-            }
-            .disabled(true)
-            .accessibilityIdentifier(DashboardAccessibilityFields.rangeToolbar)
-            .accessibilityHidden(true)
-        }
     }
 
     @ViewBuilder
@@ -84,10 +67,15 @@ public struct DashboardView: View {
                     currency: viewModel.currency,
                     rate: viewModel.exchangeRate
                 )
-                WishlistTeaser(
-                    trackedCount: snapshot.wishlistTrackedCount,
-                    readyToBuyCount: snapshot.wishlistReadyToBuyCount
-                )
+                NavigationLink {
+                    WishlistView(viewModel: DependencyContainer.shared.makeWishlistViewModel())
+                } label: {
+                    WishlistTeaser(
+                        trackedCount: snapshot.wishlistTrackedCount,
+                        readyToBuyCount: snapshot.wishlistReadyToBuyCount
+                    )
+                }
+                .buttonStyle(.plain)
                 QuickStatsRow(
                     stats: snapshot.stats,
                     currency: viewModel.currency,

@@ -29,4 +29,17 @@ public final class MTGJSONPriceCatalogueSource: PriceCatalogueSource {
             ownedCardIDs: ownedCardIDs
         )
     }
+
+    public func fetchFullHistory(ownedCardIDs: Set<UUID>, windowStart: Date?) async throws -> [PriceSnapshot] {
+        guard !ownedCardIDs.isEmpty else { return [] }
+
+        let fileURL = try await client.downloadAllPrices()
+        defer { try? FileManager.default.removeItem(at: fileURL) }
+
+        return try MTGJSONStreamingPriceParser.parse(
+            fileURL: fileURL,
+            ownedCardIDs: ownedCardIDs,
+            windowStart: windowStart
+        )
+    }
 }

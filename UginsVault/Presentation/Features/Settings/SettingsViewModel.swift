@@ -28,11 +28,19 @@ public final class SettingsViewModel {
     public private(set) var catalogueCount: Int = 0
     public private(set) var dataStatus: DataStatus = .idle
 
+    /// Profile hero stat-strip values: owned collection value (USD) +
+    /// number of deck-kind stacks. `nil` until `loadProfileStats()` runs.
+    public private(set) var ownedValueUSD: Decimal?
+    public private(set) var deckCount: Int?
+
     // MARK: - Dependencies
 
     @ObservationIgnored private let sessionRepository:    SessionRepository
     @ObservationIgnored private let userProfileRepo:      UserProfileRepository
     @ObservationIgnored private let cardRepository:       CardRepository
+    @ObservationIgnored private let dashboardRepository:  DashboardRepository?
+    @ObservationIgnored private let stackRepository:      StackRepository?
+    @ObservationIgnored private let exchangeRateRepository: ExchangeRateRepository?
 
     @ObservationIgnored private let getThemeUseCase:      GetThemeUseCase
     @ObservationIgnored private let setThemeUseCase:      SetThemeUseCase
@@ -58,6 +66,9 @@ public final class SettingsViewModel {
         sessionRepository: SessionRepository,
         userProfileRepository: UserProfileRepository,
         cardRepository: CardRepository,
+        dashboardRepository: DashboardRepository? = nil,
+        stackRepository: StackRepository? = nil,
+        exchangeRateRepository: ExchangeRateRepository? = nil,
         getThemeUseCase: GetThemeUseCase,
         setThemeUseCase: SetThemeUseCase,
         getPreferredLanguageUseCase: GetPreferredLanguageUseCase,
@@ -76,6 +87,9 @@ public final class SettingsViewModel {
         self.sessionRepository    = sessionRepository
         self.userProfileRepo      = userProfileRepository
         self.cardRepository       = cardRepository
+        self.dashboardRepository  = dashboardRepository
+        self.stackRepository      = stackRepository
+        self.exchangeRateRepository = exchangeRateRepository
         self.getThemeUseCase      = getThemeUseCase
         self.setThemeUseCase      = setThemeUseCase
         self.getLanguageUseCase   = getPreferredLanguageUseCase
@@ -101,6 +115,19 @@ public final class SettingsViewModel {
     public var faceIDLock:   Bool        { getFaceIDLockUseCase.execute() }
     public var profile:      UserProfile { getProfileUseCase.execute() }
 
+    /// Owned-collection value formatted in the active display currency
+    /// (FX-converted when a rate is available). `nil` until
+    /// `loadProfileStats()` populates `ownedValueUSD`.
+    public var profileValueLabel: String? {
+        ownedValueUSD.map {
+            CurrencyFormatter.format(
+                $0,
+                currency: currency,
+                rate: exchangeRateRepository?.rate(toQuote: currency)
+            )
+        }
+    }
+
     public var isResetting: Bool {
         if case .resetting = dataStatus { return true }
         return false
@@ -110,6 +137,27 @@ public final class SettingsViewModel {
 
     public func onAppear() async {
         await refreshCatalogueCount()
+        await loadProfileStats()
+    }
+
+    /// Populates the profile hero stat strip: owned collection value
+    /// (reuses the shared Dashboard snapshot — fetched once if the
+    /// Dashboard tab hasn't already produced it) + the number of deck
+    /// stacks.
+    public func loadProfileStats() async {
+        if let dashboardRepository {
+            if dashboardRepository.snapshot == nil {
+                _ = try? await dashboardRepository.fetch()
+            }
+            ownedValueUSD = dashboardRepository.snapshot?.totalValueUSD
+        }
+        if let stackRepository, let stacks = try? await stackRepository.refresh() {
+            deckCount = stacks.filter { $0.kind == .deck }.count
+        }
+        // Keep FX fresh so the value label converts correctly.
+        if let exchangeRateRepository {
+            Task { try? await exchangeRateRepository.refresh() }
+        }
     }
 
     // MARK: - Preference intents

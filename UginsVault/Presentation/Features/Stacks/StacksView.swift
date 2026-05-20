@@ -195,9 +195,9 @@ public struct StacksView: View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: Spacing.lg) {
                 header
+                    .padding(.horizontal, Spacing.screenEdge)
                 filterStrip
             }
-            .padding(.horizontal, Spacing.screenEdge)
             .padding(.top, Spacing.sm)
             .padding(.bottom, Spacing.md)
 

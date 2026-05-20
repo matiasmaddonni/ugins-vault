@@ -12,6 +12,7 @@ struct CardRowView: View {
 
     let card: Card
     let displayCurrency: Currency
+    var rate: ExchangeRate? = nil
 
     var body: some View {
         HStack(alignment: .top, spacing: Spacing.md) {
@@ -34,7 +35,7 @@ struct CardRowView: View {
                         .foregroundStyle(Color.uv.muted2)
 
                     if let price = card.prices.usdPrice(for: .nonfoil) {
-                        Text(CurrencyFormatter.format(price, currency: displayCurrency))
+                        Text(CurrencyFormatter.format(price, currency: displayCurrency, rate: rate))
                             .font(.uv.mono(11, weight: .semibold))
                             .foregroundStyle(Color.uv.gold)
                     }

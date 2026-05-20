@@ -28,13 +28,17 @@ public struct WishlistTeaser: View {
                 Text("Wishlist")
                     .font(.uv.display(15, weight: .semibold))
                     .foregroundStyle(Color.uv.text)
-                Text("Coming soon")
+                Text(subtitle)
                     .font(.uv.mono(10.5))
                     .tracking(0.5)
                     .foregroundStyle(Color.uv.muted)
             }
 
             Spacer(minLength: 0)
+
+            Image(systemName: "chevron.right")
+                .font(.system(size: Layout.smallIcon - 2, weight: .semibold))
+                .foregroundStyle(Color.uv.muted)
         }
         .padding(.horizontal, Spacing.lg)
         .padding(.vertical, Spacing.md + 2)
@@ -48,7 +52,15 @@ public struct WishlistTeaser: View {
         )
         .accessibilityElement(children: .combine)
         .accessibilityIdentifier(DashboardAccessibilityFields.wishlistTile)
-        .accessibilityLabel("Wishlist — coming soon")
+        .accessibilityLabel("Wishlist")
+    }
+
+    private var subtitle: String {
+        switch trackedCount {
+        case 0:  return "Track cards you want"
+        case 1:  return "1 card tracked"
+        default: return "\(trackedCount) cards tracked"
+        }
     }
 
     private var iconSquare: some View {

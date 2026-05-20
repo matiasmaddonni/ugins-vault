@@ -87,6 +87,17 @@ public final class SwiftDataPriceRepository: PriceRepository {
         return map
     }
 
+    public func allSince(source: PriceSource, since: Date) async throws -> [PriceSnapshot] {
+        let sourceRaw = source.rawValue
+        let descriptor = FetchDescriptor<SwiftDataPriceSnapshot>(
+            predicate: #Predicate<SwiftDataPriceSnapshot> {
+                $0.sourceRaw == sourceRaw && $0.date >= since
+            },
+            sortBy: [SortDescriptor(\.date, order: .forward)]
+        )
+        return try context.fetch(descriptor).compactMap(PriceSnapshot.init(from:))
+    }
+
     // MARK: - Writes
 
     public func upsert(

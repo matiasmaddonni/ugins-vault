@@ -41,19 +41,25 @@ public final class PriceSyncViewModel {
     @ObservationIgnored private let cardRepository: CardRepository
     @ObservationIgnored private let reachability: NetworkReachability
     @ObservationIgnored private let seedQuery: String
+    /// When `true` the boot/refresh sync pulls the FULL price-history
+    /// dump (so the Dashboard has real movers immediately). Background +
+    /// pull-to-refresh stay on the lighter today-only path.
+    @ObservationIgnored private let fullHistory: Bool
 
     public init(
         useCase: SyncPricesUseCase,
         seedCatalogue: SeedCatalogueUseCase,
         cardRepository: CardRepository,
         reachability: NetworkReachability,
-        seedQuery: String = "set:fdn"
+        seedQuery: String = "set:fdn",
+        fullHistory: Bool = true
     ) {
         self.useCase = useCase
         self.seedCatalogue = seedCatalogue
         self.cardRepository = cardRepository
         self.reachability = reachability
         self.seedQuery = seedQuery
+        self.fullHistory = fullHistory
     }
 
     // MARK: - Intents
@@ -85,9 +91,12 @@ public final class PriceSyncViewModel {
         }
 
         do {
-            let count = try await useCase.execute { [weak self] progress in
+            let progressHandler: (SyncPricesUseCase.Progress) -> Void = { [weak self] progress in
                 self?.applyProgress(progress)
             }
+            let count = fullHistory
+                ? try await useCase.executeFullHistory(progress: progressHandler)
+                : try await useCase.execute(progress: progressHandler)
             status = .finished(importedCount: count)
         } catch let error as SyncPricesUseCase.SyncError {
             status = .failed(message: error.localizedDescription)

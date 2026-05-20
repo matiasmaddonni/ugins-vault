@@ -16,6 +16,7 @@ public struct SettingsView: View {
     @State private var isPresentingAcknowledgements: Bool = false
     @State private var presentedSheet: ActiveSheet?
     @State private var isConfirmingReset: Bool = false
+    @State private var isShowingWishlist: Bool = false
 
     private enum ActiveSheet: Identifiable {
         case language
@@ -40,16 +41,20 @@ public struct SettingsView: View {
                     ProfileHeroCard(
                         profile: viewModel.profile,
                         cardCount: viewModel.catalogueCount > 0 ? viewModel.catalogueCount : nil,
+                        totalValueLabel: viewModel.profileValueLabel,
+                        deckCount: viewModel.deckCount,
                         avatarImage: viewModel.profile.avatarFilename.flatMap(
                             DependencyContainer.shared.avatarStorage.loadImage
                         ),
                         onTap: { isEditingProfile = true }
                     )
 
+                    wishlistGroup
                     displayGroup
                     privacyGroup
                     PricingSettingsGroup(
-                        sessionRepository: DependencyContainer.shared.sessionRepository
+                        sessionRepository: DependencyContainer.shared.sessionRepository,
+                        exchangeRateRepository: DependencyContainer.shared.exchangeRateRepository
                     )
                     dataGroup
                     aboutGroup
@@ -62,6 +67,9 @@ public struct SettingsView: View {
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.large)
             .task { await viewModel.onAppear() }
+            .navigationDestination(isPresented: $isShowingWishlist) {
+                WishlistView(viewModel: DependencyContainer.shared.makeWishlistViewModel())
+            }
             .confirmationDialog(
                 "Reset the catalogue?",
                 isPresented: $isConfirmingReset,
@@ -111,6 +119,21 @@ public struct SettingsView: View {
             }
         }
         .accessibilityIdentifier(SettingsAccessibilityFields.screen)
+    }
+
+    // MARK: - Collection
+
+    private var wishlistGroup: some View {
+        SettingsGroup("Collection") {
+            SettingsRow(
+                icon: "heart",
+                title: "Wishlist",
+                value: nil
+            ) {
+                isShowingWishlist = true
+            }
+            .accessibilityIdentifier(SettingsAccessibilityFields.wishlistRow)
+        }
     }
 
     // MARK: - Display
@@ -164,7 +187,7 @@ public struct SettingsView: View {
         SettingsRow(
             icon: "dollarsign.circle",
             title: "Display currency",
-            subtitle: "Values shown in USD until conversion rates ship in v0.3",
+            subtitle: "Convert with live blue-dollar / ECB rates",
             value: viewModel.currency.rawValue
         ) {
             presentedSheet = .currency

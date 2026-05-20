@@ -28,19 +28,22 @@ public final class RealDashboardRepository: DashboardRepository {
     @ObservationIgnored private let stackRepository: StackRepository
     @ObservationIgnored private let priceRepository: PriceRepository
     @ObservationIgnored private let sessionRepository: SessionRepository
+    @ObservationIgnored private let wishlistRepository: WishlistRepository?
 
     public init(
         cardRepository: CardRepository,
         collectionItemRepository: CollectionItemRepository,
         stackRepository: StackRepository,
         priceRepository: PriceRepository,
-        sessionRepository: SessionRepository
+        sessionRepository: SessionRepository,
+        wishlistRepository: WishlistRepository? = nil
     ) {
         self.cardRepository = cardRepository
         self.collectionItemRepository = collectionItemRepository
         self.stackRepository = stackRepository
         self.priceRepository = priceRepository
         self.sessionRepository = sessionRepository
+        self.wishlistRepository = wishlistRepository
     }
 
     @discardableResult
@@ -74,12 +77,40 @@ public final class RealDashboardRepository: DashboardRepository {
             fallbackLatest: fallbackLatest
         )
 
-        let real = buildRealStats(
+        var real = buildRealStats(
             items: items,
             cardsByID: cardsByID,
             stackByID: stackByID,
             resolver: resolver
         )
+
+        // Real wishlist count replaces the mocked teaser numbers. Simple
+        // mode has no buy-target, so "ready to buy" is always 0.
+        if let wishlistRepository {
+            let count = (try? await wishlistRepository.refresh())?.count
+                ?? wishlistRepository.items.count
+            real.wishlistTrackedCount = count
+            real.wishlistReadyToBuyCount = 0
+        }
+
+        // Real price-history fields (sparkline / week-delta / movers).
+        // Replaces the mocked bag entirely — degrades to honest empties
+        // when there aren't yet two distinct days of history to compare.
+        let historyWindow: TimeInterval = 35 * 24 * 60 * 60
+        let since = Date().addingTimeInterval(-historyWindow)
+        let snapshots = (try? await priceRepository.allSince(source: preferred, since: since)) ?? []
+        let history = Self.computeHistory(
+            items: items,
+            cardsByID: cardsByID,
+            resolver: resolver,
+            snapshots: snapshots,
+            moverThreshold: sessionRepository.dashboardMoverThreshold
+        )
+        real.weekDeltaUSD   = history.weekDeltaUSD
+        real.weekDeltaPct   = history.weekDeltaPct
+        real.monthSparkline = history.sparkline
+        real.gainers        = history.gainers
+        real.losers         = history.losers
 
         let assembled = DashboardSnapshot.assemble(
             realStats: real,
@@ -163,6 +194,127 @@ public final class RealDashboardRepository: DashboardRepository {
                 foils: foilQuantity,
                 avgValueUSD: avg
             )
+        )
+    }
+
+    // MARK: - Price-history producer
+
+    private struct HistoryResult {
+        var weekDeltaUSD: Decimal
+        var weekDeltaPct: Double
+        var sparkline: [Decimal]
+        var gainers: [Mover]
+        var losers: [Mover]
+    }
+
+    /// Builds the sparkline + week-delta + per-card movers from windowed
+    /// price snapshots. Returns honest empties when there are fewer than
+    /// two distinct days of history (nothing to compare yet) — this is
+    /// what replaces the old mocked gainers/losers.
+    private static func computeHistory(
+        items: [CollectionItem],
+        cardsByID: [UUID: Card],
+        resolver: PriceResolver,
+        snapshots: [PriceSnapshot],
+        moverThreshold: Decimal
+    ) -> HistoryResult {
+        let empty = HistoryResult(weekDeltaUSD: .zero, weekDeltaPct: 0, sparkline: [], gainers: [], losers: [])
+
+        // Group snapshots by card (day-keyed, carry-forward friendly).
+        var historyByCard: [UUID: [(day: Date, price: Decimal)]] = [:]
+        var daySet: Set<Date> = []
+        let calendar = Calendar(identifier: .iso8601)
+        for snap in snapshots where snap.retail > 0 {
+            let day = calendar.startOfDay(for: snap.date)
+            historyByCard[snap.cardID, default: []].append((day, snap.retail))
+            daySet.insert(day)
+        }
+        let days = daySet.sorted()
+        guard days.count >= 2, let latestDay = days.last else { return empty }
+        let weekAgoDay = calendar.date(byAdding: .day, value: -7, to: latestDay) ?? days[0]
+
+        // Last price on/before a target day (carry-forward).
+        func priceOnDay(_ cardID: UUID, _ target: Date) -> Decimal? {
+            guard let points = historyByCard[cardID] else { return nil }
+            var result: Decimal?
+            for point in points {
+                if point.day <= target { result = point.price } else { break }
+            }
+            return result
+        }
+
+        var qtyByCard: [UUID: Int] = [:]
+        for item in items { qtyByCard[item.cardID, default: 0] += item.quantity }
+
+        // Portfolio value on a day: per-card price-on-day × quantity,
+        // falling back to the resolver's latest for cards lacking history.
+        func portfolio(on target: Date) -> Decimal {
+            var total: Decimal = .zero
+            for (cardID, qty) in qtyByCard {
+                let unit: Decimal
+                if let priced = priceOnDay(cardID, target) {
+                    unit = priced
+                } else if let card = cardsByID[cardID],
+                          let fallback = resolver.price(for: card, finish: .nonfoil) {
+                    unit = fallback
+                } else {
+                    unit = .zero
+                }
+                total += unit * Decimal(qty)
+            }
+            return total
+        }
+
+        // Sparkline — sample down to ≤ maxPoints across the window.
+        let maxPoints = 24
+        let sampledDays: [Date]
+        if days.count <= maxPoints {
+            sampledDays = days
+        } else {
+            let step = Double(days.count - 1) / Double(maxPoints - 1)
+            sampledDays = (0..<maxPoints).map { index in
+                days[min(days.count - 1, Int((Double(index) * step).rounded()))]
+            }
+        }
+        let sparkline = sampledDays.map { portfolio(on: $0) }
+
+        let todayValue = portfolio(on: latestDay)
+        let weekAgoValue = portfolio(on: weekAgoDay)
+        let weekDeltaUSD = todayValue - weekAgoValue
+        let weekDeltaPct: Double = {
+            let base = NSDecimalNumber(decimal: weekAgoValue).doubleValue
+            guard base > 0 else { return 0 }
+            return NSDecimalNumber(decimal: weekDeltaUSD).doubleValue / base * 100
+        }()
+
+        // Per-card movers — per-unit 7-day change, threshold-filtered.
+        var movers: [Mover] = []
+        for cardID in qtyByCard.keys {
+            guard let card = cardsByID[cardID],
+                  let today = priceOnDay(cardID, latestDay),
+                  let weekAgo = priceOnDay(cardID, weekAgoDay),
+                  weekAgo > 0 else { continue }
+            let delta = today - weekAgo
+            guard delta != 0, abs(delta) >= moverThreshold else { continue }
+            let pct = NSDecimalNumber(decimal: delta).doubleValue
+                    / NSDecimalNumber(decimal: weekAgo).doubleValue * 100
+            movers.append(Mover(
+                id: cardID.uuidString,
+                name: card.name,
+                setCode: card.setCode.uppercased(),
+                deltaUSD: delta,
+                pct: pct
+            ))
+        }
+        let gainers = movers.filter { $0.deltaUSD > 0 }.sorted { $0.pct > $1.pct }.prefix(5).map { $0 }
+        let losers  = movers.filter { $0.deltaUSD < 0 }.sorted { $0.pct < $1.pct }.prefix(5).map { $0 }
+
+        return HistoryResult(
+            weekDeltaUSD: weekDeltaUSD,
+            weekDeltaPct: weekDeltaPct,
+            sparkline: sparkline,
+            gainers: gainers,
+            losers: losers
         )
     }
 

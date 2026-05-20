@@ -54,7 +54,7 @@ public final class SyncPricesUseCase {
         priceRepository: PriceRepository,
         cardRepository: CardRepository,
         priceSource: PriceCatalogueSource,
-        historyWindow: TimeInterval = 30 * 24 * 60 * 60
+        historyWindow: TimeInterval = 35 * 24 * 60 * 60
     ) {
         self.priceRepository = priceRepository
         self.cardRepository = cardRepository
@@ -91,6 +91,38 @@ public final class SyncPricesUseCase {
         // 3. Persist + prune.
         progress?(.init(phase: .persisting, importedCount: snapshots.count))
         let cutoff = Date().addingTimeInterval(-historyWindow)
+        try await priceRepository.upsert(snapshots, keepingSince: cutoff)
+
+        progress?(.init(phase: .pruning, importedCount: snapshots.count))
+        try await priceRepository.markSyncCompleted(at: Date())
+
+        progress?(.init(phase: .finished, importedCount: snapshots.count))
+        return snapshots.count
+    }
+
+    /// First-launch / rebuild path: pulls the FULL price-history dump
+    /// (clamped to `historyWindow`) so the Dashboard sparkline + movers
+    /// have real data immediately instead of waiting for daily snapshots
+    /// to accrue. Same persist/prune as `execute()`.
+    @discardableResult
+    public func executeFullHistory(
+        progress: ((Progress) -> Void)? = nil
+    ) async throws -> Int {
+        let owned = try await ownedCardIDs()
+        guard !owned.isEmpty else { throw SyncError.noOwnedCards }
+
+        let cutoff = Date().addingTimeInterval(-historyWindow)
+
+        progress?(.init(phase: .fetching, importedCount: 0))
+        let snapshots: [PriceSnapshot]
+        do {
+            progress?(.init(phase: .parsing, importedCount: 0))
+            snapshots = try await priceSource.fetchFullHistory(ownedCardIDs: owned, windowStart: cutoff)
+        } catch {
+            throw SyncError.sourceFailed(message: error.localizedDescription)
+        }
+
+        progress?(.init(phase: .persisting, importedCount: snapshots.count))
         try await priceRepository.upsert(snapshots, keepingSince: cutoff)
 
         progress?(.init(phase: .pruning, importedCount: snapshots.count))

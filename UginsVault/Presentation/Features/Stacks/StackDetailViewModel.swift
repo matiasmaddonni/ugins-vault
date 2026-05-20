@@ -58,6 +58,7 @@ public final class StackDetailViewModel {
     @ObservationIgnored private let cardRepository: CardRepository?
     @ObservationIgnored private let stackRepository: StackRepository?
     @ObservationIgnored private let sessionRepository: SessionRepository
+    @ObservationIgnored private let exchangeRateRepository: ExchangeRateRepository?
     @ObservationIgnored private let importDeckList: ImportDeckListUseCase?
     @ObservationIgnored private let scryfallClient: (any ScryfallClientProtocol)?
 
@@ -69,6 +70,7 @@ public final class StackDetailViewModel {
         sessionRepository: SessionRepository,
         cardRepository: CardRepository? = nil,
         stackRepository: StackRepository? = nil,
+        exchangeRateRepository: ExchangeRateRepository? = nil,
         importDeckList: ImportDeckListUseCase? = nil,
         scryfallClient: (any ScryfallClientProtocol)? = nil
     ) {
@@ -77,6 +79,7 @@ public final class StackDetailViewModel {
         self.cardRepository = cardRepository
         self.stackRepository = stackRepository
         self.sessionRepository = sessionRepository
+        self.exchangeRateRepository = exchangeRateRepository
         self.importDeckList = importDeckList
         self.scryfallClient = scryfallClient
     }
@@ -160,8 +163,14 @@ public final class StackDetailViewModel {
         }
     }
 
+    /// USD→display-currency rate for `CurrencyFormatter`. `nil` until the
+    /// FX repo's first refresh.
+    public var exchangeRate: ExchangeRate? {
+        exchangeRateRepository?.rate(toQuote: currency)
+    }
+
     public var formattedTotalValue: String {
-        CurrencyFormatter.format(totalValue, currency: currency)
+        CurrencyFormatter.format(totalValue, currency: currency, rate: exchangeRate)
     }
 
     /// Kind-aware action labels rendered in `StackActionBar`.
@@ -211,6 +220,9 @@ public final class StackDetailViewModel {
 
     public func onAppear() async {
         await refresh()
+        if let exchangeRateRepository {
+            Task { try? await exchangeRateRepository.refresh() }
+        }
     }
 
     public func refresh() async {

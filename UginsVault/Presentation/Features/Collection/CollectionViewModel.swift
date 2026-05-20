@@ -43,6 +43,7 @@ public final class CollectionViewModel {
     @ObservationIgnored private let sessionRepository: SessionRepository
     @ObservationIgnored private let cardRepository: CardRepository
     @ObservationIgnored private let seedCatalogue: SeedCatalogueUseCase
+    @ObservationIgnored private let exchangeRateRepository: ExchangeRateRepository?
 
     /// Scryfall search to use when seeding an empty catalogue on first
     /// launch. Foundations ships ~310 cards.
@@ -57,12 +58,14 @@ public final class CollectionViewModel {
         sessionRepository: SessionRepository,
         cardRepository: CardRepository,
         seedCatalogue: SeedCatalogueUseCase,
+        exchangeRateRepository: ExchangeRateRepository? = nil,
         seedQuery: String = "set:fdn",
         pageSize: Int = 50
     ) {
         self.sessionRepository = sessionRepository
         self.cardRepository = cardRepository
         self.seedCatalogue = seedCatalogue
+        self.exchangeRateRepository = exchangeRateRepository
         self.seedQuery = seedQuery
         self.pageSize = pageSize
         self.currency = sessionRepository.currency
@@ -78,6 +81,13 @@ public final class CollectionViewModel {
         cards.reduce(.zero) { partial, card in
             partial + (card.prices.usdPrice(for: .nonfoil) ?? .zero)
         }
+    }
+
+    /// USD→display-currency rate for `CurrencyFormatter`. `nil` until the
+    /// FX repo's first refresh; the formatter then degrades to a symbol
+    /// swap rather than a wrong number.
+    public var exchangeRate: ExchangeRate? {
+        exchangeRateRepository?.rate(toQuote: currency)
     }
 
     public var hasActiveFilter: Bool {
@@ -99,6 +109,11 @@ public final class CollectionViewModel {
     public func onAppear() async {
         currency = sessionRepository.currency
         await loadOrSeed()
+        // Fire-and-forget FX refresh — rows + total re-read `exchangeRate`
+        // once the repo bumps its cache.
+        if let exchangeRateRepository {
+            Task { try? await exchangeRateRepository.refresh() }
+        }
     }
 
     /// Pulls the latest first-page slice from storage. If the catalogue
