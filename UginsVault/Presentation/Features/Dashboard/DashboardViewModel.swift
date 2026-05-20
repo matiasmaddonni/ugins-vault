@@ -102,7 +102,7 @@ public final class DashboardViewModel {
     /// remote response.
     public func refresh() async {
         if let syncPrices, reachability?.isOnWiFi == true {
-            try? await syncPrices.execute(progress: nil)
+            _ = try? await syncPrices.execute(progress: nil)
         }
         do {
             let result = try await repository.fetch()
