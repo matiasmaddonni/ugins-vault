@@ -59,15 +59,7 @@ public struct UndoToast: View {
         }
         .padding(.horizontal, Spacing.rowHorizontal)
         .padding(.vertical, Spacing.md)
-        .background(
-            RoundedRectangle(cornerRadius: UVRadius.lg)
-                .fill(Color.uv.panel)
-                .overlay(
-                    RoundedRectangle(cornerRadius: UVRadius.lg)
-                        .strokeBorder(Color.uv.stroke, lineWidth: 1)
-                )
-                .shadow(color: .black.opacity(0.4), radius: 16, y: 4)
-        )
+        .glassEffect(in: RoundedRectangle(cornerRadius: UVRadius.lg))
         .padding(.horizontal, Spacing.screenEdge)
         .padding(.bottom, Spacing.md)
         .transition(.move(edge: .bottom).combined(with: .opacity))

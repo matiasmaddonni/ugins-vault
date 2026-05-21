@@ -34,13 +34,6 @@ public struct SectionPanel<Content: View>: View {
         }
         .padding(Spacing.lg - 2)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            RoundedRectangle(cornerRadius: UVRadius.lg)
-                .fill(Color.uv.panel)
-                .overlay(
-                    RoundedRectangle(cornerRadius: UVRadius.lg)
-                        .strokeBorder(Color.uv.stroke, lineWidth: Layout.hairline)
-                )
-        )
+        .glassEffect(in: RoundedRectangle(cornerRadius: UVRadius.lg))
     }
 }

@@ -124,7 +124,7 @@ struct RestoreCollectionUseCaseTests {
         let item = CollectionItem(cardID: Self.fixtureID, stackID: UUID())
         let store = MockRemoteCollectionStore()
         store.fetchResult = RemoteCollection(stacks: [], items: [item])
-        let client = MockScryfallClient(card: try decodeFixtureCard())
+        let client = MockScryfallClient(collectionCards: [try decodeFixtureCard()])
         let sut = RestoreCollectionUseCase(remote: store, stackRepository: stackRepo,
                                            itemRepository: itemRepo, cardRepository: cardRepo,
                                            scryfallClient: client)

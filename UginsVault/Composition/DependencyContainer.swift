@@ -342,6 +342,7 @@ public final class DependencyContainer {
             cardRepository: cardRepository,
             priceRepository: priceRepository,
             latestPriceUseCase: makeLatestPriceUseCase(),
+            priceStatusSource: priceStatusSource,
             sessionRepository: sessionRepository
         )
     }

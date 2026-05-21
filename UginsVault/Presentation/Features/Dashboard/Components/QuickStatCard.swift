@@ -42,14 +42,7 @@ public struct QuickStatCard: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, Spacing.md)
         .padding(.vertical, Spacing.sm + 2)
-        .background(
-            RoundedRectangle(cornerRadius: UVRadius.md)
-                .fill(Color.uv.panel)
-                .overlay(
-                    RoundedRectangle(cornerRadius: UVRadius.md)
-                        .strokeBorder(Color.uv.stroke, lineWidth: Layout.hairline)
-                )
-        )
+        .glassEffect(in: RoundedRectangle(cornerRadius: UVRadius.md))
         .accessibilityElement(children: .combine)
         .accessibilityIdentifier(DashboardAccessibilityFields.quickStatCard(key))
     }

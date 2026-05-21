@@ -46,8 +46,10 @@ public final class RestoreCollectionUseCase {
     @discardableResult
     public func execute() async throws -> RemoteCollection {
         let collection = try await remote.fetch()
-        await hydrateMissingCards(Set(collection.items.map(\.cardID)))
+        // Mirror stacks + items first so the UI has rows immediately; card
+        // art/names are hydrated right after (batched, so it's quick).
         try await replaceLocal(with: collection)
+        await hydrateMissingCards(Set(collection.items.map(\.cardID)))
         return collection
     }
 
@@ -62,14 +64,30 @@ public final class RestoreCollectionUseCase {
         for item in collection.items { try await itemRepository.save(item) }
     }
 
-    /// Fetches + caches Scryfall data for any printing we don't have yet.
-    /// Best-effort: a single Scryfall miss never fails the restore.
+    /// Fetches + caches Scryfall data for any printing we don't have yet,
+    /// BATCHED via `/cards/collection` (75 ids/request) instead of one call
+    /// per card. Best-effort: a failed chunk never fails the restore.
     private func hydrateMissingCards(_ ids: Set<UUID>) async {
-        for id in ids {
-            if (try? await cardRepository.card(id: id)) != nil { continue }
-            guard let dto = try? await scryfallClient.card(id: id),
-                  let card = Card(from: dto) else { continue }
-            try? await cardRepository.save([card])
+        var missing: [UUID] = []
+        for id in ids where (try? await cardRepository.card(id: id)) == nil {
+            missing.append(id)
+        }
+        guard !missing.isEmpty else { return }
+
+        for chunk in missing.chunked(into: 75) {
+            let identifiers = chunk.map { ScryfallCardIdentifier(id: $0) }
+            guard let dtos = try? await scryfallClient.collection(identifiers: identifiers) else { continue }
+            let cards = dtos.compactMap(Card.init(from:))
+            try? await cardRepository.save(cards)
+        }
+    }
+}
+
+private extension Array {
+    func chunked(into size: Int) -> [[Element]] {
+        guard size > 0 else { return [self] }
+        return stride(from: 0, to: count, by: size).map {
+            Array(self[$0 ..< Swift.min($0 + size, count)])
         }
     }
 }

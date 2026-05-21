@@ -35,6 +35,11 @@ public final class CardDetailViewModel {
     /// (the backend). `nil` when the card isn't priced.
     public private(set) var resolvedPrice: LatestPriceUseCase.Resolved?
 
+    /// Why the retail value is (or isn't) shown: a real price, still being
+    /// fetched server-side, or confirmed to have no price data.
+    public enum PriceState: Equatable { case priced, fetching, noData }
+    public private(set) var priceState: PriceState = .fetching
+
     /// 30-day rolling history for the preferred source. Drives the
     /// mini sparkline on Card Detail. Oldest first.
     public private(set) var priceHistory: [PriceSnapshot] = []
@@ -51,6 +56,7 @@ public final class CardDetailViewModel {
     @ObservationIgnored private let cardRepository: CardRepository?
     @ObservationIgnored private let priceRepository: PriceRepository?
     @ObservationIgnored private let latestPriceUseCase: LatestPriceUseCase?
+    @ObservationIgnored private let priceStatusSource: PriceStatusSource?
     @ObservationIgnored private let sessionRepository: SessionRepository?
 
     // MARK: - Init
@@ -64,6 +70,7 @@ public final class CardDetailViewModel {
         cardRepository: CardRepository? = nil,
         priceRepository: PriceRepository? = nil,
         latestPriceUseCase: LatestPriceUseCase? = nil,
+        priceStatusSource: PriceStatusSource? = nil,
         sessionRepository: SessionRepository? = nil
     ) {
         self.card = card
@@ -74,6 +81,7 @@ public final class CardDetailViewModel {
         self.cardRepository = cardRepository
         self.priceRepository = priceRepository
         self.latestPriceUseCase = latestPriceUseCase
+        self.priceStatusSource = priceStatusSource
         self.sessionRepository = sessionRepository
         self.preferredSource = sessionRepository?.preferredPriceSource ?? .cardkingdom
     }
@@ -102,6 +110,21 @@ public final class CardDetailViewModel {
                 since: cutoff
             )) ?? []
         }
+        await resolvePriceState()
+    }
+
+    /// Classifies the missing-price case so the view can say *why*: still being
+    /// fetched server-side (`fetching`) vs. MTGJSON has no price (`noData`).
+    private func resolvePriceState() async {
+        if resolvedPrice != nil {
+            priceState = .priced
+            return
+        }
+        guard let status = try? await priceStatusSource?.status() else {
+            priceState = .fetching
+            return
+        }
+        priceState = status.noData.contains(card.id) ? .noData : .fetching
     }
 
     // MARK: - Stale-data backfill

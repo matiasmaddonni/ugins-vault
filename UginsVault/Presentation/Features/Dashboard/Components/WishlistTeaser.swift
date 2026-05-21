@@ -42,14 +42,7 @@ public struct WishlistTeaser: View {
         }
         .padding(.horizontal, Spacing.lg)
         .padding(.vertical, Spacing.md + 2)
-        .background(
-            RoundedRectangle(cornerRadius: UVRadius.lg)
-                .fill(Color.uv.panel)
-                .overlay(
-                    RoundedRectangle(cornerRadius: UVRadius.lg)
-                        .strokeBorder(Color.uv.stroke, lineWidth: Layout.hairline)
-                )
-        )
+        .glassEffect(in: RoundedRectangle(cornerRadius: UVRadius.lg))
         .accessibilityElement(children: .combine)
         .accessibilityIdentifier(DashboardAccessibilityFields.wishlistTile)
         .accessibilityLabel("Wishlist")

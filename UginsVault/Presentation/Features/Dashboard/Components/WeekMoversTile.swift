@@ -46,14 +46,7 @@ public struct WeekMoversTile: View {
         .padding(.horizontal, Spacing.lg - 2)
         .padding(.vertical, Spacing.md)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(
-            RoundedRectangle(cornerRadius: UVRadius.lg)
-                .fill(Color.uv.panel)
-                .overlay(
-                    RoundedRectangle(cornerRadius: UVRadius.lg)
-                        .strokeBorder(Color.uv.stroke, lineWidth: Layout.hairline)
-                )
-        )
+        .glassEffect(in: RoundedRectangle(cornerRadius: UVRadius.lg))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier(DashboardAccessibilityFields.weekMoversTile)
     }

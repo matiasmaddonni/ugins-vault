@@ -38,13 +38,12 @@ public struct RootView: View {
                 AccountLoginView(
                     viewModel: container.makeAccountLoginViewModel(
                         onProceed: {
-                            // After account sign-in, apply the local Face ID
-                            // gate (or enter the app directly when it's off).
-                            if container.sessionRepository.faceIDLock {
-                                viewModel.transition(to: .login)
-                            } else {
-                                viewModel.transition(to: appEntryPhase())
-                            }
+                            // Just authenticated with email/password — enter the
+                            // app directly. Face ID is a cold-launch re-lock
+                            // (see AdvanceFromSplashUseCase), not a second gate
+                            // right after an explicit sign-in. Stays toggleable
+                            // in Settings.
+                            viewModel.transition(to: appEntryPhase())
                         }
                     )
                 )

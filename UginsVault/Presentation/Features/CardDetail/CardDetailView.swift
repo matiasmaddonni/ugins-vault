@@ -324,7 +324,12 @@ public struct CardDetailView: View {
 
     private var priceRows: [PriceRow] {
         guard let resolved = viewModel.resolvedPrice else {
-            return [PriceRow(label: "Retail", value: "—")]
+            let placeholder: String
+            switch viewModel.priceState {
+            case .noData:            placeholder = String(localized: "No price")
+            case .fetching, .priced: placeholder = String(localized: "Fetching…")
+            }
+            return [PriceRow(label: "Retail", value: placeholder)]
         }
         return [
             PriceRow(

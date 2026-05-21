@@ -37,14 +37,7 @@ public struct StackActionBar: View {
                                 .lineLimit(1)
                         }
                         .frame(width: Layout.stackActionWidth, height: Layout.stackActionHeight)
-                        .background(
-                            RoundedRectangle(cornerRadius: UVRadius.md)
-                                .fill(Color.uv.panel)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: UVRadius.md)
-                                        .strokeBorder(Color.uv.stroke, lineWidth: Layout.hairline)
-                                )
-                        )
+                        .glassEffect(in: RoundedRectangle(cornerRadius: UVRadius.md))
                     }
                     .buttonStyle(.pressable)
                     .accessibilityIdentifier(StackDetailAccessibilityFields.actionButton(id: action.id))

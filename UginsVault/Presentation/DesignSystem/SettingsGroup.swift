@@ -33,14 +33,7 @@ public struct SettingsGroup<Content: View>: View {
             VStack(spacing: 0) {
                 content
             }
-            .background(
-                RoundedRectangle(cornerRadius: UVRadius.lg)
-                    .fill(Color.uv.panel)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: UVRadius.lg)
-                            .strokeBorder(Color.uv.stroke, lineWidth: 1)
-                    )
-            )
+            .glassEffect(in: RoundedRectangle(cornerRadius: UVRadius.lg))
 
             if let footer {
                 Text(footer)

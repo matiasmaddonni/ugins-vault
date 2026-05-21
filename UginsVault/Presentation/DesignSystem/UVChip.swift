@@ -42,16 +42,9 @@ public struct UVChip: View {
             .foregroundStyle(isSelected ? Color(hex: 0x1A1410) : Color.uv.text)
             .padding(.horizontal, Spacing.md)
             .padding(.vertical, Spacing.xs + 3)
-            .background(
-                Capsule()
-                    .fill(isSelected ? Color.uv.gold : Color.uv.panel)
-                    .overlay(
-                        Capsule()
-                            .strokeBorder(
-                                isSelected ? Color.uv.gold : Color.uv.stroke,
-                                lineWidth: Layout.hairline
-                            )
-                    )
+            .glassEffect(
+                isSelected ? .regular.tint(Color.uv.gold) : .regular,
+                in: Capsule()
             )
         }
         .buttonStyle(.pressable)
