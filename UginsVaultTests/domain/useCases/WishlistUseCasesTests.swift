@@ -56,17 +56,16 @@ struct WishlistUseCasesTests {
         #expect(try await GetWishlistUseCase(repository: repo).execute().count == 1)
     }
 
-    @Test("IsInWishlist reflects membership; Remove clears it")
-    func isInAndRemove() async throws {
+    @Test("Membership reflects adds; Remove clears it")
+    func membershipAndRemove() async throws {
         let repo = try makeRepository()
         let card = makeCard()
-        let isIn = IsInWishlistUseCase(repository: repo)
 
-        #expect(try await isIn.execute(id: card.id) == false)
+        #expect(try await repo.contains(id: card.id) == false)
         try await AddToWishlistUseCase(repository: repo).execute(card: card)
-        #expect(try await isIn.execute(id: card.id) == true)
+        #expect(try await repo.contains(id: card.id) == true)
 
         try await RemoveFromWishlistUseCase(repository: repo).execute(id: card.id)
-        #expect(try await isIn.execute(id: card.id) == false)
+        #expect(try await repo.contains(id: card.id) == false)
     }
 }

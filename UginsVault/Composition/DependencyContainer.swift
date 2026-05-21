@@ -134,8 +134,6 @@ public final class DependencyContainer {
         storage: sessionStorage
     )
 
-    public lazy var cardCatalogueSource: CardCatalogueSource = ScryfallCardCatalogueSource(client: scryfallClient)
-
     // v0.6: real catalogue-derived stats; mock-only historical bits
     // (sparkline / gainers / losers / wishlist counts) come from
     // `MockDashboardRepository.seed` until the price-history backend
@@ -162,10 +160,6 @@ public final class DependencyContainer {
         )
     }
 
-    public func makeSignOutUseCase() -> SignOutUseCase {
-        SignOutUseCase(sessionRepository: sessionRepository)
-    }
-
     // MARK: - Use case factories — account (Supabase)
 
     public func makeSignInUseCase() -> SignInUseCase {
@@ -174,10 +168,6 @@ public final class DependencyContainer {
 
     public func makeSignOutAccountUseCase() -> SignOutAccountUseCase {
         SignOutAccountUseCase(accountRepository: accountRepository)
-    }
-
-    public func makeRestoreSessionUseCase() -> RestoreSessionUseCase {
-        RestoreSessionUseCase(accountRepository: accountRepository)
     }
 
     // MARK: - Use case factories — preferences
@@ -234,31 +224,11 @@ public final class DependencyContainer {
 
     // MARK: - Use case factories — catalogue
 
-    public func makeSeedCatalogueUseCase() -> SeedCatalogueUseCase {
-        SeedCatalogueUseCase(source: cardCatalogueSource, repository: cardRepository)
-    }
-
     public func makeResetCatalogueUseCase() -> ResetCatalogueUseCase {
         ResetCatalogueUseCase(cardRepository: cardRepository)
     }
 
     // MARK: - Use case factories — pricing prefs
-
-    public func makeGetPreferredPriceSourceUseCase() -> GetPreferredPriceSourceUseCase {
-        GetPreferredPriceSourceUseCase(sessionRepository: sessionRepository)
-    }
-
-    public func makeSetPreferredPriceSourceUseCase() -> SetPreferredPriceSourceUseCase {
-        SetPreferredPriceSourceUseCase(sessionRepository: sessionRepository)
-    }
-
-    public func makeGetDashboardMoverThresholdUseCase() -> GetDashboardMoverThresholdUseCase {
-        GetDashboardMoverThresholdUseCase(sessionRepository: sessionRepository)
-    }
-
-    public func makeSetDashboardMoverThresholdUseCase() -> SetDashboardMoverThresholdUseCase {
-        SetDashboardMoverThresholdUseCase(sessionRepository: sessionRepository)
-    }
 
     public func makeGetManualARSRateUseCase() -> GetManualARSRateUseCase {
         GetManualARSRateUseCase(sessionRepository: sessionRepository)
@@ -374,10 +344,6 @@ public final class DependencyContainer {
         AddCardToStackUseCase(itemRepository: collectionItemRepository)
     }
 
-    public func makeMoveCollectionItemUseCase() -> MoveCollectionItemUseCase {
-        MoveCollectionItemUseCase(itemRepository: collectionItemRepository)
-    }
-
     public func makeImportDeckListUseCase() -> ImportDeckListUseCase {
         ImportDeckListUseCase(
             cardRepository: cardRepository,
@@ -390,7 +356,6 @@ public final class DependencyContainer {
         CollectionViewModel(
             sessionRepository: sessionRepository,
             cardRepository: cardRepository,
-            seedCatalogue: makeSeedCatalogueUseCase(),
             exchangeRateRepository: exchangeRateRepository,
             priceRepository: priceRepository
         )

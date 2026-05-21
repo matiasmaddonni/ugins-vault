@@ -3,9 +3,7 @@
 //  UginsVault — Presentation: Collection
 //
 //  Drives the Collection tab. Reads cards from a `CardRepository`,
-//  reports a loading / seeding / error state, owns sort + filter +
-//  pagination, and on first launch kicks the `SeedCatalogueUseCase` to
-//  populate an empty catalogue.
+//  reports a loading / error state, owns sort + filter + pagination.
 //
 
 import Foundation
@@ -21,7 +19,6 @@ public final class CollectionViewModel {
         case idle
         case loading
         case loadingMore
-        case seeding(savedSoFar: Int)
         case error(message: String)
     }
 
@@ -42,7 +39,6 @@ public final class CollectionViewModel {
 
     @ObservationIgnored private let sessionRepository: SessionRepository
     @ObservationIgnored private let cardRepository: CardRepository
-    @ObservationIgnored private let seedCatalogue: SeedCatalogueUseCase
     @ObservationIgnored private let exchangeRateRepository: ExchangeRateRepository?
     @ObservationIgnored private let priceRepository: PriceRepository?
 
@@ -50,10 +46,6 @@ public final class CollectionViewModel {
     /// user's preferred source. Cards without a priced snapshot are absent —
     /// they render with no price.
     public private(set) var priceMap: [UUID: Decimal] = [:]
-
-    /// Scryfall search to use when seeding an empty catalogue on first
-    /// launch. Foundations ships ~310 cards.
-    @ObservationIgnored private let seedQuery: String
 
     /// Page size for pagination.
     @ObservationIgnored private let pageSize: Int
@@ -63,18 +55,14 @@ public final class CollectionViewModel {
     public init(
         sessionRepository: SessionRepository,
         cardRepository: CardRepository,
-        seedCatalogue: SeedCatalogueUseCase,
         exchangeRateRepository: ExchangeRateRepository? = nil,
         priceRepository: PriceRepository? = nil,
-        seedQuery: String = "set:fdn",
         pageSize: Int = 50
     ) {
         self.sessionRepository = sessionRepository
         self.cardRepository = cardRepository
-        self.seedCatalogue = seedCatalogue
         self.exchangeRateRepository = exchangeRateRepository
         self.priceRepository = priceRepository
-        self.seedQuery = seedQuery
         self.pageSize = pageSize
         self.currency = sessionRepository.currency
     }
@@ -131,8 +119,7 @@ public final class CollectionViewModel {
 
     /// Loads the first page from the local catalogue. The catalogue is NOT
     /// auto-seeded — the Collection starts empty and fills as the user adds /
-    /// imports cards (import persists each resolved card here). Explicit
-    /// seeding stays available via Settings → Reset (`reseed()`).
+    /// imports cards (import persists each resolved card here).
     public func loadOrSeed() async {
         status = .loading
 
@@ -193,8 +180,7 @@ public final class CollectionViewModel {
 
     /// Drives the swipe-down refresh control on the Collection list.
     /// Re-runs the current query against the local catalogue and refreshes
-    /// the cached set-code list — does NOT re-seed from Scryfall (use
-    /// `reseed()` for a full reset).
+    /// the cached set-code list.
     public func pullToRefresh() async {
         do {
             try await refreshFirstPage()
@@ -275,26 +261,4 @@ public final class CollectionViewModel {
         }
     }
 
-    /// Wipes the local catalogue + re-seeds from Scryfall.
-    public func reseed() async {
-        status = .loading
-        do {
-            try await cardRepository.deleteAll()
-            try await seed()
-            try await refreshFirstPage()
-            availableSetCodes = try await cardRepository.availableSetCodes()
-            status = .idle
-        } catch {
-            status = .error(message: error.localizedDescription)
-        }
-    }
-
-    // MARK: - Private
-
-    private func seed() async throws {
-        try await seedCatalogue.execute(query: seedQuery) { [weak self] progress in
-            guard let self else { return }
-            self.status = .seeding(savedSoFar: progress.savedCount)
-        }
-    }
 }

@@ -4,9 +4,9 @@
 //
 //  Self-contained Settings panel for the v0.5+ pricing prefs:
 //  preferred marketplace, Dashboard mover threshold, optional manual
-//  USD→ARS override. Reads + writes through `SessionRepository`
-//  directly so `SettingsViewModel` doesn't grow another 6
-//  dependencies.
+//  USD→ARS override. Marketplace + threshold read/write `SessionRepository`
+//  directly so `SettingsViewModel` doesn't grow another 6 dependencies;
+//  the manual ARS override goes through its Get/Set use cases.
 //
 
 import SwiftUI
@@ -15,6 +15,8 @@ public struct PricingSettingsGroup: View {
 
     private let sessionRepository: SessionRepository
     private let exchangeRateRepository: ExchangeRateRepository
+    private let getManualARSRate: GetManualARSRateUseCase
+    private let setManualARSRate: SetManualARSRateUseCase
 
     @State private var isPresentingSourcePicker: Bool = false
     @State private var isPresentingThresholdEditor: Bool = false
@@ -29,10 +31,14 @@ public struct PricingSettingsGroup: View {
 
     public init(
         sessionRepository: SessionRepository,
-        exchangeRateRepository: ExchangeRateRepository
+        exchangeRateRepository: ExchangeRateRepository,
+        getManualARSRate: GetManualARSRateUseCase,
+        setManualARSRate: SetManualARSRateUseCase
     ) {
         self.sessionRepository = sessionRepository
         self.exchangeRateRepository = exchangeRateRepository
+        self.getManualARSRate = getManualARSRate
+        self.setManualARSRate = setManualARSRate
     }
 
     public var body: some View {
@@ -84,15 +90,11 @@ public struct PricingSettingsGroup: View {
                 input: $arsInput,
                 onSave: {
                     let normalized = arsInput.replacingOccurrences(of: ",", with: ".")
-                    if let value = Decimal(string: normalized), value > 0 {
-                        sessionRepository.saveManualARSRate(value)
-                    } else {
-                        sessionRepository.saveManualARSRate(nil)
-                    }
+                    setManualARSRate.execute(Decimal(string: normalized))
                     isPresentingARSEditor = false
                 },
                 onClear: {
-                    sessionRepository.saveManualARSRate(nil)
+                    setManualARSRate.execute(nil)
                     arsInput = ""
                     isPresentingARSEditor = false
                 }
@@ -128,9 +130,9 @@ public struct PricingSettingsGroup: View {
         SettingsRow(
             icon: "argentinianpesosign.circle",
             title: "Manual USD → ARS",
-            value: sessionRepository.manualARSRate.map(formatDecimal) ?? String(localized: "Auto")
+            value: getManualARSRate.execute().map(formatDecimal) ?? String(localized: "Auto")
         ) {
-            arsInput = sessionRepository.manualARSRate.map(formatDecimal) ?? ""
+            arsInput = getManualARSRate.execute().map(formatDecimal) ?? ""
             isPresentingARSEditor = true
         }
     }

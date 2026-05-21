@@ -57,7 +57,9 @@ public struct SettingsView: View {
                     privacyGroup
                     PricingSettingsGroup(
                         sessionRepository: DependencyContainer.shared.sessionRepository,
-                        exchangeRateRepository: DependencyContainer.shared.exchangeRateRepository
+                        exchangeRateRepository: DependencyContainer.shared.exchangeRateRepository,
+                        getManualARSRate: DependencyContainer.shared.makeGetManualARSRateUseCase(),
+                        setManualARSRate: DependencyContainer.shared.makeSetManualARSRateUseCase()
                     )
                     dataGroup
                     aboutGroup

@@ -45,26 +45,4 @@ struct AccountAuthUseCasesTests {
         #expect(account.isSignedIn == false)
     }
 
-    @Test("RestoreSessionUseCase returns true when a session is restored")
-    func restoreSignedIn() async {
-        let account = MockAccountRepository()
-        account.restoresToSignedIn = true
-        let sut = RestoreSessionUseCase(accountRepository: account)
-
-        let result = await sut.execute()
-
-        #expect(result)
-        #expect(account.restoreCallCount == 1)
-    }
-
-    @Test("RestoreSessionUseCase returns false when there is no session")
-    func restoreSignedOut() async {
-        let account = MockAccountRepository()
-        account.restoresToSignedIn = false
-        let sut = RestoreSessionUseCase(accountRepository: account)
-
-        let result = await sut.execute()
-
-        #expect(result == false)
-    }
 }

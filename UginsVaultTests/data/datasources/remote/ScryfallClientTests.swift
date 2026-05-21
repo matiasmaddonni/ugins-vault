@@ -12,28 +12,6 @@ struct ScryfallClientTests {
 
     // MARK: - Fixtures
 
-    private static let bulkDataResponse = """
-    {
-      "object": "list",
-      "has_more": false,
-      "data": [
-        {
-          "object": "bulk_data",
-          "id": "27bf3214-1271-490b-bdfe-c0be6c23d02e",
-          "uri": "https://api.scryfall.com/bulk-data/oracle-cards",
-          "type": "oracle_cards",
-          "name": "Oracle Cards",
-          "description": "A JSON file containing one Scryfall card object for each Oracle ID on Scryfall.",
-          "download_uri": "https://data.scryfall.io/oracle-cards/oracle-cards-20260518090420.json",
-          "updated_at": "2026-05-18T09:04:20.000+00:00",
-          "size": 195345765,
-          "content_type": "application/json",
-          "content_encoding": "gzip"
-        }
-      ]
-    }
-    """
-
     private static let cardResponse = """
     {
       "object": "card",
@@ -76,21 +54,6 @@ struct ScryfallClientTests {
     """
 
     // MARK: - Tests
-
-    @Test("bulkDataIndex decodes a paged list of bulk-data entries")
-    func bulkDataDecodes() async throws {
-        let client = makeClient { request in
-            #expect(request.url?.path == "/bulk-data")
-            return Self.ok(body: Self.bulkDataResponse)
-        }
-
-        let entries = try await client.bulkDataIndex()
-
-        #expect(entries.count == 1)
-        #expect(entries.first?.type == "oracle_cards")
-        #expect(entries.first?.size == 195345765)
-        #expect(entries.first?.downloadURI.absoluteString.contains("oracle-cards") == true)
-    }
 
     @Test("card(id:) decodes a single card and uses the lowercased UUID in the path")
     func cardByIDDecodes() async throws {
@@ -137,10 +100,10 @@ struct ScryfallClientTests {
         let client = makeClient { request in
             #expect(request.value(forHTTPHeaderField: "Accept") == "application/json")
             #expect(request.value(forHTTPHeaderField: "User-Agent")?.contains("UginsVault") == true)
-            return Self.ok(body: Self.bulkDataResponse)
+            return Self.ok(body: Self.cardResponse)
         }
 
-        _ = try await client.bulkDataIndex()
+        _ = try await client.card(id: UUID())
     }
 
     @Test("Non-2xx responses surface as ScryfallError.apiError with the envelope")

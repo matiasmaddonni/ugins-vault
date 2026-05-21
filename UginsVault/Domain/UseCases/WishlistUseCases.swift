@@ -43,14 +43,3 @@ public struct RemoveFromWishlistUseCase {
         try await repository.remove(id: id)
     }
 }
-
-/// `true` when the card is already wishlisted — drives "added" affordances.
-@MainActor
-public struct IsInWishlistUseCase {
-    private let repository: WishlistRepository
-    public init(repository: WishlistRepository) { self.repository = repository }
-
-    public func execute(id: UUID) async throws -> Bool {
-        try await repository.contains(id: id)
-    }
-}

@@ -47,36 +47,30 @@ struct CollectionViewModelTests {
     }
 
     private func makeSUT(
-        sessionCurrency: Currency = .usd,
-        seedPages: [CardCataloguePage] = []
-    ) throws -> (CollectionViewModel, SwiftDataCardRepository, SwiftDataPriceRepository, MockSessionRepository, MockCardCatalogueSource) {
+        sessionCurrency: Currency = .usd
+    ) throws -> (CollectionViewModel, SwiftDataCardRepository, SwiftDataPriceRepository, MockSessionRepository) {
         let session = MockSessionRepository()
         session.currency = sessionCurrency
         let (repo, priceRepo) = try makeRepos()
-        let source = MockCardCatalogueSource()
-        source.queuedPages = seedPages
-        let useCase = SeedCatalogueUseCase(source: source, repository: repo)
         let vm = CollectionViewModel(
             sessionRepository: session,
             cardRepository: repo,
-            seedCatalogue: useCase,
-            priceRepository: priceRepo,
-            seedQuery: "set:test"
+            priceRepository: priceRepo
         )
-        return (vm, repo, priceRepo, session, source)
+        return (vm, repo, priceRepo, session)
     }
 
     // MARK: - Tests
 
     @Test("Init reads the currency preference from the session repository")
     func initReadsCurrency() throws {
-        let (sut, _, _, _, _) = try makeSUT(sessionCurrency: .eur)
+        let (sut, _, _, _) = try makeSUT(sessionCurrency: .eur)
         #expect(sut.currency == .eur)
     }
 
     @Test("Defaults: empty cards, zero count, idle status")
     func defaultsAreEmpty() throws {
-        let (sut, _, _, _, _) = try makeSUT()
+        let (sut, _, _, _) = try makeSUT()
         #expect(sut.cards.isEmpty)
         #expect(sut.matchingCount == 0)
         #expect(sut.searchQuery == "")
@@ -85,48 +79,29 @@ struct CollectionViewModelTests {
 
     @Test("loadOrSeed pulls existing cards when the repo isn't empty")
     func loadsExistingCards() async throws {
-        let (sut, repo, _, _, source) = try makeSUT()
+        let (sut, repo, _, _) = try makeSUT()
         try await repo.save([makeCard(name: "Bolt"), makeCard(name: "Counterspell")])
 
         await sut.loadOrSeed()
 
         #expect(sut.cards.count == 2)
         #expect(sut.matchingCount == 2)
-        #expect(source.fetchCallCount == 0)
         #expect(sut.status == .idle)
     }
 
     @Test("loadOrSeed does NOT auto-seed — Collection starts empty")
     func emptyCatalogueStaysEmpty() async throws {
-        let (sut, _, _, _, source) = try makeSUT(
-            seedPages: [
-                CardCataloguePage(cards: [makeCard(name: "A"), makeCard(name: "B")], hasMore: false)
-            ]
-        )
+        let (sut, _, _, _) = try makeSUT()
 
         await sut.loadOrSeed()
 
-        #expect(source.fetchCallCount == 0)   // no seeding on first load
         #expect(sut.cards.isEmpty)
         #expect(sut.status == .idle)
     }
 
-    @Test("reseed surfaces seeding errors as .error status")
-    func errorOnReseedFailure() async throws {
-        let (sut, _, _, _, source) = try makeSUT()
-        source.nextError = ScryfallError.transport(underlying: URLError(.notConnectedToInternet))
-
-        await sut.reseed()
-
-        guard case .error = sut.status else {
-            Issue.record("Expected .error, got \(sut.status)")
-            return
-        }
-    }
-
     @Test("search filters cards by query through the repository")
     func searchFilters() async throws {
-        let (sut, repo, _, _, _) = try makeSUT()
+        let (sut, repo, _, _) = try makeSUT()
         try await repo.save([
             makeCard(name: "Lightning Bolt"),
             makeCard(name: "Lightning Helix"),
@@ -143,7 +118,7 @@ struct CollectionViewModelTests {
 
     @Test("totalValueUSD sums priced cards from the local store")
     func totalValueSums() async throws {
-        let (sut, repo, priceRepo, _, _) = try makeSUT()
+        let (sut, repo, priceRepo, _) = try makeSUT()
         let a = makeCard(name: "A")
         let b = makeCard(name: "B")
         try await repo.save([a, b])
@@ -161,7 +136,7 @@ struct CollectionViewModelTests {
 
     @Test("setSort updates sort + reruns the search")
     func setSortReorders() async throws {
-        let (sut, repo, _, _, _) = try makeSUT()
+        let (sut, repo, _, _) = try makeSUT()
         try await repo.save([
             makeCard(name: "Counterspell"),
             makeCard(name: "Ancestral Recall")
@@ -177,7 +152,7 @@ struct CollectionViewModelTests {
 
     @Test("applyFilter narrows the result set + advertises hasActiveFilter")
     func applyFilterNarrows() async throws {
-        let (sut, repo, _, _, _) = try makeSUT()
+        let (sut, repo, _, _) = try makeSUT()
         try await repo.save([
             makeCard(name: "A"),
             makeCard(name: "B"),
@@ -194,7 +169,7 @@ struct CollectionViewModelTests {
 
     @Test("removeCard(id:) deletes from repo + drops the row + updates count")
     func removeCardPulls() async throws {
-        let (sut, repo, _, _, _) = try makeSUT()
+        let (sut, repo, _, _) = try makeSUT()
         let a = makeCard(name: "A")
         let b = makeCard(name: "B")
         try await repo.save([a, b])
@@ -216,16 +191,10 @@ struct CollectionViewModelTests {
         let cards = (0..<10).map { makeCard(name: String(format: "Card %02d", $0)) }
         try await repo.save(cards)
 
-        let useCase = SeedCatalogueUseCase(
-            source: MockCardCatalogueSource(),
-            repository: repo
-        )
         let sut = CollectionViewModel(
             sessionRepository: session,
             cardRepository: repo,
-            seedCatalogue: useCase,
             priceRepository: priceRepo,
-            seedQuery: "set:test",
             pageSize: 4
         )
 

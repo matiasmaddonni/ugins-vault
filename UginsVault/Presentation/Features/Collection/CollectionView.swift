@@ -3,8 +3,7 @@
 //  UginsVault — Presentation: Collection
 //
 //  The Collection tab. Header (title + count + total value), search,
-//  card list with sort + filter + pagination. On empty catalogue,
-//  kicks the seed flow automatically.
+//  card list with sort + filter + pagination.
 //
 
 import SwiftUI
@@ -120,9 +119,6 @@ public struct CollectionView: View {
     @ViewBuilder
     private var content: some View {
         switch viewModel.status {
-        case .seeding(let savedSoFar):
-            seedingPanel(savedSoFar: savedSoFar)
-
         case .error(let message):
             errorPanel(message: message)
 
@@ -145,31 +141,6 @@ public struct CollectionView: View {
                 .foregroundStyle(Color.uv.muted)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-
-    private func seedingPanel(savedSoFar: Int) -> some View {
-        VStack(spacing: Spacing.md + 2) {
-            UginMark(size: Layout.emptyStateMarkSize, showsGlow: true)
-
-            VStack(spacing: Spacing.xs) {
-                Text("Building your catalogue")
-                    .font(.uv.display(18, weight: .semibold))
-                    .foregroundStyle(Color.uv.text)
-                Text("Pulling cards from Scryfall…")
-                    .font(.uv.body(13))
-                    .foregroundStyle(Color.uv.muted)
-            }
-
-            HStack(spacing: Spacing.sm) {
-                ProgressView()
-                    .tint(Color.uv.gold)
-                Text("\(savedSoFar) cards saved")
-                    .font(.uv.mono(12))
-                    .foregroundStyle(Color.uv.muted)
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(.horizontal, Spacing.xl)
     }
 
     private func errorPanel(message: String) -> some View {

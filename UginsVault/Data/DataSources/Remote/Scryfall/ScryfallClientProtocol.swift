@@ -11,10 +11,6 @@ import Foundation
 
 public protocol ScryfallClientProtocol: Actor {
 
-    /// Returns the list of available bulk-data dumps. Pick the
-    /// `oracle_cards` entry to seed the local catalogue on first launch.
-    func bulkDataIndex() async throws -> [ScryfallBulkData]
-
     /// Returns a single card by its Scryfall UUID.
     func card(id: UUID) async throws -> ScryfallCard
 

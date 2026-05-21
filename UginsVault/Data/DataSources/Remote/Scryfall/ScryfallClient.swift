@@ -61,11 +61,6 @@ public actor ScryfallClient: ScryfallClientProtocol {
 
     // MARK: - Public endpoints
 
-    public func bulkDataIndex() async throws -> [ScryfallBulkData] {
-        let list: ScryfallList<ScryfallBulkData> = try await get("bulk-data")
-        return list.data
-    }
-
     public func card(id: UUID) async throws -> ScryfallCard {
         try await get("cards/\(id.uuidString.lowercased())")
     }
