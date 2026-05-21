@@ -267,7 +267,7 @@ public struct StacksView: View {
             Spacer(minLength: Spacing.xl)
 
             VStack(spacing: Spacing.md + 2) {
-                UginMark(size: Layout.emptyStateMarkSize, showsGlow: false)
+                UginMark(size: Layout.emptyStateMarkSize)
                     .opacity(0.55)
 
                 VStack(spacing: Spacing.xs + 2) {

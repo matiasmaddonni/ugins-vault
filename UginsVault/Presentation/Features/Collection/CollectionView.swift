@@ -403,7 +403,7 @@ public struct CollectionView: View {
 
     private var emptyResults: some View {
         VStack(spacing: Spacing.md + 2) {
-            UginMark(size: Layout.emptyStateMarkSize, showsGlow: false)
+            UginMark(size: Layout.emptyStateMarkSize)
                 .opacity(0.45)
 
             VStack(spacing: Spacing.xs + 2) {

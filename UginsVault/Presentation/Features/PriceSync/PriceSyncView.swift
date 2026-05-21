@@ -28,7 +28,7 @@ public struct PriceSyncView: View {
             Color.uv.bg.ignoresSafeArea()
 
             VStack(spacing: Spacing.lg + 2) {
-                UginMark(size: Layout.splashMarkSize, showsGlow: true)
+                UginMark(size: Layout.splashMarkSize)
 
                 VStack(spacing: Spacing.xs + 2) {
                     Text("Refreshing prices")
