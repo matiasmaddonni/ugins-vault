@@ -44,6 +44,10 @@ public protocol CollectionItemRepository: AnyObject, Observable {
     /// Inserts or updates by `CollectionItem.id`. Idempotent.
     func save(_ item: CollectionItem) async throws
 
+    /// Inserts or updates a batch in a single write. Idempotent by id.
+    /// Used by bulk paths (deck import) to avoid a save per row.
+    func save(_ items: [CollectionItem]) async throws
+
     /// Removes a single item by id.
     func delete(id: UUID) async throws
 

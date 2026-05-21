@@ -12,11 +12,13 @@ actor MockScryfallClient: ScryfallClientProtocol {
 
     private let cardByID: ScryfallCard?
     private let shouldThrow: Bool
+    private let collectionCards: [ScryfallCard]
     private(set) var requestedIDs: [UUID] = []
 
-    init(card: ScryfallCard? = nil, shouldThrow: Bool = false) {
+    init(card: ScryfallCard? = nil, shouldThrow: Bool = false, collectionCards: [ScryfallCard] = []) {
         self.cardByID = card
         self.shouldThrow = shouldThrow
+        self.collectionCards = collectionCards
     }
 
     func card(id: UUID) async throws -> ScryfallCard {
@@ -33,5 +35,10 @@ actor MockScryfallClient: ScryfallClientProtocol {
 
     func searchCards(query: String, page: Int) async throws -> ScryfallList<ScryfallCard> {
         throw ScryfallError.transport(underlying: URLError(.unsupportedURL))
+    }
+
+    func collection(identifiers: [ScryfallCardIdentifier]) async throws -> [ScryfallCard] {
+        if shouldThrow { throw ScryfallError.transport(underlying: URLError(.notConnectedToInternet)) }
+        return collectionCards
     }
 }

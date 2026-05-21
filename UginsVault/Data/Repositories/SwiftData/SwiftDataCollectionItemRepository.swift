@@ -79,6 +79,26 @@ public final class SwiftDataCollectionItemRepository: CollectionItemRepository {
         try context.save()
     }
 
+    public func save(_ items: [CollectionItem]) async throws {
+        guard !items.isEmpty else { return }
+        isWriting = true
+        defer { isWriting = false }
+
+        for item in items {
+            let itemID = item.id
+            var descriptor = FetchDescriptor<SwiftDataCollectionItem>(
+                predicate: #Predicate<SwiftDataCollectionItem> { $0.id == itemID }
+            )
+            descriptor.fetchLimit = 1
+            if let existing = try context.fetch(descriptor).first {
+                existing.apply(item)
+            } else {
+                context.insert(SwiftDataCollectionItem(from: item))
+            }
+        }
+        try context.save()   // one write for the whole batch
+    }
+
     public func delete(id: UUID) async throws {
         isWriting = true
         defer { isWriting = false }

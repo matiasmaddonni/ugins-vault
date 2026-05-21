@@ -40,7 +40,22 @@ public struct MainTabView: View {
             case .ready:   tabs
             }
         }
+        .overlay(alignment: .bottom) { importPill }
+        .animation(.spring(response: 0.4, dampingFraction: 0.85), value: container.importCoordinator.phase)
         .task { await runBootstrap() }
+    }
+
+    @ViewBuilder
+    private var importPill: some View {
+        if container.importCoordinator.phase != .idle {
+            ImportProgressPill(
+                coordinator: container.importCoordinator,
+                onTap: { selectedTab = .stacks }
+            )
+            .padding(.horizontal, Spacing.md)
+            .padding(.bottom, Layout.importPillBottomInset)
+            .transition(.move(edge: .bottom).combined(with: .opacity))
+        }
     }
 
     private var tabs: some View {
@@ -89,11 +104,11 @@ public struct MainTabView: View {
         let localEmpty = ((try? await container.collectionItemRepository.allItems()) ?? []).isEmpty
         let restore = container.makeRestoreCollectionUseCase()
         if localEmpty {
-            try? await restore.execute()
+            _ = try? await restore.execute()
             bootstrap = .ready
         } else {
             bootstrap = .ready
-            try? await restore.execute()
+            _ = try? await restore.execute()
         }
     }
 }

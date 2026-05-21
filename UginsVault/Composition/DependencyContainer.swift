@@ -356,9 +356,15 @@ public final class DependencyContainer {
         ImportDeckListUseCase(
             cardRepository: cardRepository,
             scryfallClient: scryfallClient,
-            addCardToStack: makeAddCardToStackUseCase()
+            itemRepository: collectionItemRepository
         )
     }
+
+    /// App-scoped: a deck import runs in the background and surfaces in the
+    /// floating progress pill, so it outlives the sheet + tab switches.
+    public lazy var importCoordinator: ImportCoordinator = ImportCoordinator(
+        makeUseCase: { [unowned self] in self.makeImportDeckListUseCase() }
+    )
 
     @MainActor public func makeCollectionViewModel() -> CollectionViewModel {
         CollectionViewModel(
@@ -402,7 +408,7 @@ public final class DependencyContainer {
             stackRepository: stackRepository,
             exchangeRateRepository: exchangeRateRepository,
             priceRepository: priceRepository,
-            importDeckList: makeImportDeckListUseCase(),
+            importCoordinator: importCoordinator,
             scryfallClient: scryfallClient
         )
     }

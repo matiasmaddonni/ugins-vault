@@ -52,6 +52,21 @@ struct CollectionSyncingItemRepositoryTests {
         #expect(remote.allUpsertedItemIDs.contains(item.id))
     }
 
+    @Test("batch save persists all rows + pushes one upsert batch")
+    func batchSavePushes() async throws {
+        let (sut, base, remote) = try makeSUT()
+        let items = [
+            CollectionItem(cardID: UUID(), stackID: UUID()),
+            CollectionItem(cardID: UUID(), stackID: UUID())
+        ]
+
+        try await sut.save(items)
+        try await Task.sleep(for: .milliseconds(150))
+
+        #expect(try await base.allItems().count == 2)
+        #expect(items.allSatisfy { remote.allUpsertedItemIDs.contains($0.id) })
+    }
+
     @Test("delete removes locally + pushes a delete")
     func deletePushesDelete() async throws {
         let (sut, _, remote) = try makeSUT()

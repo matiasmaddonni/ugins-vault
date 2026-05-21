@@ -43,9 +43,6 @@ public final class StackDetailViewModel {
     // MARK: - Import sheet
 
     public var isPresentingImport: Bool = false
-    public private(set) var isImporting: Bool = false
-    public private(set) var importProgress: (current: Int, total: Int) = (0, 0)
-    public private(set) var lastImportResult: ImportDeckListUseCase.ImportResult?
 
     // MARK: - Delete
 
@@ -64,7 +61,7 @@ public final class StackDetailViewModel {
     @ObservationIgnored private let sessionRepository: SessionRepository
     @ObservationIgnored private let exchangeRateRepository: ExchangeRateRepository?
     @ObservationIgnored private let priceRepository: PriceRepository?
-    @ObservationIgnored private let importDeckList: ImportDeckListUseCase?
+    @ObservationIgnored private let importCoordinator: ImportCoordinator?
     @ObservationIgnored private let scryfallClient: (any ScryfallClientProtocol)?
 
     // MARK: - Init
@@ -77,7 +74,7 @@ public final class StackDetailViewModel {
         stackRepository: StackRepository? = nil,
         exchangeRateRepository: ExchangeRateRepository? = nil,
         priceRepository: PriceRepository? = nil,
-        importDeckList: ImportDeckListUseCase? = nil,
+        importCoordinator: ImportCoordinator? = nil,
         scryfallClient: (any ScryfallClientProtocol)? = nil
     ) {
         self.stack = stack
@@ -87,7 +84,7 @@ public final class StackDetailViewModel {
         self.sessionRepository = sessionRepository
         self.exchangeRateRepository = exchangeRateRepository
         self.priceRepository = priceRepository
-        self.importDeckList = importDeckList
+        self.importCoordinator = importCoordinator
         self.scryfallClient = scryfallClient
     }
 
@@ -296,16 +293,11 @@ public final class StackDetailViewModel {
     // MARK: - Import
 
     public func presentImport() {
-        lastImportResult = nil
         isPresentingImport = true
     }
 
     public func dismissImport() {
         isPresentingImport = false
-    }
-
-    public func dismissImportResult() {
-        lastImportResult = nil
     }
 
     // MARK: - Delete stack
@@ -385,28 +377,11 @@ public final class StackDetailViewModel {
         }
     }
 
-    /// Parses + resolves a Moxfield-style decklist and pushes the
-    /// matched cards into this stack.
-    public func importDeckList(source: String) async {
-        guard let importDeckList else { return }
-        isImporting = true
-        importProgress = (0, 0)
-        defer { isImporting = false }
-
-        do {
-            let result = try await importDeckList.execute(
-                source: source,
-                stackID: stack.id,
-                progress: { [weak self] current, total in
-                    self?.importProgress = (current, total)
-                }
-            )
-            lastImportResult = result
-            isPresentingImport = false
-            await refresh()
-        } catch {
-            status = .error(message: error.localizedDescription)
-        }
+    /// Hands the decklist to the app-scoped import coordinator (runs in the
+    /// background + surfaces in the floating pill), then closes the sheet.
+    public func startImport(source: String) {
+        importCoordinator?.start(source: source, stackID: stack.id, stackName: stack.name)
+        isPresentingImport = false
     }
 }
 

@@ -2,10 +2,10 @@
 //  ImportDeckListSheet.swift
 //  UginsVault — Presentation: Stacks
 //
-//  Big paste-text sheet for bulk-importing a deck list (Moxfield /
-//  Arena / MTGO format) into the current `Stack`. Tap "Import" → the
-//  view model parses every line, resolves it locally then via Scryfall,
-//  and pushes matched cards into the stack as `CollectionItem` rows.
+//  Paste-text sheet for bulk-importing a deck list (Moxfield / Arena / MTGO)
+//  into the current `Stack`. Tap "Import" → hand the text to the app-scoped
+//  import coordinator and dismiss immediately; progress shows in the floating
+//  pill above the tab bar so the app stays usable while it runs.
 //
 
 import SwiftUI
@@ -15,19 +15,13 @@ public struct ImportDeckListSheet: View {
     @Environment(\.dismiss) private var dismiss
     @State private var text: String
 
-    @Binding var isImporting: Bool
-    let progress: (current: Int, total: Int)
-    let onImport: (String) async -> Void
+    let onImport: (String) -> Void
 
     public init(
         initialText: String = "",
-        isImporting: Binding<Bool>,
-        progress: (current: Int, total: Int),
-        onImport: @escaping (String) async -> Void
+        onImport: @escaping (String) -> Void
     ) {
         self._text = State(initialValue: initialText)
-        self._isImporting = isImporting
-        self.progress = progress
         self.onImport = onImport
     }
 
@@ -35,12 +29,7 @@ public struct ImportDeckListSheet: View {
         NavigationStack {
             VStack(alignment: .leading, spacing: Spacing.md) {
                 instructions
-
                 editor
-
-                if isImporting {
-                    progressBar
-                }
             }
             .padding(.horizontal, Spacing.screenEdge)
             .padding(.top, Spacing.lg)
@@ -53,7 +42,6 @@ public struct ImportDeckListSheet: View {
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
         .presentationBackground(Color.uv.bg)
-        .interactiveDismissDisabled(isImporting)
         .accessibilityIdentifier(StackDetailAccessibilityFields.importSheet)
     }
 
@@ -97,40 +85,23 @@ public struct ImportDeckListSheet: View {
         .frame(minHeight: Layout.importEditorMinHeight)
     }
 
-    private var progressBar: some View {
-        VStack(spacing: Spacing.xs) {
-            ProgressView(
-                value: Double(progress.current),
-                total: Double(max(progress.total, 1))
-            )
-            .tint(Color.uv.gold)
-
-            HStack {
-                Text("Resolving \(progress.current) / \(progress.total)")
-                    .font(.uv.mono(11))
-                    .foregroundStyle(Color.uv.muted)
-                Spacer()
-            }
-        }
-    }
-
     @ToolbarContentBuilder
     private var toolbar: some ToolbarContent {
         ToolbarItem(placement: .topBarLeading) {
             Button("Cancel") { dismiss() }
-                .disabled(isImporting)
                 .foregroundStyle(Color.uv.muted)
                 .accessibilityIdentifier(StackDetailAccessibilityFields.importCancel)
         }
         ToolbarItem(placement: .topBarTrailing) {
             Button {
-                Task { await onImport(text) }
+                onImport(text)
+                dismiss()
             } label: {
                 Text("Import")
                     .font(.uv.body(15, weight: .semibold))
                     .foregroundStyle(canImport ? Color.uv.gold : Color.uv.muted)
             }
-            .disabled(!canImport || isImporting)
+            .disabled(!canImport)
             .accessibilityIdentifier(StackDetailAccessibilityFields.importSubmit)
         }
     }

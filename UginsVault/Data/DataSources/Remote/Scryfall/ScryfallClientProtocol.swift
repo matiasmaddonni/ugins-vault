@@ -22,4 +22,9 @@ public protocol ScryfallClientProtocol: Actor {
     /// Paged Scryfall search. `query` is Scryfall search syntax
     /// (`"set:fdn"`, `"c:r t:instant"`, …); `page` is 1-indexed.
     func searchCards(query: String, page: Int) async throws -> ScryfallList<ScryfallCard>
+
+    /// Resolves up to 75 identifiers (name + optional set) in one
+    /// `POST /cards/collection` request. Returns only the matched cards;
+    /// the caller diffs against the request to find the misses.
+    func collection(identifiers: [ScryfallCardIdentifier]) async throws -> [ScryfallCard]
 }

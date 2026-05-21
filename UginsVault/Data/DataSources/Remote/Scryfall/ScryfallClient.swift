@@ -42,6 +42,7 @@ public actor ScryfallClient: ScryfallClientProtocol {
     private let configuration: Configuration
     private let session: URLSession
     private let decoder: JSONDecoder
+    private let encoder = JSONEncoder()
     private let clock: any Clock<Duration>
 
     private var lastRequestAt: ContinuousClock.Instant?
@@ -87,6 +88,15 @@ public actor ScryfallClient: ScryfallClientProtocol {
         return try await get("cards/search?\(queryString)")
     }
 
+    public func collection(identifiers: [ScryfallCardIdentifier]) async throws -> [ScryfallCard] {
+        guard !identifiers.isEmpty else { return [] }
+        let response: ScryfallCollectionResponse = try await post(
+            "cards/collection",
+            body: ScryfallCollectionRequest(identifiers: identifiers)
+        )
+        return response.data
+    }
+
     // MARK: - Generic GET
 
     /// Issues a throttled GET against the Scryfall API and decodes the
@@ -102,6 +112,39 @@ public actor ScryfallClient: ScryfallClientProtocol {
         request.httpMethod = "GET"
         request.setValue(configuration.userAgent, forHTTPHeaderField: "User-Agent")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
+
+        let data: Data
+        let response: URLResponse
+        do {
+            (data, response) = try await session.data(for: request)
+        } catch {
+            throw ScryfallError.transport(underlying: error)
+        }
+
+        try Self.validate(response: response, data: data, decoder: decoder)
+
+        do {
+            return try decoder.decode(T.self, from: data)
+        } catch {
+            throw ScryfallError.decoding(underlying: error)
+        }
+    }
+
+    /// Throttled POST with a JSON body. Shares Scryfall's request spacing +
+    /// error handling with `get`.
+    func post<Body: Encodable, T: Decodable>(_ path: String, body: Body) async throws -> T {
+        try await throttleIfNeeded()
+
+        guard let url = URL(string: path, relativeTo: configuration.baseURL) else {
+            throw ScryfallError.invalidEndpoint(path: path)
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue(configuration.userAgent, forHTTPHeaderField: "User-Agent")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try encoder.encode(body)
 
         let data: Data
         let response: URLResponse

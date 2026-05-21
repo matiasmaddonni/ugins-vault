@@ -134,6 +134,10 @@ public enum Layout {
     /// `ImportResultToast`.
     public static let importToastUnresolvedMaxHeight: CGFloat = 180
 
+    /// Bottom inset for the floating import progress pill so it floats just
+    /// above the tab bar.
+    public static let importPillBottomInset: CGFloat = 56
+
     // MARK: - Dashboard
 
     /// Vertical spacing between Dashboard sections. Bumped from 12 →

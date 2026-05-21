@@ -42,11 +42,7 @@ public struct StackDetailView: View {
             .sheet(isPresented: $viewModel.isPresentingImport) {
                 ImportDeckListSheet(
                     initialText: viewModel.serializedCardList,
-                    isImporting: .constant(viewModel.isImporting),
-                    progress: viewModel.importProgress,
-                    onImport: { source in
-                        await viewModel.importDeckList(source: source)
-                    }
+                    onImport: { source in viewModel.startImport(source: source) }
                 )
             }
             .sheet(isPresented: $viewModel.isPresentingCommanderPicker) {
@@ -73,8 +69,6 @@ public struct StackDetailView: View {
             } message: {
                 Text("Removes \"\(viewModel.stack.name)\" and every card stored in it. This can't be undone.")
             }
-            .overlay(alignment: .bottom) { importResultOverlay }
-            .animation(.spring(response: 0.35, dampingFraction: 0.85), value: viewModel.lastImportResult)
             .accessibilityIdentifier(StackDetailAccessibilityFields.screen)
     }
 
@@ -118,20 +112,6 @@ public struct StackDetailView: View {
                     .foregroundStyle(Color.uv.gold)
             }
             .accessibilityIdentifier(StackDetailAccessibilityFields.deleteToolbar)
-        }
-    }
-
-    @ViewBuilder
-    private var importResultOverlay: some View {
-        if let result = viewModel.lastImportResult {
-            ImportResultToast(
-                result: result,
-                onDismiss: { viewModel.dismissImportResult() }
-            )
-            .padding(.horizontal, Spacing.screenEdge)
-            .padding(.bottom, Spacing.lg)
-            .transition(.move(edge: .bottom).combined(with: .opacity))
-            .accessibilityIdentifier(StackDetailAccessibilityFields.importToast)
         }
     }
 

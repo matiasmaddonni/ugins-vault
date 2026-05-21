@@ -74,6 +74,15 @@ public final class CollectionSyncingItemRepository: CollectionItemRepository {
         scheduleFlush()
     }
 
+    public func save(_ items: [CollectionItem]) async throws {
+        try await wrapped.save(items)
+        for item in items {
+            pendingDeleteIDs.remove(item.id)
+            pendingUpsertIDs.insert(item.id)
+        }
+        scheduleFlush()
+    }
+
     public func delete(id: UUID) async throws {
         try await wrapped.delete(id: id)
         pendingUpsertIDs.remove(id)
