@@ -14,6 +14,7 @@ struct CardRowView: View {
     let displayCurrency: Currency
     var rate: ExchangeRate? = nil
     var price: Decimal? = nil
+    var isFetching: Bool = false
 
     var body: some View {
         HStack(alignment: .top, spacing: Spacing.md) {
@@ -39,6 +40,10 @@ struct CardRowView: View {
                         Text(CurrencyFormatter.format(price, currency: displayCurrency, rate: rate))
                             .font(.uv.mono(11, weight: .semibold))
                             .foregroundStyle(Color.uv.gold)
+                    } else if isFetching {
+                        Text("Fetching…")
+                            .font(.uv.mono(11))
+                            .foregroundStyle(Color.uv.muted2)
                     }
                 }
             }

@@ -90,16 +90,19 @@ public final class DependencyContainer {
     }
 
     public lazy var cardRepository: CardRepository = SwiftDataCardRepository(modelContainer: modelContainer)
-    public lazy var stackRepository: StackRepository = SwiftDataStackRepository(modelContainer: modelContainer)
+    private lazy var baseStackRepository = SwiftDataStackRepository(modelContainer: modelContainer)
+    /// Wraps the SwiftData repo so every stack write debounce-pushes an
+    /// incremental upsert/delete to the backend (`/v1/collection/stacks`).
+    public lazy var stackRepository: StackRepository = CollectionSyncingStackRepository(
+        wrapped: baseStackRepository,
+        remote: collectionStore
+    )
     private lazy var baseCollectionItemRepository = SwiftDataCollectionItemRepository(modelContainer: modelContainer)
-    /// Wraps the SwiftData repo so every owned-collection write debounce-pushes
-    /// the owned list to the backend (`PUT /v1/owned`).
-    public lazy var collectionItemRepository: CollectionItemRepository = OwnedSyncingCollectionItemRepository(
+    /// Wraps the SwiftData repo so every collection write debounce-pushes an
+    /// incremental upsert/delete to the backend (`/v1/collection/items`).
+    public lazy var collectionItemRepository: CollectionItemRepository = CollectionSyncingItemRepository(
         wrapped: baseCollectionItemRepository,
-        pushOwned: PushOwnedUseCase(
-            collectionItemRepository: baseCollectionItemRepository,
-            remoteOwnedSync: remoteOwnedSync
-        )
+        remote: collectionStore
     )
     public lazy var priceRepository: PriceRepository = SwiftDataPriceRepository(
         modelContainer: modelContainer,
@@ -111,7 +114,7 @@ public final class DependencyContainer {
 
     public lazy var networkReachability: NetworkReachability = NWPathReachability()
 
-    /// Backend read API (prices / owned), authenticated with the Supabase token.
+    /// Backend read API (prices / collection), authenticated with the Supabase token.
     public lazy var apiClient: UginsVaultAPIClient = UginsVaultAPIClient(tokenProvider: accessTokenProvider)
 
     /// Authoritative price source — the backend (single source of truth).
@@ -120,8 +123,11 @@ public final class DependencyContainer {
         sessionRepository: sessionRepository
     )
 
-    /// Pushes the owned list to the backend (`PUT /v1/owned`).
-    public lazy var remoteOwnedSync: RemoteOwnedSync = BackendOwnedSync(client: apiClient)
+    /// Reads server-side pricing progress (`/v1/prices/status`).
+    public lazy var priceStatusSource: PriceStatusSource = APIPriceStatusSource(client: apiClient)
+
+    /// Backend collection store — the source of truth for stacks + items.
+    public lazy var collectionStore: RemoteCollectionStore = BackendCollectionStore(client: apiClient)
 
     // MARK: - FX wiring (v0.7)
 
@@ -269,19 +275,21 @@ public final class DependencyContainer {
 
     // MARK: - Use case factories — pricing
 
-    public func makePushOwnedUseCase() -> PushOwnedUseCase {
-        PushOwnedUseCase(
-            collectionItemRepository: collectionItemRepository,
-            remoteOwnedSync: remoteOwnedSync
-        )
-    }
-
     public func makeSyncPricesUseCase() -> SyncPricesUseCase {
         SyncPricesUseCase(
             priceRepository: priceRepository,
             collectionItemRepository: collectionItemRepository,
-            backendSource: backendPriceSource,
-            pushOwned: makePushOwnedUseCase()
+            backendSource: backendPriceSource
+        )
+    }
+
+    public func makeRestoreCollectionUseCase() -> RestoreCollectionUseCase {
+        RestoreCollectionUseCase(
+            remote: collectionStore,
+            stackRepository: baseStackRepository,
+            itemRepository: baseCollectionItemRepository,
+            cardRepository: cardRepository,
+            scryfallClient: scryfallClient
         )
     }
 
@@ -357,7 +365,8 @@ public final class DependencyContainer {
             sessionRepository: sessionRepository,
             cardRepository: cardRepository,
             exchangeRateRepository: exchangeRateRepository,
-            priceRepository: priceRepository
+            priceRepository: priceRepository,
+            priceStatusSource: priceStatusSource
         )
     }
 

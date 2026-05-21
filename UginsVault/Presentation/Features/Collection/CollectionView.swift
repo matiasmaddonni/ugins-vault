@@ -25,6 +25,7 @@ public struct CollectionView: View {
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar { toolbar }
                 .task { await viewModel.onAppear() }
+                .onDisappear { viewModel.stopPriceStatusPolling() }
                 .navigationDestination(for: Card.self) { card in
                     CardDetailView(
                         viewModel: DependencyContainer.shared.makeCardDetailViewModel(
@@ -206,7 +207,7 @@ public struct CollectionView: View {
         List {
             ForEach(viewModel.cards) { card in
                 NavigationLink(value: card) {
-                    CardRowView(card: card, displayCurrency: viewModel.currency, rate: viewModel.exchangeRate, price: viewModel.price(for: card.id))
+                    CardRowView(card: card, displayCurrency: viewModel.currency, rate: viewModel.exchangeRate, price: viewModel.price(for: card.id), isFetching: viewModel.isFetchingPrice(card.id))
                 }
                 .listRowBackground(Color.uv.bg)
                 .listRowSeparatorTint(Color.uv.stroke.opacity(0.4))

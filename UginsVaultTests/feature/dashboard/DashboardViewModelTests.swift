@@ -160,10 +160,6 @@ struct DashboardViewModelTests {
         }
     }
 
-    struct NoopOwnedSync: RemoteOwnedSync {
-        func push(_ cards: [OwnedCardCount]) async throws {}
-    }
-
     /// Builds a Dashboard VM whose price sync hits a controllable backend
     /// source. Seeds one owned card so the sync reaches the backend fetch.
     private func makeSyncSUT(
@@ -180,8 +176,7 @@ struct DashboardViewModelTests {
         let sync = SyncPricesUseCase(
             priceRepository: MockPriceRepository(),
             collectionItemRepository: items,
-            backendSource: backend,
-            pushOwned: PushOwnedUseCase(collectionItemRepository: items, remoteOwnedSync: NoopOwnedSync())
+            backendSource: backend
         )
         let repo = MockRepo()
         let sut = DashboardViewModel(

@@ -209,4 +209,41 @@ struct CollectionViewModelTests {
         #expect(sut.cards.count == 10)
         #expect(sut.hasMore == false)
     }
+
+    // MARK: - Price status polling
+
+    private struct StubPriceStatusSource: PriceStatusSource {
+        let result: PriceStatus
+        func status() async throws -> PriceStatus { result }
+    }
+
+    @Test("polling marks unpriced, non-noData cards as fetching")
+    func pollingMarksFetching() async throws {
+        let session = MockSessionRepository()
+        let (repo, priceRepo) = try makeRepos()
+        let a = makeCard(name: "A")
+        let b = makeCard(name: "B")
+        try await repo.save([a, b])
+
+        let day = Date()
+        try await priceRepo.upsert(
+            [PriceSnapshot(cardID: a.id, source: .cardkingdom, date: day, currency: .usd, retail: Decimal(1))],
+            keepingSince: day.addingTimeInterval(-100_000)
+        )
+
+        let status = StubPriceStatusSource(result: PriceStatus(pending: [b.id], noData: [], updatedAt: nil))
+        let sut = CollectionViewModel(
+            sessionRepository: session,
+            cardRepository: repo,
+            priceRepository: priceRepo,
+            priceStatusSource: status
+        )
+
+        await sut.onAppear()
+        try await Task.sleep(for: .milliseconds(150))
+
+        #expect(sut.isFetchingPrice(b.id))
+        #expect(!sut.isFetchingPrice(a.id))
+        sut.stopPriceStatusPolling()
+    }
 }

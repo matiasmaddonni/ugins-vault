@@ -31,10 +31,6 @@ struct PriceSyncViewModelTests {
         }
     }
 
-    struct NoopOwnedSync: RemoteOwnedSync {
-        func push(_ cards: [OwnedCardCount]) async throws {}
-    }
-
     final class InMemoryStorage: SessionStorageDataSource, @unchecked Sendable {
         private var bag: [String: String] = [:]
         func string(forKey key: String) -> String? { bag[key] }
@@ -67,11 +63,7 @@ struct PriceSyncViewModelTests {
         let useCase = SyncPricesUseCase(
             priceRepository: priceRepo,
             collectionItemRepository: itemRepo,
-            backendSource: backend,
-            pushOwned: PushOwnedUseCase(
-                collectionItemRepository: itemRepo,
-                remoteOwnedSync: NoopOwnedSync()
-            )
+            backendSource: backend
         )
         let sut = PriceSyncViewModel(useCase: useCase, reachability: reach)
         return (sut, itemRepo, priceRepo, backend, reach)

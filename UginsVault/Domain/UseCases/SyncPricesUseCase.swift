@@ -4,12 +4,13 @@
 //
 //  One end-to-end price refresh against the backend (the single source of
 //  truth):
-//    1. push the owned list so the backend ingest covers those cards.
-//    2. fetch backend prices for the owned set.
-//    3. persist + prune the rolling window + stamp the sync clock.
+//    1. fetch backend prices for the owned set.
+//    2. persist + prune the rolling window + stamp the sync clock.
 //
-//  Cards the backend hasn't ingested yet simply have no price until its
-//  ingest runs. Wi-Fi gating + scheduling live a layer up.
+//  The backend already holds the collection (it's the source of truth), so
+//  there is no owned-list push here. Cards the backend hasn't ingested yet
+//  simply have no price until its ingest runs. Wi-Fi gating + scheduling live
+//  a layer up.
 //
 
 import Foundation
@@ -52,20 +53,17 @@ public final class SyncPricesUseCase {
     private let priceRepository: PriceRepository
     private let collectionItemRepository: CollectionItemRepository
     private let backendSource: PriceCatalogueSource
-    private let pushOwned: PushOwnedUseCase
     private let historyWindow: TimeInterval
 
     public init(
         priceRepository: PriceRepository,
         collectionItemRepository: CollectionItemRepository,
         backendSource: PriceCatalogueSource,
-        pushOwned: PushOwnedUseCase,
         historyWindow: TimeInterval = 35 * 24 * 60 * 60
     ) {
         self.priceRepository = priceRepository
         self.collectionItemRepository = collectionItemRepository
         self.backendSource = backendSource
-        self.pushOwned = pushOwned
         self.historyWindow = historyWindow
     }
 
@@ -89,10 +87,6 @@ public final class SyncPricesUseCase {
     private func run(fullHistory: Bool, progress: ((Progress) -> Void)?) async throws -> Int {
         let owned = try await ownedCardIDs()
         guard !owned.isEmpty else { throw SyncError.noOwnedCards }
-
-        // Push owned so the backend ingest covers them. Best-effort: ingest is
-        // async server-side, and we still want to read whatever prices exist.
-        _ = try? await pushOwned.execute()
 
         let cutoff = Date().addingTimeInterval(-historyWindow)
 

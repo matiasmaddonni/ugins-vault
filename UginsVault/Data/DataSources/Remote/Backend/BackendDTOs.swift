@@ -29,18 +29,11 @@ struct PricePointDTO: Decodable, Sendable {
     let price: Decimal
 }
 
-// MARK: - PUT /v1/owned
+// MARK: - GET /v1/prices/status
 
-struct OwnedRequestDTO: Encodable, Sendable {
-    let cards: [OwnedCardDTO]
+struct PricesStatusDTO: Decodable, Sendable {
+    let pending: [UUID]    // still fetching server-side
+    let noData: [UUID]     // MTGJSON has no price — stop showing "fetching"
+    let updatedAt: String? // "YYYY-MM-DD" or null
 }
 
-struct OwnedCardDTO: Codable, Sendable {
-    let cardId: String
-    let quantity: Int
-}
-
-struct OwnedResponseDTO: Decodable, Sendable {
-    let ok: Bool
-    let count: Int
-}

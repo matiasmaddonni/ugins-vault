@@ -24,11 +24,6 @@ struct SyncPricesUseCaseTests {
         }
     }
 
-    final class CapturingOwnedSync: RemoteOwnedSync, @unchecked Sendable {
-        private(set) var pushed = false
-        func push(_ cards: [OwnedCardCount]) async throws { pushed = true }
-    }
-
     private func makeItemRepo() throws -> SwiftDataCollectionItemRepository {
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
         let container = try ModelContainer(for: SwiftDataCollectionItem.self, configurations: config)
@@ -38,14 +33,12 @@ struct SyncPricesUseCaseTests {
     private func makeSUT(
         price: MockPriceRepository,
         items: SwiftDataCollectionItemRepository,
-        backend: CaptureSource,
-        sync: RemoteOwnedSync = CapturingOwnedSync()
+        backend: CaptureSource
     ) -> SyncPricesUseCase {
         SyncPricesUseCase(
             priceRepository: price,
             collectionItemRepository: items,
-            backendSource: backend,
-            pushOwned: PushOwnedUseCase(collectionItemRepository: items, remoteOwnedSync: sync)
+            backendSource: backend
         )
     }
 
@@ -68,13 +61,11 @@ struct SyncPricesUseCaseTests {
         let price = MockPriceRepository()
         let backend = CaptureSource()
         backend.snapshots = [PriceSnapshot(cardID: card, source: .tcgplayer, date: Date(), currency: .usd, retail: 5)]
-        let owned = CapturingOwnedSync()
-        let sut = makeSUT(price: price, items: items, backend: backend, sync: owned)
+        let sut = makeSUT(price: price, items: items, backend: backend)
 
         let count = try await sut.execute()
 
         #expect(count == 1)
-        #expect(owned.pushed)
         #expect(backend.received == [card])
         #expect(price.upserts.count == 1)
         #expect(price.upserts.first?.count == 1)

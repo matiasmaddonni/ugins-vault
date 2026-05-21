@@ -41,11 +41,20 @@ public final class CollectionViewModel {
     @ObservationIgnored private let cardRepository: CardRepository
     @ObservationIgnored private let exchangeRateRepository: ExchangeRateRepository?
     @ObservationIgnored private let priceRepository: PriceRepository?
+    @ObservationIgnored private let priceStatusSource: PriceStatusSource?
 
     /// Latest retail price per card from the local store (backend) for the
     /// user's preferred source. Cards without a priced snapshot are absent —
     /// they render with no price.
     public private(set) var priceMap: [UUID: Decimal] = [:]
+
+    /// Owned cards still being priced server-side (drives the row "Fetching…"
+    /// state). Cards the backend has no price for sit in `noDataCardIDs` and are
+    /// NOT shown as fetching.
+    public private(set) var fetchingCardIDs: Set<UUID> = []
+    public private(set) var noDataCardIDs: Set<UUID> = []
+
+    @ObservationIgnored private var pollTask: Task<Void, Never>?
 
     /// Page size for pagination.
     @ObservationIgnored private let pageSize: Int
@@ -57,12 +66,14 @@ public final class CollectionViewModel {
         cardRepository: CardRepository,
         exchangeRateRepository: ExchangeRateRepository? = nil,
         priceRepository: PriceRepository? = nil,
+        priceStatusSource: PriceStatusSource? = nil,
         pageSize: Int = 50
     ) {
         self.sessionRepository = sessionRepository
         self.cardRepository = cardRepository
         self.exchangeRateRepository = exchangeRateRepository
         self.priceRepository = priceRepository
+        self.priceStatusSource = priceStatusSource
         self.pageSize = pageSize
         self.currency = sessionRepository.currency
     }
@@ -70,6 +81,12 @@ public final class CollectionViewModel {
     /// Price for a card from the local store, or `nil` when unpriced.
     public func price(for cardID: UUID) -> Decimal? {
         priceMap[cardID]
+    }
+
+    /// `true` when this card has no local price yet but the backend is still
+    /// fetching one (vs. genuinely having no data).
+    public func isFetchingPrice(_ cardID: UUID) -> Bool {
+        fetchingCardIDs.contains(cardID)
     }
 
     // MARK: - Derived
@@ -115,6 +132,7 @@ public final class CollectionViewModel {
         if let exchangeRateRepository {
             Task { try? await exchangeRateRepository.refresh() }
         }
+        startPriceStatusPolling()
     }
 
     /// Loads the first page from the local catalogue. The catalogue is NOT
@@ -150,6 +168,42 @@ public final class CollectionViewModel {
         let source = sessionRepository.preferredPriceSource
         let latest = (try? await priceRepository.latestByCard(source: source)) ?? [:]
         priceMap = latest.mapValues(\.retail)
+    }
+
+    // MARK: - Price status polling
+
+    /// Polls `/v1/prices/status` while any owned card is still being priced,
+    /// backing off 3s → 30s. Updates `fetchingCardIDs` / `noDataCardIDs` and
+    /// re-reads the local price store so prices that land mid-poll appear.
+    public func startPriceStatusPolling() {
+        guard priceStatusSource != nil else { return }
+        pollTask?.cancel()
+        pollTask = Task { @MainActor [weak self] in
+            guard let self else { return }
+            var delay: Duration = .seconds(3)
+            var iterations = 0
+            while !Task.isCancelled, iterations < 40 {
+                await self.refreshPriceStatus()
+                if self.fetchingCardIDs.isEmpty { break }
+                try? await Task.sleep(for: delay)
+                delay = min(.seconds(30), delay * 2)
+                iterations += 1
+            }
+        }
+    }
+
+    public func stopPriceStatusPolling() {
+        pollTask?.cancel()
+        pollTask = nil
+    }
+
+    private func refreshPriceStatus() async {
+        guard let priceStatusSource else { return }
+        await loadPrices()
+        guard let status = try? await priceStatusSource.status() else { return }
+        let unpriced = Set(cards.map(\.id)).filter { priceMap[$0] == nil }
+        noDataCardIDs = unpriced.intersection(status.noData)
+        fetchingCardIDs = unpriced.subtracting(status.noData)
     }
 
     /// Appends the next page to the existing card list. No-op when

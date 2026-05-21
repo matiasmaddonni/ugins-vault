@@ -49,8 +49,8 @@ public actor UginsVaultAPIClient {
     private let configuration: Configuration
     private let session: URLSession
     private let tokenProvider: AccessTokenProviding
-    private let decoder = JSONDecoder()
-    private let encoder = JSONEncoder()
+    private let decoder = UginsVaultAPIClient.makeDecoder()
+    private let encoder = UginsVaultAPIClient.makeEncoder()
 
     public init(
         tokenProvider: AccessTokenProviding,
@@ -75,10 +75,47 @@ public actor UginsVaultAPIClient {
         return try await get("v1/prices?\(query)")
     }
 
-    /// `PUT /v1/owned` — atomic replace of the caller's owned list.
+    // MARK: - Collection (source of truth lives on the backend)
+
+    /// `GET /v1/collection` — the full collection to restore on launch.
+    func getCollection() async throws -> CollectionResponseDTO {
+        try await get("v1/collection")
+    }
+
+    /// `PUT /v1/collection` — full replace. First import / hard reset only.
     @discardableResult
-    func putOwned(_ body: OwnedRequestDTO) async throws -> OwnedResponseDTO {
-        try await send("v1/owned", method: "PUT", body: body)
+    func putCollection(stacks: [StackDTO], items: [CollectionItemDTO]) async throws -> CollectionReplaceResponseDTO {
+        try await send("v1/collection", method: "PUT",
+                       body: CollectionReplaceRequestDTO(stacks: stacks, items: items))
+    }
+
+    /// `POST /v1/collection/items` — upsert a batch by id.
+    @discardableResult
+    func upsertItems(_ items: [CollectionItemDTO]) async throws -> ItemsUpsertResponseDTO {
+        try await send("v1/collection/items", method: "POST", body: ItemsUpsertRequestDTO(items: items))
+    }
+
+    /// `DELETE /v1/collection/items` — remove items by id.
+    @discardableResult
+    func deleteItems(ids: [UUID]) async throws -> DeleteResponseDTO {
+        try await send("v1/collection/items", method: "DELETE", body: IDsRequestDTO(ids: ids))
+    }
+
+    /// `POST /v1/collection/stacks` — upsert a batch by id.
+    @discardableResult
+    func upsertStacks(_ stacks: [StackDTO]) async throws -> StacksUpsertResponseDTO {
+        try await send("v1/collection/stacks", method: "POST", body: StacksUpsertRequestDTO(stacks: stacks))
+    }
+
+    /// `DELETE /v1/collection/stacks` — remove stacks (and their items) by id.
+    @discardableResult
+    func deleteStacks(ids: [UUID]) async throws -> DeleteResponseDTO {
+        try await send("v1/collection/stacks", method: "DELETE", body: IDsRequestDTO(ids: ids))
+    }
+
+    /// `GET /v1/prices/status` — which owned cards are still being priced.
+    func pricesStatus() async throws -> PricesStatusDTO {
+        try await get("v1/prices/status")
     }
 
     // MARK: - Plumbing
@@ -99,8 +136,7 @@ public actor UginsVaultAPIClient {
     }
 
     private func get<T: Decodable>(_ path: String) async throws -> T {
-        let request = try await authorizedRequest(path: path, method: "GET")
-        return try await perform(request)
+        try await performWithRetry { try await self.authorizedRequest(path: path, method: "GET") }
     }
 
     private func send<Body: Encodable, T: Decodable>(
@@ -108,10 +144,28 @@ public actor UginsVaultAPIClient {
         method: String,
         body: Body
     ) async throws -> T {
-        var request = try await authorizedRequest(path: path, method: method)
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try encoder.encode(body)
-        return try await perform(request)
+        let payload = try encoder.encode(body)
+        return try await performWithRetry {
+            var request = try await self.authorizedRequest(path: path, method: method)
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.httpBody = payload
+            return request
+        }
+    }
+
+    /// Performs the built request; on a 401 it rebuilds the request — which
+    /// re-fetches the bearer, reloading + refreshing the Supabase session — and
+    /// retries exactly once before surfacing `.unauthorized`.
+    private func performWithRetry<T: Decodable>(
+        _ makeRequest: () async throws -> URLRequest
+    ) async throws -> T {
+        do {
+            let request = try await makeRequest()
+            return try await perform(request)
+        } catch BackendAPIError.unauthorized {
+            let retry = try await makeRequest()
+            return try await perform(retry)
+        }
     }
 
     private func perform<T: Decodable>(_ request: URLRequest) async throws -> T {
@@ -133,5 +187,40 @@ public actor UginsVaultAPIClient {
         } catch {
             throw BackendAPIError.decoding(underlying: error)
         }
+    }
+
+    // MARK: - Coding
+
+    private static func makeDecoder() -> JSONDecoder {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .custom { decoder in
+            let container = try decoder.singleValueContainer()
+            let raw = try container.decode(String.self)
+            guard let date = Self.parseTimestamp(raw) else {
+                throw DecodingError.dataCorrupted(
+                    .init(codingPath: decoder.codingPath,
+                          debugDescription: "Unparseable ISO8601 timestamp: \(raw)")
+                )
+            }
+            return date
+        }
+        return decoder
+    }
+
+    private static func makeEncoder() -> JSONEncoder {
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        return encoder
+    }
+
+    /// Server timestamps are ISO8601 WITH an offset (e.g. "…+00:00"), sometimes
+    /// with fractional seconds. Try both forms.
+    private static func parseTimestamp(_ raw: String) -> Date? {
+        let withFraction = ISO8601DateFormatter()
+        withFraction.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        if let date = withFraction.date(from: raw) { return date }
+        let plain = ISO8601DateFormatter()
+        plain.formatOptions = [.withInternetDateTime]
+        return plain.date(from: raw)
     }
 }
