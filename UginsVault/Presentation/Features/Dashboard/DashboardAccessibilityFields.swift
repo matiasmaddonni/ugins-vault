@@ -14,7 +14,7 @@ public enum DashboardAccessibilityFields {
     // MARK: - Screen
 
     public static let screen = "scr_dashboard"
-    public static let syncFailedBanner = "lbl_dashboard_sync_failed"
+    public static let priceSyncBanner = "lbl_dashboard_price_sync"
 
     // MARK: - Nav
 

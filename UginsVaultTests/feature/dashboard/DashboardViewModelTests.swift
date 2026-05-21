@@ -203,7 +203,8 @@ struct DashboardViewModelTests {
 
         // initial load (snapshot nil) + post-sync reload
         #expect(repo.fetchCallCount == 2)
-        #expect(sut.syncFailed == false)
+        // backend returned no prices for the owned card → pending
+        #expect(sut.priceSyncState == .pending)
     }
 
     @Test("expired session during sync routes to sign-in")
@@ -217,15 +218,15 @@ struct DashboardViewModelTests {
         await sut.refresh()
 
         #expect(routed)
-        #expect(sut.syncFailed == false)
+        #expect(sut.priceSyncState == .idle)
     }
 
-    @Test("network/server error during sync flags syncFailed")
+    @Test("network/server error during sync flags .failed")
     func syncFailureFlag() async throws {
         let (sut, _) = try await makeSyncSUT(sourceError: DummyError())
 
         await sut.refresh()
 
-        #expect(sut.syncFailed)
+        #expect(sut.priceSyncState == .failed)
     }
 }

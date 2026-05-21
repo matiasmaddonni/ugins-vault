@@ -30,9 +30,16 @@ public final class DashboardViewModel {
     public private(set) var status: Status = .idle
     public private(set) var currency: Currency
 
-    /// `true` when the last price sync failed for a reason worth showing the
-    /// user (network / server). Auth expiry routes to login instead.
-    public private(set) var syncFailed: Bool = false
+    public enum PriceSyncState: Equatable {
+        case idle      // nothing to show
+        case syncing   // a refresh is in flight
+        case pending   // synced, but the backend has no prices for these cards yet
+        case failed    // network / server error worth surfacing
+    }
+
+    /// Drives the non-blocking price-sync banner. Auth expiry routes to login
+    /// instead of surfacing here.
+    public private(set) var priceSyncState: PriceSyncState = .idle
 
     // MARK: - Dependencies
 
@@ -131,17 +138,20 @@ public final class DashboardViewModel {
     @discardableResult
     private func runSync() async -> Bool {
         guard let syncPrices, reachability?.isOnWiFi == true else { return false }
+        priceSyncState = .syncing
         do {
-            _ = try await syncPrices.execute(progress: nil)
-            syncFailed = false
+            let imported = try await syncPrices.execute(progress: nil)
+            // 0 imported on success → owned cards aren't priced on the backend
+            // yet (ingest pending), so tell the user prices are on the way.
+            priceSyncState = imported > 0 ? .idle : .pending
         } catch SyncPricesUseCase.SyncError.unauthorized {
-            syncFailed = false
+            priceSyncState = .idle
             await signOutAccount?.execute()
             onRequireSignIn()
         } catch SyncPricesUseCase.SyncError.noOwnedCards {
-            syncFailed = false
+            priceSyncState = .idle
         } catch {
-            syncFailed = true
+            priceSyncState = .failed
         }
         return true
     }

@@ -52,11 +52,33 @@ public struct DashboardView: View {
 
     // MARK: - Loaded
 
-    private var syncFailedBanner: some View {
+    @ViewBuilder
+    private var priceSyncBanner: some View {
+        switch viewModel.priceSyncState {
+        case .idle:
+            EmptyView()
+        case .syncing:
+            syncBanner(icon: "arrow.triangle.2.circlepath", tint: Color.uv.gold,
+                       text: String(localized: "Updating prices…"), showSpinner: true)
+        case .pending:
+            syncBanner(icon: "clock", tint: Color.uv.muted,
+                       text: String(localized: "Prices are being prepared — check back after the next update."),
+                       showSpinner: false)
+        case .failed:
+            syncBanner(icon: "exclamationmark.triangle.fill", tint: Color.uv.down,
+                       text: String(localized: "Couldn't refresh prices — pull to retry."),
+                       showSpinner: false)
+        }
+    }
+
+    private func syncBanner(icon: String, tint: Color, text: String, showSpinner: Bool) -> some View {
         HStack(spacing: Spacing.sm) {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .foregroundStyle(Color.uv.down)
-            Text("Couldn't refresh prices — pull to retry.")
+            if showSpinner {
+                ProgressView().tint(tint)
+            } else {
+                Image(systemName: icon).foregroundStyle(tint)
+            }
+            Text(text)
                 .font(.uv.body(13))
                 .foregroundStyle(Color.uv.muted)
             Spacer(minLength: 0)
@@ -68,15 +90,13 @@ public struct DashboardView: View {
                 .fill(Color.uv.panel)
         )
         .accessibilityElement(children: .contain)
-        .accessibilityIdentifier(DashboardAccessibilityFields.syncFailedBanner)
+        .accessibilityIdentifier(DashboardAccessibilityFields.priceSyncBanner)
     }
 
     private func loadedScroll(snapshot: DashboardSnapshot) -> some View {
         ScrollView {
             VStack(spacing: Layout.dashboardSectionSpacing) {
-                if viewModel.syncFailed {
-                    syncFailedBanner
-                }
+                priceSyncBanner
                 heroRow(snapshot: snapshot)
                 moversRow(snapshot: snapshot)
                 ByFormatPanel(
