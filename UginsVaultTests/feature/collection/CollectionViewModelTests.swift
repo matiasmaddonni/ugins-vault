@@ -96,8 +96,8 @@ struct CollectionViewModelTests {
         #expect(sut.status == .idle)
     }
 
-    @Test("loadOrSeed seeds an empty catalogue via the SeedCatalogue use case")
-    func seedsEmptyCatalogue() async throws {
+    @Test("loadOrSeed does NOT auto-seed — Collection starts empty")
+    func emptyCatalogueStaysEmpty() async throws {
         let (sut, _, _, _, source) = try makeSUT(
             seedPages: [
                 CardCataloguePage(cards: [makeCard(name: "A"), makeCard(name: "B")], hasMore: false)
@@ -106,19 +106,17 @@ struct CollectionViewModelTests {
 
         await sut.loadOrSeed()
 
-        #expect(source.fetchCallCount == 1)
-        #expect(source.lastQuery == "set:test")
-        #expect(sut.cards.count == 2)
-        #expect(sut.matchingCount == 2)
+        #expect(source.fetchCallCount == 0)   // no seeding on first load
+        #expect(sut.cards.isEmpty)
         #expect(sut.status == .idle)
     }
 
-    @Test("loadOrSeed surfaces seeding errors as .error status")
-    func errorOnSeedFailure() async throws {
+    @Test("reseed surfaces seeding errors as .error status")
+    func errorOnReseedFailure() async throws {
         let (sut, _, _, _, source) = try makeSUT()
         source.nextError = ScryfallError.transport(underlying: URLError(.notConnectedToInternet))
 
-        await sut.loadOrSeed()
+        await sut.reseed()
 
         guard case .error = sut.status else {
             Issue.record("Expected .error, got \(sut.status)")

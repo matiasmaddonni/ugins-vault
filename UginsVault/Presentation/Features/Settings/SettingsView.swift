@@ -75,18 +75,18 @@ public struct SettingsView: View {
                 WishlistView(viewModel: DependencyContainer.shared.makeWishlistViewModel())
             }
             .confirmationDialog(
-                "Reset the catalogue?",
+                "Clear the catalogue?",
                 isPresented: $isConfirmingReset,
                 titleVisibility: .visible
             ) {
-                Button("Reset catalogue", role: .destructive) {
-                    Task { await viewModel.resetCatalogueNow() }
+                Button("Clear catalogue", role: .destructive) {
+                    Task { await viewModel.clearCatalogueNow() }
                 }
                 .accessibilityIdentifier(SettingsAccessibilityFields.resetConfirmButton)
 
                 Button("Cancel", role: .cancel) {}
             } message: {
-                Text("Wipes every card stored locally and re-downloads the seed set from Scryfall. Your preferences are not affected.")
+                Text("Removes every card stored locally. Cards reappear as you add or import them. Your preferences are not affected.")
             }
             .confirmationDialog(
                 "Sign out?",
@@ -298,20 +298,14 @@ public struct SettingsView: View {
             )
 
             SettingsRow(
-                icon: "arrow.triangle.2.circlepath",
-                title: "Reset catalogue",
-                subtitle: String(localized: "Wipe local cards + re-download the seed set"),
+                icon: "trash",
+                title: "Clear catalogue",
+                subtitle: String(localized: "Remove all locally stored cards"),
                 isDestructive: true,
                 action: { isConfirmingReset = true }
             ) {
                 if viewModel.isResetting {
-                    if case .resetting(let saved) = viewModel.dataStatus {
-                        Text("\(saved)")
-                            .font(.uv.mono(13, weight: .medium))
-                            .foregroundStyle(Color.uv.muted)
-                    } else {
-                        ProgressView().tint(Color.uv.gold)
-                    }
+                    ProgressView().tint(Color.uv.gold)
                 } else {
                     Image(systemName: "chevron.right")
                         .font(.system(size: 12, weight: .semibold))

@@ -2,10 +2,10 @@
 //  PriceSyncViewModel.swift
 //  UginsVault — Presentation: PriceSync
 //
-//  Drives the price-sync loading screen and the manual "Refresh
-//  prices" button in Settings. Owns the Wi-Fi gate, the staged boot
-//  flow (seed catalogue if empty → sync MTGJSON prices), and the
-//  progress mirror the view binds to.
+//  Drives the price-sync loading screen and the manual "Refresh prices"
+//  button in Settings. Owns the Wi-Fi gate + the progress mirror the view
+//  binds to. The catalogue is no longer seeded here — it fills from the cards
+//  the user adds/imports — so an empty collection finishes cleanly.
 //
 
 import Foundation
@@ -20,7 +20,6 @@ public final class PriceSyncViewModel {
     public enum Status: Equatable {
         case idle
         case waitingForWiFi
-        case seeding(savedSoFar: Int)
         case fetching
         case parsing
         case persisting
@@ -37,56 +36,30 @@ public final class PriceSyncViewModel {
     // MARK: - Dependencies
 
     @ObservationIgnored private let useCase: SyncPricesUseCase
-    @ObservationIgnored private let seedCatalogue: SeedCatalogueUseCase
-    @ObservationIgnored private let cardRepository: CardRepository
     @ObservationIgnored private let reachability: NetworkReachability
-    @ObservationIgnored private let seedQuery: String
-    /// When `true` the boot/refresh sync pulls the FULL price-history
-    /// dump (so the Dashboard has real movers immediately). Background +
+    /// When `true` the boot/refresh sync pulls the FULL price-history window
+    /// (so the Dashboard has real movers immediately). Background +
     /// pull-to-refresh stay on the lighter today-only path.
     @ObservationIgnored private let fullHistory: Bool
 
     public init(
         useCase: SyncPricesUseCase,
-        seedCatalogue: SeedCatalogueUseCase,
-        cardRepository: CardRepository,
         reachability: NetworkReachability,
-        seedQuery: String = "set:fdn",
         fullHistory: Bool = true
     ) {
         self.useCase = useCase
-        self.seedCatalogue = seedCatalogue
-        self.cardRepository = cardRepository
         self.reachability = reachability
-        self.seedQuery = seedQuery
         self.fullHistory = fullHistory
     }
 
     // MARK: - Intents
 
-    /// Boot sync. Three phases, any of which can short-circuit:
-    ///   1. Wi-Fi gate — bail to the Wi-Fi alert if no.
-    ///   2. Seed the local catalogue from Scryfall when empty
-    ///      (Foundations on first launch). Without this the MTGJSON
-    ///      owned-cards intersection produces zero rows + the user
-    ///      stares at a "catalogue empty" error.
-    ///   3. Sync MTGJSON prices for the seeded cards.
+    /// Boot / manual price sync. Wi-Fi gated. An empty collection finishes
+    /// cleanly (nothing to price) instead of erroring.
     public func sync() async {
         guard reachability.isOnWiFi else {
             status = .waitingForWiFi
             isWiFiAlertPresented = true
-            return
-        }
-
-        do {
-            if try await cardRepository.totalCount() == 0 {
-                status = .seeding(savedSoFar: 0)
-                try await seedCatalogue.execute(query: seedQuery) { [weak self] progress in
-                    self?.status = .seeding(savedSoFar: progress.savedCount)
-                }
-            }
-        } catch {
-            status = .failed(message: error.localizedDescription)
             return
         }
 
@@ -98,8 +71,8 @@ public final class PriceSyncViewModel {
                 ? try await useCase.executeFullHistory(progress: progressHandler)
                 : try await useCase.execute(progress: progressHandler)
             status = .finished(importedCount: count)
-        } catch let error as SyncPricesUseCase.SyncError {
-            status = .failed(message: error.localizedDescription)
+        } catch SyncPricesUseCase.SyncError.noOwnedCards {
+            status = .finished(importedCount: 0)
         } catch {
             status = .failed(message: error.localizedDescription)
         }
@@ -110,9 +83,8 @@ public final class PriceSyncViewModel {
         status = .idle
     }
 
-    /// Lets the user move on without prices when sync fails. The
-    /// Root view's `onFinish` treats this exactly like a normal
-    /// completion + advances to Home.
+    /// Lets the user move on without prices when sync fails. The Root view's
+    /// `onFinish` treats this exactly like a normal completion + advances Home.
     public func skip() {
         status = .finished(importedCount: 0)
     }
@@ -131,18 +103,16 @@ public final class PriceSyncViewModel {
 
     // MARK: - Derived
 
-    /// Localized one-line description of the current status.
     public var statusCopy: String {
         switch status {
-        case .idle:                       return String(localized: "Preparing…")
-        case .waitingForWiFi:             return String(localized: "Wi-Fi required")
-        case .seeding(let savedSoFar):    return String(localized: "Building catalogue — \(savedSoFar) cards")
-        case .fetching:                   return String(localized: "Downloading pricing data…")
-        case .parsing:                    return String(localized: "Reading price snapshots…")
-        case .persisting:                 return String(localized: "Saving to your vault…")
-        case .pruning:                    return String(localized: "Tidying up old data…")
-        case .finished:                   return String(localized: "Done")
-        case .failed(let msg):            return msg
+        case .idle:                return String(localized: "Preparing…")
+        case .waitingForWiFi:      return String(localized: "Wi-Fi required")
+        case .fetching:            return String(localized: "Downloading pricing data…")
+        case .parsing:             return String(localized: "Reading price snapshots…")
+        case .persisting:          return String(localized: "Saving to your vault…")
+        case .pruning:             return String(localized: "Tidying up old data…")
+        case .finished:            return String(localized: "Done")
+        case .failed(let msg):     return msg
         }
     }
 

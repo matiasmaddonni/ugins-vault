@@ -19,7 +19,7 @@ public final class SettingsViewModel {
 
     public enum DataStatus: Equatable {
         case idle
-        case resetting(savedSoFar: Int)
+        case clearing
         case error(message: String)
     }
 
@@ -59,10 +59,6 @@ public final class SettingsViewModel {
     @ObservationIgnored private let onSignedOut:          () -> Void
     @ObservationIgnored private let accountRepository:    AccountRepository
 
-    /// Seed query used when the user taps "Reset catalogue". Matches the
-    /// CollectionViewModel default so the reset lands on the same set.
-    @ObservationIgnored private let seedQuery: String
-
     // MARK: - Init
 
     public init(
@@ -87,8 +83,7 @@ public final class SettingsViewModel {
         resetCatalogueUseCase: ResetCatalogueUseCase,
         signOutAccount: SignOutAccountUseCase,
         accountRepository: AccountRepository,
-        onSignedOut: @escaping () -> Void = {},
-        seedQuery: String = "set:fdn"
+        onSignedOut: @escaping () -> Void = {}
     ) {
         self.sessionRepository    = sessionRepository
         self.userProfileRepo      = userProfileRepository
@@ -112,7 +107,6 @@ public final class SettingsViewModel {
         self.signOutAccount       = signOutAccount
         self.onSignedOut          = onSignedOut
         self.accountRepository    = accountRepository
-        self.seedQuery            = seedQuery
     }
 
     /// Email of the signed-in backend account, or `nil` in local-only mode.
@@ -150,7 +144,7 @@ public final class SettingsViewModel {
     }
 
     public var isResetting: Bool {
-        if case .resetting = dataStatus { return true }
+        if case .clearing = dataStatus { return true }
         return false
     }
 
@@ -217,20 +211,12 @@ public final class SettingsViewModel {
         }
     }
 
-    /// Wipes the local catalogue and re-seeds it from Scryfall.
-    public func resetCatalogueNow() async {
-        dataStatus = .resetting(savedSoFar: 0)
-
+    /// Wipes the local catalogue entirely (no re-seed).
+    public func clearCatalogueNow() async {
+        dataStatus = .clearing
         do {
-            let saved = try await resetCatalogue.execute(
-                seedQuery: seedQuery,
-                progress: { [weak self] progress in
-                    Task { @MainActor in
-                        self?.dataStatus = .resetting(savedSoFar: progress.savedCount)
-                    }
-                }
-            )
-            catalogueCount = saved
+            try await resetCatalogue.execute()
+            catalogueCount = 0
             dataStatus = .idle
         } catch {
             dataStatus = .error(message: error.localizedDescription)

@@ -239,10 +239,7 @@ public final class DependencyContainer {
     }
 
     public func makeResetCatalogueUseCase() -> ResetCatalogueUseCase {
-        ResetCatalogueUseCase(
-            cardRepository: cardRepository,
-            seedCatalogue: makeSeedCatalogueUseCase()
-        )
+        ResetCatalogueUseCase(cardRepository: cardRepository)
     }
 
     // MARK: - Use case factories — pricing prefs
@@ -321,8 +318,6 @@ public final class DependencyContainer {
     @MainActor public func makePriceSyncViewModel(fullHistory: Bool = false) -> PriceSyncViewModel {
         PriceSyncViewModel(
             useCase: makeSyncPricesUseCase(),
-            seedCatalogue: makeSeedCatalogueUseCase(),
-            cardRepository: cardRepository,
             reachability: networkReachability,
             fullHistory: fullHistory
         )

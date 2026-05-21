@@ -129,16 +129,14 @@ public final class CollectionViewModel {
         }
     }
 
-    /// Pulls the latest first-page slice from storage. If the catalogue
-    /// is empty, kicks the seed flow before re-reading.
+    /// Loads the first page from the local catalogue. The catalogue is NOT
+    /// auto-seeded — the Collection starts empty and fills as the user adds /
+    /// imports cards (import persists each resolved card here). Explicit
+    /// seeding stays available via Settings → Reset (`reseed()`).
     public func loadOrSeed() async {
         status = .loading
 
         do {
-            let total = try await cardRepository.totalCount()
-            if total == 0 {
-                try await seed()
-            }
             try await refreshFirstPage()
             availableSetCodes = try await cardRepository.availableSetCodes()
             status = .idle

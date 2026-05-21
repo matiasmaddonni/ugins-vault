@@ -43,16 +43,8 @@ struct PriceSyncViewModelTests {
         }
     }
 
-    /// Returns an empty catalogue page so the seed step doesn't hit Scryfall.
-    final class NoopCatalogueSource: CardCatalogueSource, @unchecked Sendable {
-        func fetchCards(query: String, page: Int) async throws -> CardCataloguePage {
-            CardCataloguePage(cards: [], hasMore: false)
-        }
-    }
-
-    /// Spins up a full real-stack VM with an in-memory SwiftData container and
-    /// a controllable backend source. The MTGJSON fallback is a stub returning
-    /// nothing so behaviour stays deterministic.
+    /// Real-stack VM over an in-memory SwiftData container + a controllable
+    /// backend source. No catalogue seeding anymore.
     private func makeSUT() throws -> (
         PriceSyncViewModel,
         SwiftDataCollectionItemRepository,
@@ -62,13 +54,9 @@ struct PriceSyncViewModelTests {
     ) {
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
         let container = try ModelContainer(
-            for: SwiftDataCard.self,
-            SwiftDataPriceSnapshot.self,
-            SwiftDataCollectionItem.self,
-            SwiftDataWishlistItem.self,
+            for: SwiftDataPriceSnapshot.self, SwiftDataCollectionItem.self,
             configurations: config
         )
-        let cardRepo = SwiftDataCardRepository(modelContainer: container)
         let itemRepo = SwiftDataCollectionItemRepository(modelContainer: container)
         let priceRepo = SwiftDataPriceRepository(
             modelContainer: container,
@@ -85,16 +73,7 @@ struct PriceSyncViewModelTests {
                 remoteOwnedSync: NoopOwnedSync()
             )
         )
-        let seed = SeedCatalogueUseCase(
-            source: NoopCatalogueSource(),
-            repository: cardRepo
-        )
-        let sut = PriceSyncViewModel(
-            useCase: useCase,
-            seedCatalogue: seed,
-            cardRepository: cardRepo,
-            reachability: reach
-        )
+        let sut = PriceSyncViewModel(useCase: useCase, reachability: reach)
         return (sut, itemRepo, priceRepo, backend, reach)
     }
 
@@ -113,14 +92,16 @@ struct PriceSyncViewModelTests {
         #expect(sut.isWiFiAlertPresented)
     }
 
-    @Test("No owned cards → status .failed with no-owned-cards message")
-    func noOwnedFailure() async throws {
+    @Test("No owned cards → finished (nothing to price), not an error")
+    func noOwnedFinishes() async throws {
         let (sut, _, _, _, _) = try makeSUT()
+
         await sut.sync()
-        if case .failed(let message) = sut.status {
-            #expect(!message.isEmpty)
+
+        if case .finished(let count) = sut.status {
+            #expect(count == 0)
         } else {
-            Issue.record("Expected .failed status, got \(sut.status)")
+            Issue.record("Expected .finished, got \(sut.status)")
         }
     }
 

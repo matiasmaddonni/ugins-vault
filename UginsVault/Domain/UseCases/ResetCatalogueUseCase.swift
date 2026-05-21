@@ -2,8 +2,8 @@
 //  ResetCatalogueUseCase.swift
 //  UginsVault — Domain layer
 //
-//  Wipes the local card catalogue + re-seeds it from the upstream
-//  catalogue source. Used by Settings → Data → Reset catalogue.
+//  Wipes the local card catalogue. Used by Settings → Data → Clear catalogue.
+//  No re-seed: the catalogue fills only from the cards the user adds / imports.
 //
 
 import Foundation
@@ -12,27 +12,12 @@ import Foundation
 public final class ResetCatalogueUseCase {
 
     private let cardRepository: CardRepository
-    private let seedCatalogue: SeedCatalogueUseCase
 
-    public init(
-        cardRepository: CardRepository,
-        seedCatalogue: SeedCatalogueUseCase
-    ) {
+    public init(cardRepository: CardRepository) {
         self.cardRepository = cardRepository
-        self.seedCatalogue = seedCatalogue
     }
 
-    @discardableResult
-    public func execute(
-        seedQuery: String,
-        maxPages: Int = 10,
-        progress: ((SeedCatalogueUseCase.Progress) -> Void)? = nil
-    ) async throws -> Int {
+    public func execute() async throws {
         try await cardRepository.deleteAll()
-        return try await seedCatalogue.execute(
-            query: seedQuery,
-            maxPages: maxPages,
-            progress: progress
-        )
     }
 }
