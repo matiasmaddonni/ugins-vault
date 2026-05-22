@@ -359,6 +359,17 @@ public struct CardDetailView: View {
                     .frame(height: Layout.dashboardSparklineHeight)
             }
             .padding(.top, Spacing.sm)
+        } else if viewModel.resolvedPrice != nil {
+            // Priced, but fewer than 2 daily points yet — the chart needs a few
+            // days of tracking to draw. Explain instead of showing nothing.
+            HStack(spacing: Spacing.sm) {
+                Image(systemName: "chart.line.uptrend.xyaxis")
+                    .foregroundStyle(Color.uv.muted)
+                Text("Price history builds up after a few days of tracking.")
+                    .font(.uv.body(12))
+                    .foregroundStyle(Color.uv.muted)
+            }
+            .padding(.top, Spacing.sm)
         }
     }
 
