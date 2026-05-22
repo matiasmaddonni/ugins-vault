@@ -163,6 +163,10 @@ public struct StackDetailView: View {
                 .accessibilityElement(children: .contain)
                 .accessibilityIdentifier(StackDetailAccessibilityFields.actionBar)
 
+                if let validation = viewModel.commanderValidation {
+                    commanderValidationBanner(validation)
+                }
+
                 cardListSection
             }
             .padding(.horizontal, Spacing.screenEdge)
@@ -172,6 +176,27 @@ public struct StackDetailView: View {
         .sheet(isPresented: $isPresentingShare) {
             ShareSheet(text: viewModel.serializedCardList)
         }
+    }
+
+    private func commanderValidationBanner(_ message: String) -> some View {
+        HStack(spacing: Spacing.sm) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundStyle(Color.uv.gold)
+            Text(message)
+                .font(.uv.body(12))
+                .foregroundStyle(Color.uv.text)
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, Spacing.rowHorizontal)
+        .padding(.vertical, Spacing.sm)
+        .background(
+            RoundedRectangle(cornerRadius: UVRadius.md)
+                .fill(Color.uv.gold.opacity(0.12))
+                .overlay(
+                    RoundedRectangle(cornerRadius: UVRadius.md)
+                        .strokeBorder(Color.uv.gold.opacity(0.35), lineWidth: 1)
+                )
+        )
     }
 
     // MARK: - Card list / empty

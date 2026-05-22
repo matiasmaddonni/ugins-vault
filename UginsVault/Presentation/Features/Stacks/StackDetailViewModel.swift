@@ -137,6 +137,37 @@ public final class StackDetailViewModel {
             ?? commanderCard?.images.large
     }
 
+    // MARK: - Commander (validation + detection)
+
+    public var isCommanderDeck: Bool {
+        stack.kind == .deck && stack.format == .commander
+    }
+
+    /// Items whose joined card is a legendary creature — commander candidates.
+    public var commanderCandidates: [CollectionItem] {
+        items.filter { item in
+            guard let card = cardsByID[item.cardID] else { return false }
+            let type = card.typeLine.lowercased()
+            return type.contains("legendary") && type.contains("creature")
+        }
+    }
+
+    /// Non-nil when a Commander deck breaks the 100-card singleton rule
+    /// (1 commander + 99). Drives a banner on the detail screen.
+    public var commanderValidation: String? {
+        guard isCommanderDeck else { return nil }
+        var issues: [String] = []
+        if cardCount != 100 {
+            issues.append(String(localized: "needs 100 cards (has \(cardCount))"))
+        }
+        let legendaryCount = commanderCandidates.reduce(0) { $0 + $1.quantity }
+        if legendaryCount != 1 {
+            issues.append(String(localized: "needs exactly 1 commander (has \(legendaryCount))"))
+        }
+        guard !issues.isEmpty else { return nil }
+        return String(localized: "Commander deck ") + issues.joined(separator: " · ")
+    }
+
     /// Decklist text — used by Edit list (pre-populates the import
     /// sheet) and by Export (share sheet content). Format mirrors
     /// Moxfield's `N Name (SET) NUMBER`.
@@ -236,6 +267,7 @@ public final class StackDetailViewModel {
             self.uniqueCount = try await itemRepository.uniqueCount(in: stack.id)
             await hydrateCards(for: loaded)
             await loadPrices()
+            await autoDetectCommanderIfNeeded()
             self.status = .idle
         } catch {
             self.status = .error(message: error.localizedDescription)
@@ -341,6 +373,15 @@ public final class StackDetailViewModel {
 
     public func dismissCommanderPicker() {
         isPresentingCommanderPicker = false
+    }
+
+    /// On refresh of a Commander deck with no commander pinned, if the list
+    /// has exactly one distinct legendary creature, set it as commander.
+    private func autoDetectCommanderIfNeeded() async {
+        guard isCommanderDeck, stack.commanderCardID == nil else { return }
+        let distinct = Set(commanderCandidates.map(\.cardID))
+        guard distinct.count == 1, let cardID = distinct.first else { return }
+        await setCommander(cardID: cardID)
     }
 
     /// Pins the printing identified by `cardID` as this deck's
