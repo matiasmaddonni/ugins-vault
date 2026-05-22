@@ -373,7 +373,8 @@ public final class DependencyContainer {
             cardRepository: cardRepository,
             exchangeRateRepository: exchangeRateRepository,
             priceRepository: priceRepository,
-            priceStatusSource: priceStatusSource
+            priceStatusSource: priceStatusSource,
+            syncPrices: makeSyncPricesUseCase()
         )
     }
 

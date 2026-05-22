@@ -42,6 +42,7 @@ public final class CollectionViewModel {
     @ObservationIgnored private let exchangeRateRepository: ExchangeRateRepository?
     @ObservationIgnored private let priceRepository: PriceRepository?
     @ObservationIgnored private let priceStatusSource: PriceStatusSource?
+    @ObservationIgnored private let syncPrices: SyncPricesUseCase?
 
     /// Latest retail price per card from the local store (backend) for the
     /// user's preferred source. Cards without a priced snapshot are absent —
@@ -67,6 +68,7 @@ public final class CollectionViewModel {
         exchangeRateRepository: ExchangeRateRepository? = nil,
         priceRepository: PriceRepository? = nil,
         priceStatusSource: PriceStatusSource? = nil,
+        syncPrices: SyncPricesUseCase? = nil,
         pageSize: Int = 50
     ) {
         self.sessionRepository = sessionRepository
@@ -74,6 +76,7 @@ public final class CollectionViewModel {
         self.exchangeRateRepository = exchangeRateRepository
         self.priceRepository = priceRepository
         self.priceStatusSource = priceStatusSource
+        self.syncPrices = syncPrices
         self.pageSize = pageSize
         self.currency = sessionRepository.currency
     }
@@ -131,6 +134,14 @@ public final class CollectionViewModel {
         // once the repo bumps its cache.
         if let exchangeRateRepository {
             Task { try? await exchangeRateRepository.refresh() }
+        }
+        // Pull fresh backend prices so anything /v1/prices has shows up here too
+        // — not only after visiting Dashboard. Best-effort + non-blocking.
+        if let syncPrices {
+            Task { [weak self] in
+                _ = try? await syncPrices.execute(progress: nil)
+                await self?.loadPrices()
+            }
         }
         startPriceStatusPolling()
     }
