@@ -13,6 +13,7 @@ import Kingfisher
 public struct CollectionItemThumbnail: View {
 
     public let card: Card?
+    public let isFoil: Bool
 
     @Environment(\.displayScale) private var displayScale
 
@@ -25,8 +26,9 @@ public struct CollectionItemThumbnail: View {
         height: Layout.stackDetailRowThumbHeight
     )
 
-    public init(card: Card?) {
+    public init(card: Card?, isFoil: Bool = false) {
         self.card = card
+        self.isFoil = isFoil
     }
 
     public var body: some View {
@@ -45,10 +47,15 @@ public struct CollectionItemThumbnail: View {
             }
         }
         .frame(width: Layout.stackDetailRowThumbWidth, height: Layout.stackDetailRowThumbHeight)
+        .overlay {
+            if isFoil {
+                FoilSheen()
+            }
+        }
         .clipShape(RoundedRectangle(cornerRadius: UVRadius.sm))
         .overlay(
             RoundedRectangle(cornerRadius: UVRadius.sm)
-                .strokeBorder(Color.uv.stroke, lineWidth: Layout.hairline)
+                .strokeBorder(isFoil ? Color.uv.gold.opacity(0.6) : Color.uv.stroke, lineWidth: Layout.hairline)
         )
     }
 

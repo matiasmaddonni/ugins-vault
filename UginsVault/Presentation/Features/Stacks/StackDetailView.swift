@@ -286,7 +286,7 @@ public struct StackDetailView: View {
 
     private func itemRowBody(item: CollectionItem, card: Card?, index: Int) -> some View {
         HStack(spacing: Spacing.md) {
-            CollectionItemThumbnail(card: card)
+            CollectionItemThumbnail(card: card, isFoil: item.finish != .nonfoil)
 
             VStack(alignment: .leading, spacing: Spacing.xs - 2) {
                 Text(card?.name ?? String(item.cardID.uuidString.prefix(8)))
