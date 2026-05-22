@@ -22,9 +22,11 @@ public struct CollectionView: View {
         NavigationStack {
             content
                 .background(Color.uv.bg.ignoresSafeArea())
-                .navigationTitle("")
-                .navigationBarTitleDisplayMode(.inline)
+                .navigationTitle("Collection")
+                .navigationBarTitleDisplayMode(.large)
+                .navigationSubtitle(collectionSubtitle)
                 .toolbar { toolbar }
+                .searchable(text: bindingForQuery, prompt: Text("Search collection…"))
                 .task { await viewModel.onAppear() }
                 .onDisappear { viewModel.stopPriceStatusPolling() }
                 .navigationDestination(for: Card.self) { card in
@@ -187,32 +189,25 @@ public struct CollectionView: View {
     }
 
     private var cardList: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            VStack(alignment: .leading, spacing: Spacing.lg) {
-                header
-                searchBar(query: bindingForQuery)
-                activeFilterStrip
-            }
-            .padding(.horizontal, Spacing.screenEdge)
-            .padding(.top, Spacing.sm)
-            .padding(.bottom, Spacing.md)
-
-            if viewModel.cards.isEmpty {
-                ScrollView {
-                    emptyResults
-                        .padding(.horizontal, Spacing.screenEdge)
-                        .padding(.vertical, Spacing.xl)
-                }
-                .refreshable { await viewModel.pullToRefresh() }
-            } else {
-                rowList
-            }
-        }
+        rowList
     }
 
     private var rowList: some View {
         List {
-            ForEach(viewModel.cards) { card in
+            if viewModel.hasActiveFilter {
+                activeFilterStrip
+                    .listRowBackground(Color.uv.bg)
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(EdgeInsets(top: Spacing.sm, leading: Spacing.screenEdge, bottom: Spacing.md, trailing: Spacing.screenEdge))
+            }
+
+            if viewModel.cards.isEmpty {
+                emptyResults
+                    .listRowBackground(Color.uv.bg)
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(EdgeInsets(top: Spacing.xl, leading: Spacing.screenEdge, bottom: Spacing.xl, trailing: Spacing.screenEdge))
+            } else {
+                ForEach(viewModel.cards) { card in
                 NavigationLink(value: card) {
                     CardRowView(card: card, displayCurrency: viewModel.currency, rate: viewModel.exchangeRate, price: viewModel.price(for: card.id), isFetching: viewModel.isFetchingPrice(card.id))
                 }
@@ -268,6 +263,7 @@ public struct CollectionView: View {
                     .listRowSeparator(.hidden)
                     .task { await viewModel.loadMoreIfNeeded() }
             }
+            }
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
@@ -283,34 +279,6 @@ public struct CollectionView: View {
             Spacer()
         }
         .padding(.vertical, Spacing.lg)
-    }
-
-    // MARK: - Header
-
-    private var header: some View {
-        VStack(alignment: .leading, spacing: Spacing.xs) {
-            Text("Collection")
-                .font(.uv.display(30, weight: .bold))
-                .tracking(-0.3)
-                .foregroundStyle(Color.uv.text)
-                .accessibilityIdentifier(CollectionAccessibilityFields.title)
-
-            HStack(spacing: Spacing.sm) {
-                Text("\(viewModel.matchingCount) cards")
-                    .font(.uv.mono(12))
-                    .foregroundStyle(Color.uv.muted)
-                    .accessibilityIdentifier(CollectionAccessibilityFields.cardCountLabel)
-
-                Circle()
-                    .fill(Color.uv.muted.opacity(0.5))
-                    .frame(width: 3, height: 3)
-
-                Text(CurrencyFormatter.format(viewModel.totalValueUSD, currency: viewModel.currency, rate: viewModel.exchangeRate))
-                    .font(.uv.mono(12, weight: .semibold))
-                    .foregroundStyle(Color.uv.gold)
-                    .accessibilityIdentifier(CollectionAccessibilityFields.totalValueLabel)
-            }
-        }
     }
 
     // MARK: - Active filter strip
@@ -365,6 +333,13 @@ public struct CollectionView: View {
 
     // MARK: - Search
 
+    private var collectionSubtitle: String {
+        let value = CurrencyFormatter.format(
+            viewModel.totalValueUSD, currency: viewModel.currency, rate: viewModel.exchangeRate
+        )
+        return "\(viewModel.matchingCount) cards · \(value)"
+    }
+
     private var bindingForQuery: Binding<String> {
         Binding(
             get: { viewModel.searchQuery },
@@ -379,30 +354,6 @@ public struct CollectionView: View {
         Binding(
             get: { viewModel.sort },
             set: { viewModel.setSort($0) }
-        )
-    }
-
-    private func searchBar(query: Binding<String>) -> some View {
-        HStack(spacing: Spacing.md - 2) {
-            Image(systemName: "magnifyingglass")
-                .foregroundStyle(Color.uv.muted)
-
-            TextField("Search collection…", text: query)
-                .font(.uv.body(14))
-                .foregroundStyle(Color.uv.text)
-                .textInputAutocapitalization(.never)
-                .autocorrectionDisabled()
-                .accessibilityIdentifier(CollectionAccessibilityFields.searchField)
-        }
-        .padding(.horizontal, Spacing.rowHorizontal)
-        .padding(.vertical, Spacing.md - 2)
-        .background(
-            RoundedRectangle(cornerRadius: UVRadius.md)
-                .fill(Color.uv.panel)
-                .overlay(
-                    RoundedRectangle(cornerRadius: UVRadius.md)
-                        .strokeBorder(Color.uv.stroke, lineWidth: 1)
-                )
         )
     }
 

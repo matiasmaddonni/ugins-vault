@@ -27,8 +27,9 @@ public struct StacksView: View {
         NavigationStack {
             content
                 .background(Color.uv.bg.ignoresSafeArea())
-                .navigationTitle("")
-                .navigationBarTitleDisplayMode(.inline)
+                .navigationTitle("Stacks")
+                .navigationBarTitleDisplayMode(.large)
+                .navigationSubtitle(stacksSubtitle)
                 .toolbar { toolbar }
                 .task { await viewModel.onAppear() }
                 .navigationDestination(for: Stack.self) { stack in
@@ -66,6 +67,10 @@ public struct StacksView: View {
                 }
         }
         .accessibilityIdentifier(StacksAccessibilityFields.screen)
+    }
+
+    private var stacksSubtitle: String {
+        "\(viewModel.totalStackCount) stacks · \(viewModel.totalCardCount) cards · \(viewModel.formattedTotalValue)"
     }
 
     private var deleteConfirmationTitle: String {
@@ -119,47 +124,6 @@ public struct StacksView: View {
         }
     }
 
-    // MARK: - Header (always rendered above the list / empty state)
-
-    private var header: some View {
-        VStack(alignment: .leading, spacing: Spacing.xs) {
-            Text("Stacks")
-                .font(.uv.display(30, weight: .bold))
-                .tracking(-0.3)
-                .foregroundStyle(Color.uv.text)
-                .accessibilityIdentifier(StacksAccessibilityFields.title)
-
-            HStack(spacing: Spacing.sm) {
-                Text("\(viewModel.totalStackCount) stacks")
-                    .font(.uv.mono(12))
-                    .foregroundStyle(Color.uv.muted)
-                    .accessibilityIdentifier(StacksAccessibilityFields.stackCountValue)
-
-                separatorDot
-
-                Text("\(viewModel.totalCardCount) cards")
-                    .font(.uv.mono(12))
-                    .foregroundStyle(Color.uv.muted)
-                    .accessibilityIdentifier(StacksAccessibilityFields.cardCountValue)
-
-                separatorDot
-
-                Text(viewModel.formattedTotalValue)
-                    .font(.uv.mono(12, weight: .semibold))
-                    .foregroundStyle(Color.uv.gold)
-                    .accessibilityIdentifier(StacksAccessibilityFields.totalValueLabel)
-            }
-            .accessibilityElement(children: .contain)
-            .accessibilityIdentifier(StacksAccessibilityFields.summaryLine)
-        }
-    }
-
-    private var separatorDot: some View {
-        Circle()
-            .fill(Color.uv.muted.opacity(0.5))
-            .frame(width: 3, height: 3)
-    }
-
     // MARK: - Filter chips
 
     private var filterStrip: some View {
@@ -192,31 +156,23 @@ public struct StacksView: View {
     // MARK: - List
 
     private var stackList: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            VStack(alignment: .leading, spacing: Spacing.lg) {
-                header
-                    .padding(.horizontal, Spacing.screenEdge)
-                filterStrip
-            }
-            .padding(.top, Spacing.sm)
-            .padding(.bottom, Spacing.md)
-
-            if viewModel.visibleStacks.isEmpty {
-                ScrollView {
-                    filteredEmptyPanel
-                        .padding(.horizontal, Spacing.screenEdge)
-                        .padding(.vertical, Spacing.xl)
-                }
-                .refreshable { await viewModel.refresh() }
-            } else {
-                rowList
-            }
-        }
+        rowList
     }
 
     private var rowList: some View {
         List {
-            ForEach(Array(viewModel.visibleStacks.enumerated()), id: \.element.id) { index, stack in
+            filterStrip
+                .listRowBackground(Color.uv.bg)
+                .listRowSeparator(.hidden)
+                .listRowInsets(EdgeInsets(top: Spacing.sm, leading: 0, bottom: Spacing.md, trailing: 0))
+
+            if viewModel.visibleStacks.isEmpty {
+                filteredEmptyPanel
+                    .listRowBackground(Color.uv.bg)
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(EdgeInsets(top: Spacing.xl, leading: Spacing.screenEdge, bottom: Spacing.xl, trailing: Spacing.screenEdge))
+            } else {
+                ForEach(Array(viewModel.visibleStacks.enumerated()), id: \.element.id) { index, stack in
                 NavigationLink(value: stack) {
                     StackRow(
                         stack: stack,
@@ -244,6 +200,7 @@ public struct StacksView: View {
                     .accessibilityIdentifier(StacksAccessibilityFields.rowDelete(at: index))
                 }
             }
+            }
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
@@ -257,13 +214,6 @@ public struct StacksView: View {
 
     private var emptyState: some View {
         VStack(spacing: 0) {
-            VStack(alignment: .leading, spacing: Spacing.lg) {
-                header
-            }
-            .padding(.horizontal, Spacing.screenEdge)
-            .padding(.top, Spacing.sm)
-            .padding(.bottom, Spacing.lg)
-
             Spacer(minLength: Spacing.xl)
 
             VStack(spacing: Spacing.md + 2) {
