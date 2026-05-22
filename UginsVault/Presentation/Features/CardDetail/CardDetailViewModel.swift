@@ -167,7 +167,10 @@ public final class CardDetailViewModel {
         status = .loading
         do {
             let list = try await client.searchCards(
-                query: "oracleid:\(card.oracleID.uuidString.lowercased())",
+                // `unique:prints` — without it Scryfall collapses to one card
+                // per oracle id, so the only hit is the card we're showing and
+                // the list comes back empty. This returns every printing.
+                query: "oracleid:\(card.oracleID.uuidString.lowercased()) unique:prints",
                 page: 1
             )
             let mapped = list.data.compactMap(Card.init(from:))
