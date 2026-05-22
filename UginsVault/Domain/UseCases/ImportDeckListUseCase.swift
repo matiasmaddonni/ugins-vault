@@ -124,9 +124,19 @@ public final class ImportDeckListUseCase {
         // 4. Persist resolved cards in one write.
         try await cardRepository.save(dedupedCards(resolved.map(\.card)))
 
-        // 5. Build + merge items, save in one write.
-        let items = try await mergedItems(resolved: resolved, stackID: stackID)
-        try await itemRepository.save(items)
+        // 5. Reconcile the stack to MATCH the imported list (set quantities,
+        // add new, remove absent) so re-importing an edited list applies the
+        // delta instead of doubling. Removals are skipped when some lines
+        // didn't resolve — a flaky import never silently drops cards.
+        let (upserts, deleteIDs) = try await reconcile(
+            resolved: resolved,
+            stackID: stackID,
+            allowRemovals: result.unresolved.isEmpty
+        )
+        try await itemRepository.save(upserts)
+        for id in deleteIDs {
+            try await itemRepository.delete(id: id)
+        }
 
         for (line, _) in resolved {
             result.importedLines += 1
@@ -189,47 +199,58 @@ public final class ImportDeckListUseCase {
         return cards.filter { seen.insert($0.id).inserted }
     }
 
-    /// Merges resolved lines into the stack's existing rows by
-    /// (cardID, finish, condition, language) — bumping quantity on a match,
-    /// otherwise creating a new row. Returns ONLY the touched rows (new or
-    /// changed) so untouched rows aren't needlessly re-written/re-synced.
-    private func mergedItems(
+    private struct ItemKey: Hashable {
+        let cardID: UUID
+        let finish: Finish
+        let condition: CardCondition
+        let language: String
+    }
+
+    /// Diffs the resolved list against the stack's current rows: SET each
+    /// desired quantity (not add), insert new rows, and — when `allowRemovals`
+    /// — remove rows the list no longer contains. Returns only changed rows.
+    private func reconcile(
         resolved: [(line: ParsedDeckLine, card: Card)],
-        stackID: UUID
-    ) async throws -> [CollectionItem] {
-        struct Key: Hashable {
-            let cardID: UUID
-            let finish: Finish
-            let condition: CardCondition
-            let language: String
+        stackID: UUID,
+        allowRemovals: Bool
+    ) async throws -> (upserts: [CollectionItem], deleteIDs: [UUID]) {
+
+        func key(for item: CollectionItem) -> ItemKey {
+            ItemKey(cardID: item.cardID, finish: item.finish, condition: item.condition, language: item.language)
+        }
+
+        var desired: [ItemKey: Int] = [:]
+        for (line, card) in resolved {
+            let key = ItemKey(cardID: card.id, finish: line.isFoil ? .foil : .nonfoil,
+                              condition: .nearMint, language: card.language)
+            desired[key, default: 0] += line.quantity
         }
 
         let existing = try await itemRepository.items(in: stackID)
-        var byKey: [Key: CollectionItem] = [:]
-        for item in existing {
-            byKey[Key(cardID: item.cardID, finish: item.finish, condition: item.condition, language: item.language)] = item
-        }
+        var existingByKey: [ItemKey: CollectionItem] = [:]
+        for item in existing { existingByKey[key(for: item)] = item }
 
-        var touched: [Key: CollectionItem] = [:]
-        for (line, card) in resolved {
-            let key = Key(cardID: card.id, finish: line.isFoil ? .foil : .nonfoil,
-                          condition: .nearMint, language: card.language)
-            if var item = touched[key] ?? byKey[key] {
-                item.quantity += line.quantity
-                touched[key] = item
+        var upserts: [CollectionItem] = []
+        for (key, qty) in desired {
+            if var item = existingByKey[key] {
+                if item.quantity != qty {
+                    item.quantity = qty
+                    upserts.append(item)
+                }
             } else {
-                touched[key] = CollectionItem(
-                    cardID: card.id,
-                    stackID: stackID,
-                    quantity: line.quantity,
-                    finish: key.finish,
-                    condition: .nearMint,
-                    language: card.language,
-                    acquiredAt: Date()
-                )
+                upserts.append(CollectionItem(
+                    cardID: key.cardID, stackID: stackID, quantity: qty,
+                    finish: key.finish, condition: .nearMint,
+                    language: key.language, acquiredAt: Date()
+                ))
             }
         }
-        return Array(touched.values)
+
+        let deleteIDs = allowRemovals
+            ? existing.filter { desired[key(for: $0)] == nil }.map(\.id)
+            : []
+
+        return (upserts, deleteIDs)
     }
 }
 

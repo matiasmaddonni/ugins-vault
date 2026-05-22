@@ -41,6 +41,11 @@ public protocol CardRepository: AnyObject, Observable {
     /// Looks up a single card by Scryfall printing id.
     func card(id: UUID) async throws -> Card?
 
+    /// Batch lookup by Scryfall printing ids in a single fetch (order not
+    /// guaranteed). Used by stack detail to hydrate a whole stack at once
+    /// instead of one query per row.
+    func cards(ids: [UUID]) async throws -> [Card]
+
     /// Direct, non-mutating lookup by exact name. When `setCode` is
     /// provided the search is pinned to that printing; otherwise the
     /// first match wins. Unlike `refresh(_:)` this does NOT mutate the

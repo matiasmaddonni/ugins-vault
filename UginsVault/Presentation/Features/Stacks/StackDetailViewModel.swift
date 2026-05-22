@@ -251,21 +251,30 @@ public final class StackDetailViewModel {
 
     private func hydrateCards(for items: [CollectionItem]) async {
         guard let cardRepository else { return }
+        // One batched fetch for the whole stack instead of a query per row —
+        // keeps the screen responsive when entering a big deck.
+        let ids = Array(Set(items.map(\.cardID)))
+        let cards = (try? await cardRepository.cards(ids: ids)) ?? []
         var map: [UUID: Card] = [:]
-        for item in items where map[item.cardID] == nil {
-            guard let local = try? await cardRepository.card(id: item.cardID) else { continue }
-
-            // Backfill: rows imported before the DFC mapper fix have no
-            // image URLs. Re-fetch + persist so thumbnails appear next
-            // refresh.
-            if !hasAnyImage(local), let refreshed = await refreshFromScryfall(id: local.id) {
-                try? await cardRepository.save([refreshed])
-                map[item.cardID] = refreshed
-            } else {
-                map[item.cardID] = local
-            }
-        }
+        for card in cards { map[card.id] = card }
         cardsByID = map
+
+        // Rows imported before the DFC mapper fix have no image URLs. Backfill
+        // them from Scryfall in the BACKGROUND so thumbnails fill in without
+        // blocking the list.
+        let imageless = cards.filter { !hasAnyImage($0) }
+        if !imageless.isEmpty {
+            Task { [weak self] in await self?.backfillImages(imageless) }
+        }
+    }
+
+    private func backfillImages(_ cards: [Card]) async {
+        guard let cardRepository else { return }
+        for card in cards {
+            guard let refreshed = await refreshFromScryfall(id: card.id) else { continue }
+            try? await cardRepository.save([refreshed])
+            cardsByID[card.id] = refreshed
+        }
     }
 
     private func refreshFromScryfall(id: UUID) async -> Card? {

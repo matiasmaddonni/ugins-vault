@@ -65,6 +65,14 @@ public final class SwiftDataCardRepository: CardRepository {
         return try context.fetch(descriptor).first.map(Card.init(from:))
     }
 
+    public func cards(ids: [UUID]) async throws -> [Card] {
+        guard !ids.isEmpty else { return [] }
+        let descriptor = FetchDescriptor<SwiftDataCard>(
+            predicate: #Predicate<SwiftDataCard> { ids.contains($0.id) }
+        )
+        return try context.fetch(descriptor).map(Card.init(from:))
+    }
+
     public func findOne(name: String, setCode: String?) async throws -> Card? {
         var descriptor: FetchDescriptor<SwiftDataCard>
         if let setCode {

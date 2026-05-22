@@ -54,8 +54,8 @@ struct ImportDeckListUseCaseTests {
         #expect(items.reduce(0) { $0 + $1.quantity } == 6)
     }
 
-    @Test("merges into an existing row in the same stack")
-    func mergesExistingRow() async throws {
+    @Test("re-import SETS the quantity to the list (not additive)")
+    func reimportSetsQuantity() async throws {
         let (sut, cardRepo, itemRepo) = try makeSUT()
         let boltID = UUID()
         try await cardRepo.save([cardWithImage("Lightning Bolt", id: boltID)])
@@ -69,7 +69,27 @@ struct ImportDeckListUseCaseTests {
 
         let items = try await itemRepo.items(in: stackID)
         #expect(items.count == 1)
-        #expect(items.first?.quantity == 4)
+        #expect(items.first?.quantity == 3)   // set to 3, not 1 + 3
+    }
+
+    @Test("import removes cards the list no longer contains")
+    func importRemovesAbsent() async throws {
+        let (sut, cardRepo, itemRepo) = try makeSUT()
+        let boltID = UUID()
+        let counterID = UUID()
+        try await cardRepo.save([
+            cardWithImage("Lightning Bolt", id: boltID),
+            cardWithImage("Counterspell", id: counterID)
+        ])
+        let stackID = UUID()
+        try await itemRepo.save(CollectionItem(cardID: boltID, stackID: stackID, quantity: 1))
+        try await itemRepo.save(CollectionItem(cardID: counterID, stackID: stackID, quantity: 1))
+
+        _ = try await sut.execute(source: "1 Lightning Bolt", stackID: stackID)
+
+        let items = try await itemRepo.items(in: stackID)
+        #expect(items.count == 1)
+        #expect(items.first?.cardID == boltID)
     }
 
     @Test("empty source yields an empty result")

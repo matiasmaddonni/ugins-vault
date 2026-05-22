@@ -56,6 +56,7 @@ public final class CollectionViewModel {
     public private(set) var noDataCardIDs: Set<UUID> = []
 
     @ObservationIgnored private var pollTask: Task<Void, Never>?
+    @ObservationIgnored private var searchTask: Task<Void, Never>?
 
     /// Page size for pagination.
     @ObservationIgnored private let pageSize: Int
@@ -155,6 +156,7 @@ public final class CollectionViewModel {
         do {
             try await refreshFirstPage()
             availableSetCodes = try await cardRepository.availableSetCodes()
+            await loadPrices()
             status = .idle
         } catch {
             status = .error(message: error.localizedDescription)
@@ -162,14 +164,15 @@ public final class CollectionViewModel {
     }
 
     /// Fetches the first page given the current query/sort/filter.
-    /// Used after any change to text/sort/filter.
+    /// Used after any change to text/sort/filter. Does NOT reload prices —
+    /// the price map covers the whole store and is independent of the query,
+    /// so search/sort/filter stay cheap (and don't shift values mid-search).
     public func refreshFirstPage() async throws {
         let query = currentQuery
         let loaded = try await cardRepository.refresh(query)
         cards = loaded
         matchingCount = try await cardRepository.count(matching: query)
         totalCount = try await cardRepository.totalCount()
-        await loadPrices()
     }
 
     /// Loads the latest price per card for the preferred source. The map
@@ -233,13 +236,19 @@ public final class CollectionViewModel {
         }
     }
 
-    /// Re-runs the current query after the user touches the search field,
-    /// the sort picker, or the filter sheet.
+    /// Debounced re-query for the search field / sort / filter. Coalesces a
+    /// burst of changes into one fetch ~300ms after the last keystroke, so the
+    /// main thread stays free while typing.
     public func search() async {
-        do {
-            try await refreshFirstPage()
-        } catch {
-            status = .error(message: error.localizedDescription)
+        searchTask?.cancel()
+        searchTask = Task { [weak self] in
+            try? await Task.sleep(for: .milliseconds(300))
+            guard !Task.isCancelled, let self else { return }
+            do {
+                try await self.refreshFirstPage()
+            } catch {
+                self.status = .error(message: error.localizedDescription)
+            }
         }
     }
 

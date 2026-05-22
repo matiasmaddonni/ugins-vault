@@ -111,6 +111,7 @@ struct CollectionViewModelTests {
 
         sut.searchQuery = "lightning"
         await sut.search()
+        try await Task.sleep(for: .milliseconds(400))
 
         #expect(sut.cards.count == 2)
         #expect(sut.cards.allSatisfy { $0.name.lowercased().contains("lightning") })
@@ -144,7 +145,7 @@ struct CollectionViewModelTests {
         await sut.loadOrSeed()
 
         sut.setSort(.nameAscending)
-        try await Task.sleep(for: .milliseconds(50))
+        try await Task.sleep(for: .milliseconds(400))
 
         #expect(sut.sort == .nameAscending)
         #expect(sut.cards.first?.name == "Ancestral Recall")
@@ -161,7 +162,7 @@ struct CollectionViewModelTests {
         await sut.loadOrSeed()
 
         sut.applyFilter(CardFilter(sets: ["fdn"]))
-        try await Task.sleep(for: .milliseconds(50))
+        try await Task.sleep(for: .milliseconds(400))
 
         #expect(sut.hasActiveFilter == true)
         #expect(sut.cards.count == 3)
