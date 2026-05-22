@@ -12,6 +12,7 @@ public struct CollectionView: View {
 
     @State private var viewModel: CollectionViewModel
     @State private var isPresentingFilter: Bool = false
+    @State private var isPresentingAddCard: Bool = false
 
     public init(viewModel: CollectionViewModel) {
         _viewModel = State(initialValue: viewModel)
@@ -39,6 +40,12 @@ public struct CollectionView: View {
                         initialFilter: viewModel.filter,
                         availableSetCodes: viewModel.availableSetCodes,
                         onApply: { viewModel.applyFilter($0) }
+                    )
+                }
+                .sheet(isPresented: $isPresentingAddCard) {
+                    AddCardSheet(
+                        viewModel: DependencyContainer.shared.makeAddCardViewModel(),
+                        displayCurrency: viewModel.currency
                     )
                 }
                 .overlay(alignment: .bottom) { undoOverlay }
@@ -71,7 +78,7 @@ public struct CollectionView: View {
 
         ToolbarItem(placement: .topBarTrailing) {
             Button {
-                // TODO: open Add Card sheet
+                isPresentingAddCard = true
             } label: {
                 Image(systemName: "plus")
                     .font(.system(size: 17, weight: .semibold))

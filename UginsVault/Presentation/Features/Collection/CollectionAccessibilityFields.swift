@@ -28,6 +28,11 @@ public enum CollectionAccessibilityFields {
 
     public static let addCardToolbar     = "btn_collection_add_card_toolbar"
 
+    // MARK: - Add card sheet
+
+    public static let addCardSheet       = "scr_collection_add_card"
+    public static func addCardResult(at index: Int) -> String { "cell_collection_add_card_\(index)" }
+
     // MARK: - Empty state
 
     public static let emptyStateTitle    = "lbl_collection_empty_title"

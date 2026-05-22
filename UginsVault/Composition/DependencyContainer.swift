@@ -378,6 +378,10 @@ public final class DependencyContainer {
         )
     }
 
+    @MainActor public func makeAddCardViewModel() -> AddCardViewModel {
+        AddCardViewModel(scryfallClient: scryfallClient)
+    }
+
     @MainActor public func makeDashboardViewModel(
         onRequireSignIn: @escaping () -> Void = {}
     ) -> DashboardViewModel {

@@ -21,4 +21,11 @@ public struct ScryfallList<Item: Decodable & Sendable>: Decodable, Sendable {
         case nextPage   = "next_page"
         case totalCards = "total_cards"
     }
+
+    public init(data: [Item], hasMore: Bool = false, nextPage: URL? = nil, totalCards: Int? = nil) {
+        self.data = data
+        self.hasMore = hasMore
+        self.nextPage = nextPage
+        self.totalCards = totalCards
+    }
 }
