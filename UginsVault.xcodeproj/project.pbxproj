@@ -82,6 +82,7 @@
 		4E9B785E1FCB1A896D1D1012 /* SettingsPriceSyncRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72D9D8A3C23DA8436E6708EA /* SettingsPriceSyncRow.swift */; };
 		508E0014DF0E9D2E05EA3F47 /* UVColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C33F74A36AF89DA5A2AD6AA /* UVColors.swift */; };
 		524054B3A6BE2A904B13136E /* CardImages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 992C5BC04B97F7EEE386EEE2 /* CardImages.swift */; };
+		5407C30642500C7AA45EE7AB /* ManaSymbolText.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2E8D2C0B18B27EC9C82E601 /* ManaSymbolText.swift */; };
 		54944E23AACB90264E5ECF37 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573BCA1AC5BFAE9E4BC99792 /* SettingsView.swift */; };
 		5755370A8FED8B4381367B53 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3E185146B2A0679E613C327 /* LoginViewModel.swift */; };
 		579C0A834958619589AA3ED2 /* ScryfallError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41211929DF0F9F6B9C41B173 /* ScryfallError.swift */; };
@@ -513,6 +514,7 @@
 		D1E40E87CDD1B1A3D1ACD31B /* AppTheme+ColorScheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppTheme+ColorScheme.swift"; sourceTree = "<group>"; };
 		D1E5A9F829B6CEC3CCEB856F /* CollectionSyncingStackRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionSyncingStackRepositoryTests.swift; sourceTree = "<group>"; };
 		D2944A85044C1A10C3B0D836 /* RootViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewModelTests.swift; sourceTree = "<group>"; };
+		D2E8D2C0B18B27EC9C82E601 /* ManaSymbolText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManaSymbolText.swift; sourceTree = "<group>"; };
 		D2FD7F3F8B9437D9846DF897 /* LatestPriceUseCaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LatestPriceUseCaseTests.swift; sourceTree = "<group>"; };
 		D371455CBD112597875BC855 /* WishlistItemMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishlistItemMapper.swift; sourceTree = "<group>"; };
 		D442651635763F98973C6D46 /* StackDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackDetailViewModel.swift; sourceTree = "<group>"; };
@@ -774,6 +776,7 @@
 				D1BB5CE19F066384AED952B2 /* AvatarPicker.swift */,
 				96A6C38703CFDE5FBF758D99 /* DonutChartView.swift */,
 				F5F6E816E686E9EC593DB842 /* ManaPipsView.swift */,
+				D2E8D2C0B18B27EC9C82E601 /* ManaSymbolText.swift */,
 				8D5C0D8A87D250E750022612 /* PressableButtonStyle.swift */,
 				050E1901BEA16D7686154481 /* SectionPanel.swift */,
 				516CAD5965C1D04A5DC02B7E /* SettingsGroup.swift */,
@@ -1667,6 +1670,7 @@
 				BFE6E0D4750EED43CF9F2309 /* MainTabView.swift in Sources */,
 				F9CA93A1C8D6B1DFAB6352FD /* ManaColor.swift in Sources */,
 				BF5EC90DECA81932E401DF7F /* ManaPipsView.swift in Sources */,
+				5407C30642500C7AA45EE7AB /* ManaSymbolText.swift in Sources */,
 				FDA5F2509C6B60AD525F4F8C /* ManualARSRateUseCases.swift in Sources */,
 				48BA107442004D04AAD6CEC5 /* MockDashboardRepository.swift in Sources */,
 				DDA3FE1ADA48090719A710E4 /* Mover.swift in Sources */,

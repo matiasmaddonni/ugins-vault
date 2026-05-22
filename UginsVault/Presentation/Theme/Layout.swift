@@ -159,6 +159,9 @@ public enum Layout {
     public static let dashboardMoversCardHeight: CGFloat = 188
 
     /// Donut diameter inside ByFormatPanel.
+    /// Diameter of an inline mana / ability symbol pip in rules text.
+    public static let manaSymbolSize: CGFloat = 18
+
     public static let dashboardDonutSize: CGFloat = 112
 
     /// Donut stroke thickness inside ByFormatPanel.

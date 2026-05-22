@@ -240,10 +240,8 @@ public struct CardDetailView: View {
             VStack(alignment: .leading, spacing: Spacing.sm) {
                 Text("Rules text")
                     .uvSectionLabel()
-                Text(text)
-                    .font(.uv.body(15))
-                    .foregroundStyle(Color.uv.text)
-                    .fixedSize(horizontal: false, vertical: true)
+                ManaSymbolText(text)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
             .padding(.horizontal, Spacing.lg)
             .padding(.vertical, Spacing.lg)
