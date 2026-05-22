@@ -110,8 +110,10 @@ public struct CreateStackSheet: View {
                 }
             }
 
-            TextField("Commander (optional)", text: $commander)
-                .accessibilityIdentifier(StacksAccessibilityFields.createCommander)
+            if format == .commander {
+                TextField("Commander (optional)", text: $commander)
+                    .accessibilityIdentifier(StacksAccessibilityFields.createCommander)
+            }
         } header: {
             Text("Deck")
         }
@@ -173,7 +175,7 @@ public struct CreateStackSheet: View {
             kind,
             kind == .deck ? format : nil,
             kind == .deck ? selectedColors : [],
-            kind == .deck && !commander.isEmpty ? commander : nil,
+            kind == .deck && format == .commander && !commander.isEmpty ? commander : nil,
             kind == .loan && !person.isEmpty ? person : nil
         )
         dismiss()

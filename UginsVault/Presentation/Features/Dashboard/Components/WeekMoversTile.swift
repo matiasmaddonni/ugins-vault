@@ -31,17 +31,18 @@ public struct WeekMoversTile: View {
                 }
             }
 
-            Spacer(minLength: Spacing.xs)
             Rectangle()
                 .fill(Color.uv.stroke.opacity(0.6))
                 .frame(height: Layout.hairline)
-            Spacer(minLength: Spacing.xs)
+                .padding(.vertical, Spacing.sm)
 
             VStack(alignment: .leading, spacing: Spacing.xs + 2) {
                 ForEach(losers.prefix(2)) { mover in
                     row(mover: mover, tone: Color.uv.down)
                 }
             }
+
+            Spacer(minLength: 0)
         }
         .padding(.horizontal, Spacing.lg - 2)
         .padding(.vertical, Spacing.md)

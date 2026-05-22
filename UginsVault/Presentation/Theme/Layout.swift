@@ -159,7 +159,7 @@ public enum Layout {
     public static let dashboardMoversCardHeight: CGFloat = 188
 
     /// Donut diameter inside ByFormatPanel.
-    public static let dashboardDonutSize: CGFloat = 130
+    public static let dashboardDonutSize: CGFloat = 112
 
     /// Donut stroke thickness inside ByFormatPanel.
     public static let dashboardDonutThickness: CGFloat = 20

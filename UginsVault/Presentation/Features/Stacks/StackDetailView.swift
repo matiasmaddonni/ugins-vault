@@ -88,7 +88,7 @@ public struct StackDetailView: View {
 
         ToolbarItem(placement: .topBarTrailing) {
             Menu {
-                if viewModel.stack.kind == .deck {
+                if viewModel.stack.kind == .deck, viewModel.stack.format == .commander {
                     Button {
                         viewModel.presentCommanderPicker()
                     } label: {

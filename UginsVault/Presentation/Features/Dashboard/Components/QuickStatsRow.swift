@@ -22,7 +22,7 @@ public struct QuickStatsRow: View {
     }
 
     public var body: some View {
-        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: Layout.dashboardRowSpacing), count: 4),
+        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: Layout.dashboardRowSpacing), count: 3),
                   spacing: Layout.dashboardRowSpacing) {
             QuickStatCard(
                 key: "total",
@@ -41,12 +41,6 @@ public struct QuickStatsRow: View {
                 label: "Foils",
                 value: thousands(stats.foils),
                 sublabel: "owned"
-            )
-            QuickStatCard(
-                key: "avg",
-                label: "Avg",
-                value: CurrencyFormatter.format(stats.avgValueUSD, currency: currency, rate: rate),
-                sublabel: "per card"
             )
         }
         .accessibilityElement(children: .contain)
