@@ -24,13 +24,23 @@ import Foundation
 public final class ImportDeckListUseCase {
 
     public struct ImportResult: Sendable, Equatable {
-        public var importedLines: Int      // lines successfully added
-        public var importedCards: Int      // total quantity inserted
+        public var importedLines: Int      // lines successfully resolved
+        public var importedCards: Int      // total quantity in the list
+        public var added: Int              // copies newly added vs the stack
+        public var removed: Int            // copies removed (absent from list)
         public var unresolved: [String]    // names we couldn't resolve
 
-        public init(importedLines: Int = 0, importedCards: Int = 0, unresolved: [String] = []) {
+        public init(
+            importedLines: Int = 0,
+            importedCards: Int = 0,
+            added: Int = 0,
+            removed: Int = 0,
+            unresolved: [String] = []
+        ) {
             self.importedLines = importedLines
             self.importedCards = importedCards
+            self.added = added
+            self.removed = removed
             self.unresolved = unresolved
         }
     }
@@ -128,15 +138,17 @@ public final class ImportDeckListUseCase {
         // add new, remove absent) so re-importing an edited list applies the
         // delta instead of doubling. Removals are skipped when some lines
         // didn't resolve — a flaky import never silently drops cards.
-        let (upserts, deleteIDs) = try await reconcile(
+        let reconciled = try await reconcile(
             resolved: resolved,
             stackID: stackID,
             allowRemovals: result.unresolved.isEmpty
         )
-        try await itemRepository.save(upserts)
-        for id in deleteIDs {
+        try await itemRepository.save(reconciled.upserts)
+        for id in reconciled.deleteIDs {
             try await itemRepository.delete(id: id)
         }
+        result.added = reconciled.added
+        result.removed = reconciled.removed
 
         for (line, _) in resolved {
             result.importedLines += 1
@@ -213,7 +225,7 @@ public final class ImportDeckListUseCase {
         resolved: [(line: ParsedDeckLine, card: Card)],
         stackID: UUID,
         allowRemovals: Bool
-    ) async throws -> (upserts: [CollectionItem], deleteIDs: [UUID]) {
+    ) async throws -> (upserts: [CollectionItem], deleteIDs: [UUID], added: Int, removed: Int) {
 
         func key(for item: CollectionItem) -> ItemKey {
             ItemKey(cardID: item.cardID, finish: item.finish, condition: item.condition, language: item.language)
@@ -231,13 +243,18 @@ public final class ImportDeckListUseCase {
         for item in existing { existingByKey[key(for: item)] = item }
 
         var upserts: [CollectionItem] = []
+        var added = 0
+        var removed = 0
         for (key, qty) in desired {
             if var item = existingByKey[key] {
                 if item.quantity != qty {
+                    if qty > item.quantity { added += qty - item.quantity }
+                    else { removed += item.quantity - qty }
                     item.quantity = qty
                     upserts.append(item)
                 }
             } else {
+                added += qty
                 upserts.append(CollectionItem(
                     cardID: key.cardID, stackID: stackID, quantity: qty,
                     finish: key.finish, condition: .nearMint,
@@ -246,11 +263,13 @@ public final class ImportDeckListUseCase {
             }
         }
 
-        let deleteIDs = allowRemovals
-            ? existing.filter { desired[key(for: $0)] == nil }.map(\.id)
+        let removedItems = allowRemovals
+            ? existing.filter { desired[key(for: $0)] == nil }
             : []
+        let deleteIDs = removedItems.map(\.id)
+        removed += removedItems.reduce(0) { $0 + $1.quantity }
 
-        return (upserts, deleteIDs)
+        return (upserts, deleteIDs, added, removed)
     }
 }
 

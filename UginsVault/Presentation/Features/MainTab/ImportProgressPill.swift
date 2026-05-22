@@ -104,12 +104,22 @@ struct ImportProgressPill: View {
                 ? String(localized: "Importing \(coordinator.current)/\(coordinator.total)")
                 : String(localized: "Preparing import…")
         case .finished:
-            let imported = coordinator.result?.importedLines ?? 0
-            return String(localized: "Imported \(imported) cards")
+            return finishedTitle
         case .failed:
             return String(localized: "Import failed")
         case .idle:
             return ""
+        }
+    }
+
+    private var finishedTitle: String {
+        let added = coordinator.result?.added ?? 0
+        let removed = coordinator.result?.removed ?? 0
+        switch (added, removed) {
+        case (0, 0):           return String(localized: "No changes")
+        case (let a, 0):       return String(localized: "Added \(a) cards")
+        case (0, let r):       return String(localized: "Removed \(r) cards")
+        case (let a, let r):   return String(localized: "Added \(a) · removed \(r)")
         }
     }
 

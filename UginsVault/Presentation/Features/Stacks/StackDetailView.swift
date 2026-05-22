@@ -31,6 +31,12 @@ public struct StackDetailView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { toolbar }
             .task { await viewModel.onAppear() }
+            .onChange(of: DependencyContainer.shared.importCoordinator.phase) { _, phase in
+                let coordinator = DependencyContainer.shared.importCoordinator
+                if phase == .finished, coordinator.stackID == viewModel.stack.id {
+                    Task { await viewModel.refresh() }
+                }
+            }
             .navigationDestination(for: Card.self) { card in
                 CardDetailView(
                     viewModel: DependencyContainer.shared.makeCardDetailViewModel(

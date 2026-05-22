@@ -160,9 +160,8 @@ public final class StackDetailViewModel {
         if cardCount != 100 {
             issues.append(String(localized: "needs 100 cards (has \(cardCount))"))
         }
-        let legendaryCount = commanderCandidates.reduce(0) { $0 + $1.quantity }
-        if legendaryCount != 1 {
-            issues.append(String(localized: "needs exactly 1 commander (has \(legendaryCount))"))
+        if stack.commanderCardID == nil {
+            issues.append(String(localized: "no commander set — pick one"))
         }
         guard !issues.isEmpty else { return nil }
         return String(localized: "Commander deck ") + issues.joined(separator: " · ")
