@@ -9,6 +9,7 @@
 //
 
 import SwiftUI
+import SVGView
 
 public struct ManaSymbolText: View {
 
@@ -92,9 +93,35 @@ private struct ManaSymbolPip: View {
     let symbol: String
     let diameter: CGFloat
 
+    @State private var svgData: Data?
+
+    /// Scryfall symbol SVG: {W}->W.svg, {2}->2.svg, {W/U}->WU.svg, {T}->T.svg.
+    private var url: URL? {
+        let key = symbol.uppercased().replacingOccurrences(of: "/", with: "")
+        guard !key.isEmpty else { return nil }
+        return URL(string: "https://svgs.scryfall.io/card-symbols/\(key).svg")
+    }
+
     var body: some View {
+        Group {
+            if let svgData {
+                SVGView(data: svgData)
+                    .frame(width: diameter, height: diameter)
+            } else {
+                fallback
+            }
+        }
+        .task(id: symbol) {
+            guard svgData == nil, let url else { return }
+            svgData = await ScryfallSymbolCache.shared.data(for: url)
+        }
+        .accessibilityLabel(symbol)
+    }
+
+    /// Shown while the SVG loads (or if it fails): a coloured pip.
+    private var fallback: some View {
         let mana = ManaColor(rawValue: symbol.uppercased())
-        ZStack {
+        return ZStack {
             Circle().fill(mana?.tintColor ?? Color(hex: 0xB8B2A6))
             Text(symbol)
                 .font(.uv.mono(diameter * 0.5, weight: .bold))
@@ -104,8 +131,20 @@ private struct ManaSymbolPip: View {
                 .padding(.horizontal, 1)
         }
         .frame(width: diameter, height: diameter)
-        .overlay(Circle().strokeBorder(Color.uv.bg.opacity(0.5), lineWidth: Layout.hairline))
-        .accessibilityLabel(symbol)
+    }
+}
+
+/// Tiny in-memory cache for Scryfall symbol SVGs (a few dozen, static).
+private actor ScryfallSymbolCache {
+    static let shared = ScryfallSymbolCache()
+    private var cache: [URL: Data] = [:]
+
+    func data(for url: URL) async -> Data? {
+        if let cached = cache[url] { return cached }
+        guard let (data, response) = try? await URLSession.shared.data(from: url) else { return nil }
+        if let http = response as? HTTPURLResponse, !(200..<300).contains(http.statusCode) { return nil }
+        cache[url] = data
+        return data
     }
 }
 

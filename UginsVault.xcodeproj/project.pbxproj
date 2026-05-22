@@ -67,6 +67,7 @@
 		3F288873B02EE2353199B992 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3640EB69183473536EB61D1 /* LoginView.swift */; };
 		3FAAAB96439FC802763C07B7 /* MockPriceRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DFF72C1E6643BC45E5C56DD /* MockPriceRepository.swift */; };
 		3FCE0BAE5F2D6EDA17BB2C92 /* WishlistRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6C964D15B22FAF23FE433DC /* WishlistRepository.swift */; };
+		42EF2740BC4573C0D7884BEB /* SVGView in Frameworks */ = {isa = PBXBuildFile; productRef = 170A4F03066CBB67531DA478 /* SVGView */; };
 		430D44014FEB2C86B5F111C9 /* UVRadius.swift in Sources */ = {isa = PBXBuildFile; fileRef = 538121236CB36B30D4CAC2B6 /* UVRadius.swift */; };
 		43AB596E8F02FD5619372205 /* ShimmerBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98186CA14E924EBFC12317CD /* ShimmerBar.swift */; };
 		45DB26D19290626906590C40 /* APIPriceStatusSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C7B301C5FED1E549EEF51F1 /* APIPriceStatusSource.swift */; };
@@ -577,6 +578,7 @@
 			files = (
 				D349F6C3E27C8A8A67857FAA /* Kingfisher in Frameworks */,
 				C8D6BC61798CA3B92D94375D /* Auth in Frameworks */,
+				42EF2740BC4573C0D7884BEB /* SVGView in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1444,6 +1446,7 @@
 			packageProductDependencies = (
 				F94C126CFFD087B2FC8A11C3 /* Kingfisher */,
 				5E891417483C848528D96D57 /* Auth */,
+				170A4F03066CBB67531DA478 /* SVGView */,
 			);
 			productName = UginsVault;
 			productReference = 3DE1358AD226C96D9BA1B04E /* UginsVault.app */;
@@ -1480,6 +1483,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				E95F6249E55D4D5CC6B0DFC2 /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				5E9DF07DE5E52F5952FEE51F /* XCRemoteSwiftPackageReference "SVGView" */,
 				35D3396CE64B3BAC6911A1E8 /* XCRemoteSwiftPackageReference "supabase-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -2067,6 +2071,14 @@
 				minimumVersion = 2.46.0;
 			};
 		};
+		5E9DF07DE5E52F5952FEE51F /* XCRemoteSwiftPackageReference "SVGView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/exyte/SVGView";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.4;
+			};
+		};
 		E95F6249E55D4D5CC6B0DFC2 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/onevcat/Kingfisher";
@@ -2078,6 +2090,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		170A4F03066CBB67531DA478 /* SVGView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5E9DF07DE5E52F5952FEE51F /* XCRemoteSwiftPackageReference "SVGView" */;
+			productName = SVGView;
+		};
 		5E891417483C848528D96D57 /* Auth */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 35D3396CE64B3BAC6911A1E8 /* XCRemoteSwiftPackageReference "supabase-swift" */;
