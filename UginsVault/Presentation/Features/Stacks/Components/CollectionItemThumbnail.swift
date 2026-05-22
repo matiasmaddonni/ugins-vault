@@ -14,14 +14,28 @@ public struct CollectionItemThumbnail: View {
 
     public let card: Card?
 
+    @Environment(\.displayScale) private var displayScale
+
+    /// Target point size for the row thumbnail. Kingfisher downsamples the
+    /// full Scryfall image to this on its background queue and caches the
+    /// small bitmap — so first display + re-filters don't re-decode a 488px
+    /// JPG on the main actor (the freeze when opening / searching the picker).
+    private static let pointSize = CGSize(
+        width: Layout.stackDetailRowThumbWidth,
+        height: Layout.stackDetailRowThumbHeight
+    )
+
     public init(card: Card?) {
         self.card = card
     }
 
     public var body: some View {
         Group {
-            if let url = card?.images.thumbnail {
+            if let url = card?.images.listThumbnail {
                 KFImage(url)
+                    .setProcessor(DownsamplingImageProcessor(size: Self.pointSize))
+                    .scaleFactor(displayScale)
+                    .cacheOriginalImage()
                     .placeholder { placeholder }
                     .fade(duration: 0.15)
                     .resizable()

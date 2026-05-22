@@ -55,11 +55,23 @@ struct UginsVaultApp: App {
         }
     }
 
-    /// Caps Kingfisher's disk image cache at ~1 GB. ~25 k card faces at
-    /// ~100 KB each would otherwise reach ~2.5 GB. The in-memory cache
-    /// is bounded separately by Kingfisher's defaults.
+    /// Tunes Kingfisher's image cache.
+    ///
+    /// - Disk: capped at ~1 GB (7-day default expiry). ~25 k card faces at
+    ///   ~100 KB each would otherwise reach ~2.5 GB.
+    /// - Memory: Kingfisher's default expiration is only 5 minutes, so a
+    ///   decoded thumbnail gets evicted from RAM after brief idle and the
+    ///   next display has to re-read from disk and **re-decode on the main
+    ///   actor** — the stutter when scrolling a list back into view or
+    ///   reopening the commander picker. Keep decoded images resident for the
+    ///   whole session (iOS still purges the memory cache on memory pressure)
+    ///   and cap the cost so it can't grow unbounded.
     private static func configureImageCache() {
+        let cache = ImageCache.default
         let oneGigabyte: UInt = 1_024 * 1_024 * 1_024
-        ImageCache.default.diskStorage.config.sizeLimit = oneGigabyte
+        cache.diskStorage.config.sizeLimit = oneGigabyte
+
+        cache.memoryStorage.config.expiration = .seconds(60 * 60) // 1 hour
+        cache.memoryStorage.config.totalCostLimit = 256 * 1_024 * 1_024 // ~256 MB
     }
 }

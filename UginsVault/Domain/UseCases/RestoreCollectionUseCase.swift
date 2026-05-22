@@ -61,7 +61,9 @@ public final class RestoreCollectionUseCase {
         try await itemRepository.deleteAll()
         try await stackRepository.deleteAll()
         for stack in collection.stacks { try await stackRepository.save(stack) }
-        for item in collection.items { try await itemRepository.save(item) }
+        // ONE batched write for all items — a save per item floods the main
+        // actor and freezes the app during a fresh-install restore.
+        try await itemRepository.save(collection.items)
     }
 
     /// Fetches + caches Scryfall data for any printing we don't have yet,

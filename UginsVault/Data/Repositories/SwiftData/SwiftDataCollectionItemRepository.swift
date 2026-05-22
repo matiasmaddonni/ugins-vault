@@ -84,16 +84,20 @@ public final class SwiftDataCollectionItemRepository: CollectionItemRepository {
         isWriting = true
         defer { isWriting = false }
 
+        // ONE fetch of the existing rows up front (keyed by id) instead of a
+        // fetch-per-item — a per-item descriptor in the loop turns a fresh
+        // restore into hundreds of synchronous main-actor round trips and
+        // freezes the app on launch.
+        let existing = try context.fetch(FetchDescriptor<SwiftDataCollectionItem>())
+        var byID = Dictionary(existing.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+
         for item in items {
-            let itemID = item.id
-            var descriptor = FetchDescriptor<SwiftDataCollectionItem>(
-                predicate: #Predicate<SwiftDataCollectionItem> { $0.id == itemID }
-            )
-            descriptor.fetchLimit = 1
-            if let existing = try context.fetch(descriptor).first {
-                existing.apply(item)
+            if let row = byID[item.id] {
+                row.apply(item)
             } else {
-                context.insert(SwiftDataCollectionItem(from: item))
+                let row = SwiftDataCollectionItem(from: item)
+                context.insert(row)
+                byID[item.id] = row
             }
         }
         try context.save()   // one write for the whole batch

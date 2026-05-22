@@ -16,6 +16,16 @@ struct CardRowView: View {
     var price: Decimal? = nil
     var isFetching: Bool = false
 
+    @Environment(\.displayScale) private var displayScale
+
+    /// Downsample target — Kingfisher decodes to this on its background queue
+    /// and caches the small bitmap, so scrolling / re-filtering the list never
+    /// re-decodes a full 488px JPG on the main actor.
+    private static let pointSize = CGSize(
+        width: Layout.collectionRowThumbWidth,
+        height: Layout.collectionRowThumbHeight
+    )
+
     var body: some View {
         HStack(alignment: .top, spacing: Spacing.md) {
             thumbnail
@@ -55,8 +65,11 @@ struct CardRowView: View {
 
     private var thumbnail: some View {
         Group {
-            if let url = card.images.thumbnail {
+            if let url = card.images.listThumbnail {
                 KFImage(url)
+                    .setProcessor(DownsamplingImageProcessor(size: Self.pointSize))
+                    .scaleFactor(displayScale)
+                    .cacheOriginalImage()
                     .placeholder { thumbnailPlaceholder }
                     .fade(duration: 0.15)
                     .resizable()
@@ -65,11 +78,11 @@ struct CardRowView: View {
                 thumbnailPlaceholder
             }
         }
-        .frame(width: 48, height: 68)
+        .frame(width: Layout.collectionRowThumbWidth, height: Layout.collectionRowThumbHeight)
         .clipShape(RoundedRectangle(cornerRadius: UVRadius.sm))
         .overlay(
             RoundedRectangle(cornerRadius: UVRadius.sm)
-                .strokeBorder(Color.uv.stroke, lineWidth: 1)
+                .strokeBorder(Color.uv.stroke, lineWidth: Layout.hairline)
         )
     }
 

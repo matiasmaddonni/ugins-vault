@@ -37,6 +37,11 @@ public struct CardImages: Codable, Hashable, Sendable {
     /// Convenience pick for list rows.
     public var thumbnail: URL? { normal ?? small ?? large }
 
+    /// Smallest art that still reads at list-row size. Prefer this on dense
+    /// lists (collection, commander picker): `small` is ~146px vs `normal`'s
+    /// ~488px, so the first decode is cheap and the cached bitmap is tiny.
+    public var listThumbnail: URL? { small ?? normal ?? large }
+
     /// Convenience pick for detail screens.
     public var hero: URL? { large ?? png ?? normal ?? small }
 }

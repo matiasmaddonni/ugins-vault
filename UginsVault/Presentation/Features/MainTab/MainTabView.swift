@@ -93,23 +93,17 @@ public struct MainTabView: View {
         }
     }
 
-    /// Restores the collection from the backend (the source of truth) before
-    /// the tabs read the local cache. A fresh install (empty cache) blocks on
-    /// the restore so cards land in their stacks immediately; a returning user
-    /// sees the cached UI right away while the restore refreshes it behind the
-    /// scenes. Best-effort: offline / signed-out simply keeps the local cache.
+    /// Shows the tabs immediately, then refreshes the local cache from the
+    /// backend (the source of truth) in the background. NEVER gate the whole
+    /// app on the restore — a fresh install with a large collection would
+    /// otherwise freeze on launch while the cache fills. The tabs read whatever
+    /// is cached and update reactively as the restore lands. Best-effort:
+    /// offline / signed-out simply keeps the local cache.
     @MainActor
     private func runBootstrap() async {
         guard bootstrap == .loading else { return }
-        let localEmpty = ((try? await container.collectionItemRepository.allItems()) ?? []).isEmpty
-        let restore = container.makeRestoreCollectionUseCase()
-        if localEmpty {
-            _ = try? await restore.execute()
-            bootstrap = .ready
-        } else {
-            bootstrap = .ready
-            _ = try? await restore.execute()
-        }
+        bootstrap = .ready
+        _ = try? await container.makeRestoreCollectionUseCase().execute()
     }
 }
 

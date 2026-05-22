@@ -184,6 +184,7 @@
 		AAD48163466E9D03FE0B6091 /* PriceSyncViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40CC2A6205A8581BDAACAE65 /* PriceSyncViewModelTests.swift */; };
 		ABFA83642EC769DEF1D07100 /* RealDashboardRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B67234F9C7EAF676DC391A8 /* RealDashboardRepository.swift */; };
 		AC040FF00208874881A70AB6 /* SwiftDataPriceRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20CC43C476D91133D4068618 /* SwiftDataPriceRepositoryTests.swift */; };
+		ADAA4EBE7C93D5DA04C19AF4 /* CardImagesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 770D0FFEED4A2F3CBD7D0DD7 /* CardImagesTests.swift */; };
 		AE060F410F99374BC4507EF0 /* AccountAuthUseCasesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45C95F82BC6D507F203D0B9 /* AccountAuthUseCasesTests.swift */; };
 		AE2B93CB5FE5B1481934FB35 /* MockBiometricsDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B7498C9D88299DA4D83BC46 /* MockBiometricsDataSource.swift */; };
 		AE2C074E8A91FC496A8E8872 /* UginsVaultApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97BB29F0E8DFB1CE7D2F5912 /* UginsVaultApp.swift */; };
@@ -403,6 +404,7 @@
 		7607EA2A3CC32886537A41C2 /* SwiftDataCollectionItemRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataCollectionItemRepositoryTests.swift; sourceTree = "<group>"; };
 		7616CFCFC0F0F6EB395CA1CD /* StackKind+Accent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StackKind+Accent.swift"; sourceTree = "<group>"; };
 		7626F10E181A67E727CE1A2F /* SwiftDataWishlistRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataWishlistRepositoryTests.swift; sourceTree = "<group>"; };
+		770D0FFEED4A2F3CBD7D0DD7 /* CardImagesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardImagesTests.swift; sourceTree = "<group>"; };
 		7806F31729CA23A9722BC104 /* DashboardViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModelTests.swift; sourceTree = "<group>"; };
 		78718388782C8A2AABE88F67 /* CollectionSyncingItemRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionSyncingItemRepositoryTests.swift; sourceTree = "<group>"; };
 		788287228C083B5310709E02 /* StackCover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackCover.swift; sourceTree = "<group>"; };
@@ -678,6 +680,7 @@
 			isa = PBXGroup;
 			children = (
 				70FAE08497538BDF625FA56C /* AccountAuthErrorTests.swift */,
+				770D0FFEED4A2F3CBD7D0DD7 /* CardImagesTests.swift */,
 			);
 			path = entities;
 			sourceTree = "<group>";
@@ -1525,6 +1528,7 @@
 				C02015C1E54C620E8683EC6B /* AuthRepositoryTests.swift in Sources */,
 				35252800F3BCEB5AA933CE7F /* AuthenticateUseCaseTests.swift in Sources */,
 				A1CBBD1B77B83D941AC936CD /* BackendCollectionMappingTests.swift in Sources */,
+				ADAA4EBE7C93D5DA04C19AF4 /* CardImagesTests.swift in Sources */,
 				49673AA5800E1764BFA68D4F /* CollectionSyncingItemRepositoryTests.swift in Sources */,
 				3710C838A16AC5B7C96B96E1 /* CollectionSyncingStackRepositoryTests.swift in Sources */,
 				DF6DB6AD06B34417E2611787 /* CollectionViewModelTests.swift in Sources */,

@@ -253,15 +253,27 @@ public final class CollectionViewModel {
     }
 
     /// Drives the swipe-down refresh control on the Collection list.
-    /// Re-runs the current query against the local catalogue and refreshes
-    /// the cached set-code list.
+    /// Re-runs the current query against the local catalogue, refreshes the
+    /// cached set-code list, and reconciles prices with the backend.
+    ///
+    /// The price reconcile matters: the backend prices newly-added cards
+    /// asynchronously (enqueue → on-demand ingest, minutes later), and the
+    /// status poll loop eventually stops (iteration cap) and is cancelled when
+    /// the user leaves the tab. Without re-pulling here, a card that finished
+    /// pricing after the loop ended stays stuck on "Fetching…" until relaunch.
     public func pullToRefresh() async {
         do {
             try await refreshFirstPage()
             availableSetCodes = try await cardRepository.availableSetCodes()
         } catch {
             status = .error(message: error.localizedDescription)
+            return
         }
+        if let syncPrices {
+            _ = try? await syncPrices.execute(progress: nil)
+        }
+        await loadPrices()
+        startPriceStatusPolling()
     }
 
     public func setSort(_ sort: CardSortOption) {
