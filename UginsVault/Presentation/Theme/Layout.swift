@@ -136,6 +136,37 @@ public enum Layout {
     /// Thumbnail height on `CollectionView`'s card list rows.
     public static let collectionRowThumbHeight: CGFloat = 68
 
+    // MARK: - Stack statistics
+
+    /// Bar thickness for the mana-curve / rarity horizontal bars.
+    public static let statsBarThickness: CGFloat = 16
+
+    /// Fixed leading-label width for a mana-curve / rarity bar row.
+    public static let statsBarLabelWidth: CGFloat = 64
+
+    /// Trailing count width for a stats bar row.
+    public static let statsBarCountWidth: CGFloat = 36
+
+    /// Thumbnail width for a "Top cards" row.
+    public static let statsTopCardThumbWidth: CGFloat = 34
+
+    /// Thumbnail height for a "Top cards" row.
+    public static let statsTopCardThumbHeight: CGFloat = 48
+
+    // MARK: - List skeletons
+
+    /// Height of a skeleton text-line placeholder.
+    public static let skeletonTextLineHeight: CGFloat = 12
+
+    /// Width of the shorter (secondary) skeleton text-line placeholder.
+    public static let skeletonTextShortWidth: CGFloat = 130
+
+    /// Square thumbnail placeholder used by the Stacks list skeleton.
+    public static let skeletonStackThumb: CGFloat = 56
+
+    /// Default number of placeholder rows in a list skeleton.
+    public static let skeletonRowCount: Int = 8
+
     /// Max scrollable height of the unresolved-names list inside
     /// `ImportResultToast`.
     public static let importToastUnresolvedMaxHeight: CGFloat = 180

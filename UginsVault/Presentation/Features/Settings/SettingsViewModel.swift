@@ -55,6 +55,7 @@ public final class SettingsViewModel {
     @ObservationIgnored private let getProfileUseCase:    GetUserProfileUseCase
     @ObservationIgnored private let updateProfileUseCase: UpdateUserProfileUseCase
     @ObservationIgnored private let resetCatalogue:       ResetCatalogueUseCase
+    @ObservationIgnored private let hardReset:            HardResetCollectionUseCase?
     @ObservationIgnored private let signOutAccount:       SignOutAccountUseCase
     @ObservationIgnored private let onSignedOut:          () -> Void
     @ObservationIgnored private let accountRepository:    AccountRepository
@@ -81,6 +82,7 @@ public final class SettingsViewModel {
         getUserProfileUseCase: GetUserProfileUseCase,
         updateUserProfileUseCase: UpdateUserProfileUseCase,
         resetCatalogueUseCase: ResetCatalogueUseCase,
+        hardResetUseCase: HardResetCollectionUseCase? = nil,
         signOutAccount: SignOutAccountUseCase,
         accountRepository: AccountRepository,
         onSignedOut: @escaping () -> Void = {}
@@ -104,6 +106,7 @@ public final class SettingsViewModel {
         self.getProfileUseCase    = getUserProfileUseCase
         self.updateProfileUseCase = updateUserProfileUseCase
         self.resetCatalogue       = resetCatalogueUseCase
+        self.hardReset            = hardResetUseCase
         self.signOutAccount       = signOutAccount
         self.onSignedOut          = onSignedOut
         self.accountRepository    = accountRepository
@@ -211,11 +214,18 @@ public final class SettingsViewModel {
         }
     }
 
-    /// Wipes the local catalogue entirely (no re-seed).
+    /// Real, full wipe: clears the entire collection on the backend AND the
+    /// local cache (items + stacks + card catalogue), so the next launch's
+    /// restore finds nothing to repopulate. Falls back to a local-only card
+    /// wipe when the backend use case isn't wired (e.g. tests).
     public func clearCatalogueNow() async {
         dataStatus = .clearing
         do {
-            try await resetCatalogue.execute()
+            if let hardReset {
+                try await hardReset.execute()
+            } else {
+                try await resetCatalogue.execute()
+            }
             catalogueCount = 0
             dataStatus = .idle
         } catch {

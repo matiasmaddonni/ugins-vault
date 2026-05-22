@@ -234,6 +234,18 @@ public final class DependencyContainer {
         ResetCatalogueUseCase(cardRepository: cardRepository)
     }
 
+    /// DEBUG hard reset: wipes the backend collection (full PUT empty) + the
+    /// whole local cache. Uses the BASE repos so the local wipe doesn't fan
+    /// out as a wave of incremental deletes (the backend is already cleared).
+    public func makeHardResetCollectionUseCase() -> HardResetCollectionUseCase {
+        HardResetCollectionUseCase(
+            remote: collectionStore,
+            itemRepository: baseCollectionItemRepository,
+            stackRepository: baseStackRepository,
+            cardRepository: cardRepository
+        )
+    }
+
     // MARK: - Use case factories — pricing prefs
 
     public func makeGetManualARSRateUseCase() -> GetManualARSRateUseCase {
@@ -442,6 +454,7 @@ public final class DependencyContainer {
             getUserProfileUseCase:       makeGetUserProfileUseCase(),
             updateUserProfileUseCase:    makeUpdateUserProfileUseCase(),
             resetCatalogueUseCase:       makeResetCatalogueUseCase(),
+            hardResetUseCase:            makeHardResetCollectionUseCase(),
             signOutAccount:              makeSignOutAccountUseCase(),
             accountRepository:           accountRepository,
             onSignedOut:                 onSignedOut

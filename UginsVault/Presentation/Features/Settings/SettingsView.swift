@@ -81,14 +81,14 @@ public struct SettingsView: View {
                 isPresented: $isConfirmingReset,
                 titleVisibility: .visible
             ) {
-                Button("Clear catalogue", role: .destructive) {
+                Button("Delete everything", role: .destructive) {
                     Task { await viewModel.clearCatalogueNow() }
                 }
                 .accessibilityIdentifier(SettingsAccessibilityFields.resetConfirmButton)
 
                 Button("Cancel", role: .cancel) {}
             } message: {
-                Text("Removes every card stored locally. Cards reappear as you add or import them. Your preferences are not affected.")
+                Text("Permanently deletes every card and stack — on this device and on the backend. Shared prices stay. This can't be undone.")
             }
             .confirmationDialog(
                 "Sign out?",
@@ -302,7 +302,7 @@ public struct SettingsView: View {
             SettingsRow(
                 icon: "trash",
                 title: "Clear catalogue",
-                subtitle: String(localized: "Remove all locally stored cards"),
+                subtitle: String(localized: "Delete every card & stack — this device and the backend"),
                 isDestructive: true,
                 action: { isConfirmingReset = true }
             ) {

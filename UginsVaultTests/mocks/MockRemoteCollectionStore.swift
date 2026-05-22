@@ -11,6 +11,7 @@ final class MockRemoteCollectionStore: RemoteCollectionStore, @unchecked Sendabl
 
     var fetchResult: RemoteCollection = RemoteCollection(stacks: [], items: [])
     var fetchError: Error?
+    var replaceError: Error?
 
     private(set) var upsertedItems: [[CollectionItem]] = []
     private(set) var deletedItemIDs: [[UUID]] = []
@@ -28,6 +29,7 @@ final class MockRemoteCollectionStore: RemoteCollectionStore, @unchecked Sendabl
     func upsertStacks(_ stacks: [Stack]) async throws { upsertedStacks.append(stacks) }
     func deleteStacks(ids: [UUID]) async throws { deletedStackIDs.append(ids) }
     func replaceAll(stacks: [Stack], items: [CollectionItem]) async throws {
+        if let replaceError { throw replaceError }
         replaced = (stacks, items)
     }
 

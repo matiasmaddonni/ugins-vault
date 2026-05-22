@@ -397,8 +397,24 @@ public struct CardDetailView: View {
     @ViewBuilder
     private var otherPrintingsBlock: some View {
         switch viewModel.status {
-        case .idle, .loading:
-            otherPrintingsHeader(showsSpinner: viewModel.status == .loading)
+        case .loading:
+            VStack(alignment: .leading, spacing: Spacing.sm) {
+                Text("Other printings")
+                    .uvSectionLabel()
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: Spacing.md) {
+                        ForEach(0..<5, id: \.self) { _ in
+                            SkeletonBlock(cornerRadius: UVRadius.sm)
+                                .frame(width: Layout.collectionRowThumbWidth,
+                                       height: Layout.collectionRowThumbHeight)
+                        }
+                    }
+                    .padding(.horizontal, Spacing.xs)
+                }
+                .accessibilityHidden(true)
+            }
+        case .idle:
+            otherPrintingsHeader(showsSpinner: false)
         case .failed:
             VStack(alignment: .leading, spacing: Spacing.sm) {
                 otherPrintingsHeader(showsSpinner: false)

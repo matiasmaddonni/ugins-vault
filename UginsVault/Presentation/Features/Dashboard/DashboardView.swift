@@ -109,15 +109,6 @@ public struct DashboardView: View {
                     currency: viewModel.currency,
                     rate: viewModel.exchangeRate
                 )
-                NavigationLink {
-                    WishlistView(viewModel: DependencyContainer.shared.makeWishlistViewModel())
-                } label: {
-                    WishlistTeaser(
-                        trackedCount: snapshot.wishlistTrackedCount,
-                        readyToBuyCount: snapshot.wishlistReadyToBuyCount
-                    )
-                }
-                .buttonStyle(.plain)
                 QuickStatsRow(
                     stats: snapshot.stats,
                     currency: viewModel.currency,

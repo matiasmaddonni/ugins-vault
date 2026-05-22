@@ -13,6 +13,7 @@ public struct CollectionView: View {
     @State private var viewModel: CollectionViewModel
     @State private var isPresentingFilter: Bool = false
     @State private var isPresentingAddCard: Bool = false
+    @State private var isPresentingWishlist: Bool = false
 
     public init(viewModel: CollectionViewModel) {
         _viewModel = State(initialValue: viewModel)
@@ -36,6 +37,9 @@ public struct CollectionView: View {
                             displayCurrency: viewModel.currency
                         )
                     )
+                }
+                .navigationDestination(isPresented: $isPresentingWishlist) {
+                    WishlistView(viewModel: DependencyContainer.shared.makeWishlistViewModel())
                 }
                 .sheet(isPresented: $isPresentingFilter) {
                     CardFilterSheet(
@@ -72,6 +76,18 @@ public struct CollectionView: View {
     private var toolbar: some ToolbarContent {
         ToolbarItem(placement: .topBarLeading) {
             sortMenu
+        }
+
+        ToolbarItem(placement: .topBarLeading) {
+            Button {
+                isPresentingWishlist = true
+            } label: {
+                Image(systemName: "heart")
+                    .font(.system(size: 17, weight: .semibold))
+                    .foregroundStyle(Color.uv.gold)
+            }
+            .accessibilityLabel("Wishlist")
+            .accessibilityIdentifier(CollectionAccessibilityFields.wishlistToolbar)
         }
 
         ToolbarItem(placement: .topBarTrailing) {
@@ -143,14 +159,10 @@ public struct CollectionView: View {
     // MARK: - States
 
     private var loadingPanel: some View {
-        VStack(spacing: Spacing.md) {
-            ProgressView()
-                .tint(Color.uv.gold)
-            Text("Loading…")
-                .font(.uv.body(13))
-                .foregroundStyle(Color.uv.muted)
+        ScrollView {
+            ListSkeleton()
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .scrollDisabled(true)
     }
 
     private func errorPanel(message: String) -> some View {

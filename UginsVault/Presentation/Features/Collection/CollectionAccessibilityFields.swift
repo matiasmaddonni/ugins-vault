@@ -27,6 +27,7 @@ public enum CollectionAccessibilityFields {
     // MARK: - Toolbar
 
     public static let addCardToolbar     = "btn_collection_add_card_toolbar"
+    public static let wishlistToolbar    = "btn_collection_wishlist_toolbar"
 
     // MARK: - Add card sheet
 

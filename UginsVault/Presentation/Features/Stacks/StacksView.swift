@@ -285,14 +285,13 @@ public struct StacksView: View {
     // MARK: - Loading / error panels
 
     private var loadingPanel: some View {
-        VStack(spacing: Spacing.md) {
-            ProgressView()
-                .tint(Color.uv.gold)
-            Text("Loading…")
-                .font(.uv.body(13))
-                .foregroundStyle(Color.uv.muted)
+        ScrollView {
+            ListSkeleton(
+                thumbWidth: Layout.skeletonStackThumb,
+                thumbHeight: Layout.skeletonStackThumb
+            )
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .scrollDisabled(true)
     }
 
     private func errorPanel(message: String) -> some View {

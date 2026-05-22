@@ -45,6 +45,14 @@ public struct StackDetailView: View {
                     )
                 )
             }
+            .navigationDestination(isPresented: $isPresentingStats) {
+                StackStatisticsView(
+                    title: viewModel.stack.name,
+                    stats: viewModel.statistics,
+                    currency: viewModel.currency,
+                    rate: viewModel.exchangeRate
+                )
+            }
             .sheet(isPresented: $viewModel.isPresentingImport) {
                 ImportDeckListSheet(
                     initialText: viewModel.serializedCardList,
@@ -107,6 +115,13 @@ public struct StackDetailView: View {
                     }
                     .disabled(viewModel.items.isEmpty)
                 }
+                Button {
+                    isPresentingStats = true
+                } label: {
+                    Label("Statistics", systemImage: "chart.bar.fill")
+                }
+                .disabled(viewModel.items.isEmpty)
+
                 Button(role: .destructive) {
                     viewModel.presentDeleteConfirm()
                 } label: {
@@ -138,6 +153,7 @@ public struct StackDetailView: View {
     // MARK: - Main scroll
 
     @State private var isPresentingShare: Bool = false
+    @State private var isPresentingStats: Bool = false
 
     private var mainScroll: some View {
         ScrollView {
@@ -160,6 +176,8 @@ public struct StackDetailView: View {
                             viewModel.presentImport()
                         case "export":
                             isPresentingShare = true
+                        case "stats":
+                            isPresentingStats = true
                         default:
                             // Other actions remain stubs in v0.3.
                             break
@@ -353,14 +371,13 @@ public struct StackDetailView: View {
     }
 
     private var loadingPanel: some View {
-        VStack(spacing: Spacing.md) {
-            ProgressView()
-                .tint(Color.uv.gold)
-            Text("Loading…")
-                .font(.uv.body(13))
-                .foregroundStyle(Color.uv.muted)
+        ScrollView {
+            ListSkeleton(
+                thumbWidth: Layout.stackDetailRowThumbWidth,
+                thumbHeight: Layout.stackDetailRowThumbHeight
+            )
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .scrollDisabled(true)
     }
 
     private func errorPanel(message: String) -> some View {

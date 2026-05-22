@@ -205,6 +205,17 @@ public final class StackDetailViewModel {
         CurrencyFormatter.format(totalValue, currency: currency, rate: exchangeRate)
     }
 
+    /// Per-stack analytics for the Statistics screen, computed from the
+    /// already-loaded rows / cards / prices — no extra fetch.
+    public var statistics: StackStatistics {
+        StackStatistics.make(
+            items: items,
+            cardsByID: cardsByID,
+            priceMap: priceMap,
+            commanderCardID: stack.commanderCardID
+        )
+    }
+
     /// Kind-aware action labels rendered in `StackActionBar`.
     /// Per the brief §8.2.
     public var actions: [StackAction] {

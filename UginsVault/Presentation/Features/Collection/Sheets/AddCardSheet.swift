@@ -77,7 +77,10 @@ struct AddCardSheet: View {
     private var stateOverlay: some View {
         switch viewModel.status {
         case .searching:
-            ProgressView().tint(Color.uv.gold)
+            VStack {
+                ListSkeleton()
+                Spacer(minLength: 0)
+            }
         case .empty:
             hint("No matches")
         case .error(let message):
