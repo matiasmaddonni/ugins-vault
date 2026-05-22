@@ -90,6 +90,12 @@ public struct CardFilterSheet: View {
                         toggleSet(code)
                     }
                 }
+                if filteredSets.isEmpty {
+                    Text(setQuery.isEmpty ? "Type to find a set" : "No sets match")
+                        .font(.uv.body(13))
+                        .foregroundStyle(Color.uv.muted)
+                        .listRowBackground(Color.uv.panel)
+                }
             } header: {
                 Text(sets.isEmpty ? "Sets" : "Sets — \(sets.count) selected")
             }
@@ -99,7 +105,10 @@ public struct CardFilterSheet: View {
     private var filteredSets: [String] {
         let query = setQuery.trimmingCharacters(in: .whitespaces).lowercased()
         let sorted = availableSetCodes.sorted()
-        return query.isEmpty ? sorted : sorted.filter { $0.lowercased().contains(query) }
+        // No query → show only the already-selected sets (the field is how you
+        // find more). Avoids dumping 30+ rows.
+        if query.isEmpty { return sorted.filter { sets.contains($0) } }
+        return sorted.filter { $0.lowercased().contains(query) }
     }
 
     // MARK: - Colours

@@ -77,10 +77,18 @@ public struct ScryfallCard: Decodable, Sendable, Identifiable {
     /// we actually consume in the mapper are decoded — keep the surface
     /// tight to match the rest of this DTO.
     public struct CardFace: Decodable, Sendable {
+        public let name: String?
+        public let typeLine: String?
+        public let oracleText: String?
+        public let manaCost: String?
         public let imageURIs: ImageURIs?
 
         enum CodingKeys: String, CodingKey {
-            case imageURIs = "image_uris"
+            case name
+            case typeLine   = "type_line"
+            case oracleText = "oracle_text"
+            case manaCost   = "mana_cost"
+            case imageURIs  = "image_uris"
         }
     }
 

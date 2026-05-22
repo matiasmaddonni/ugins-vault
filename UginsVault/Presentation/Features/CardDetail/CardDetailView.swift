@@ -413,9 +413,7 @@ public struct CardDetailView: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: Spacing.md) {
                         ForEach(viewModel.otherPrintings) { printing in
-                            Button {
-                                viewModel.switchTo(printing)
-                            } label: {
+                            NavigationLink(value: printing) {
                                 OtherPrintingChip(card: printing)
                             }
                             .buttonStyle(.plain)

@@ -25,7 +25,7 @@ extension Card {
             oracleID: oracleID,
             name: dto.name,
             typeLine: typeLine,
-            oracleText: dto.oracleText,
+            oracleText: dto.oracleText ?? Self.combinedFaceText(dto.cardFaces),
             manaCost: dto.manaCost,
             cmc: dto.cmc ?? 0,
             colors: Set((dto.colors ?? []).compactMap(ManaColor.init(rawValue:))),
@@ -64,6 +64,19 @@ extension Card {
             result[format] = legality
         }
         return result
+    }
+
+    /// DFC / split / adventure cards carry oracle text per face (top-level is
+    /// nil). Join the faces (`Name\ntext //  Name\ntext`) so rules aren't blank.
+    static func combinedFaceText(_ faces: [ScryfallCard.CardFace]?) -> String? {
+        guard let faces else { return nil }
+        let parts = faces.compactMap { face -> String? in
+            guard let text = face.oracleText?.trimmingCharacters(in: .whitespacesAndNewlines),
+                  !text.isEmpty else { return nil }
+            if let name = face.name, !name.isEmpty { return "\(name)\n\(text)" }
+            return text
+        }
+        return parts.isEmpty ? nil : parts.joined(separator: "\n//\n")
     }
 
     static func parseReleaseDate(_ raw: String) -> Date? {

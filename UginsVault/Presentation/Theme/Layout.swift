@@ -162,7 +162,7 @@ public enum Layout {
     /// Diameter of an inline mana / ability symbol pip in rules text.
     public static let manaSymbolSize: CGFloat = 18
 
-    public static let dashboardDonutSize: CGFloat = 112
+    public static let dashboardDonutSize: CGFloat = 96
 
     /// Donut stroke thickness inside ByFormatPanel.
     public static let dashboardDonutThickness: CGFloat = 20
