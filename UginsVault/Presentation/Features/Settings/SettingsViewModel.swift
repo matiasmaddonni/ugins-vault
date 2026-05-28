@@ -4,8 +4,14 @@
 //
 //  Surfaces the user-controlled preferences (theme, language, currency,
 //  reduce-motion, Face ID lock), the local profile, and the
-//  data-management surface (catalogue size + reset). All mutations go
-//  through use cases so business logic stays out of the VM.
+//  data-management surface (catalogue size + reset).
+//
+//  Per `.claude/Architecture.md` the trivial Get/Set session/profile
+//  use cases were inlined — `SessionStateStore` and `UserProfileStore`
+//  are already the canonical access surface, and wrapping a single
+//  property read/write in a one-line use case was pure ceremony. Real
+//  business operations (clear catalogue, sign out, hard reset) still go
+//  through their use cases.
 //
 
 import Foundation
@@ -35,30 +41,18 @@ public final class SettingsViewModel {
 
     // MARK: - Dependencies
 
-    @ObservationIgnored private let sessionRepository:    SessionStateStore
-    @ObservationIgnored private let userProfileRepo:      UserProfileStore
-    @ObservationIgnored private let cardRepository:       CardRepository
-    @ObservationIgnored private let dashboardRepository:  DashboardRepository?
-    @ObservationIgnored private let stackRepository:      StackRepository?
+    @ObservationIgnored private let sessionRepository:      SessionStateStore
+    @ObservationIgnored private let userProfileRepo:        UserProfileStore
+    @ObservationIgnored private let cardRepository:         CardRepository
+    @ObservationIgnored private let dashboardRepository:    DashboardRepository?
+    @ObservationIgnored private let stackRepository:        StackRepository?
     @ObservationIgnored private let exchangeRateRepository: ExchangeRateStore?
 
-    @ObservationIgnored private let getThemeUseCase:      GetThemeUseCase
-    @ObservationIgnored private let setThemeUseCase:      SetThemeUseCase
-    @ObservationIgnored private let getLanguageUseCase:   GetPreferredLanguageUseCase
-    @ObservationIgnored private let setLanguageUseCase:   SetPreferredLanguageUseCase
-    @ObservationIgnored private let getCurrencyUseCase:   GetCurrencyUseCase
-    @ObservationIgnored private let setCurrencyUseCase:   SetCurrencyUseCase
-    @ObservationIgnored private let getReduceMotionUC:    GetReduceMotionUseCase
-    @ObservationIgnored private let setReduceMotionUC:    SetReduceMotionUseCase
-    @ObservationIgnored private let getFaceIDLockUseCase: GetFaceIDLockUseCase
-    @ObservationIgnored private let setFaceIDLockUseCase: SetFaceIDLockUseCase
-    @ObservationIgnored private let getProfileUseCase:    GetUserProfileUseCase
-    @ObservationIgnored private let updateProfileUseCase: UpdateUserProfileUseCase
-    @ObservationIgnored private let resetCatalogue:       ResetCatalogueUseCase
-    @ObservationIgnored private let hardReset:            HardResetCollectionUseCase?
-    @ObservationIgnored private let signOutAccount:       SignOutAccountUseCase
-    @ObservationIgnored private let onSignedOut:          () -> Void
-    @ObservationIgnored private let accountRepository:    AccountRepository
+    @ObservationIgnored private let resetCatalogue:         ResetCatalogueUseCase
+    @ObservationIgnored private let hardReset:              HardResetCollectionUseCase?
+    @ObservationIgnored private let signOutAccount:         SignOutAccountUseCase
+    @ObservationIgnored private let onSignedOut:            () -> Void
+    @ObservationIgnored private let accountRepository:      AccountRepository
 
     // MARK: - Init
 
@@ -69,18 +63,6 @@ public final class SettingsViewModel {
         dashboardRepository: DashboardRepository? = nil,
         stackRepository: StackRepository? = nil,
         exchangeRateRepository: ExchangeRateStore? = nil,
-        getThemeUseCase: GetThemeUseCase,
-        setThemeUseCase: SetThemeUseCase,
-        getPreferredLanguageUseCase: GetPreferredLanguageUseCase,
-        setPreferredLanguageUseCase: SetPreferredLanguageUseCase,
-        getCurrencyUseCase: GetCurrencyUseCase,
-        setCurrencyUseCase: SetCurrencyUseCase,
-        getReduceMotionUseCase: GetReduceMotionUseCase,
-        setReduceMotionUseCase: SetReduceMotionUseCase,
-        getFaceIDLockUseCase: GetFaceIDLockUseCase,
-        setFaceIDLockUseCase: SetFaceIDLockUseCase,
-        getUserProfileUseCase: GetUserProfileUseCase,
-        updateUserProfileUseCase: UpdateUserProfileUseCase,
         resetCatalogueUseCase: ResetCatalogueUseCase,
         hardResetUseCase: HardResetCollectionUseCase? = nil,
         signOutAccount: SignOutAccountUseCase,
@@ -93,18 +75,6 @@ public final class SettingsViewModel {
         self.dashboardRepository  = dashboardRepository
         self.stackRepository      = stackRepository
         self.exchangeRateRepository = exchangeRateRepository
-        self.getThemeUseCase      = getThemeUseCase
-        self.setThemeUseCase      = setThemeUseCase
-        self.getLanguageUseCase   = getPreferredLanguageUseCase
-        self.setLanguageUseCase   = setPreferredLanguageUseCase
-        self.getCurrencyUseCase   = getCurrencyUseCase
-        self.setCurrencyUseCase   = setCurrencyUseCase
-        self.getReduceMotionUC    = getReduceMotionUseCase
-        self.setReduceMotionUC    = setReduceMotionUseCase
-        self.getFaceIDLockUseCase = getFaceIDLockUseCase
-        self.setFaceIDLockUseCase = setFaceIDLockUseCase
-        self.getProfileUseCase    = getUserProfileUseCase
-        self.updateProfileUseCase = updateUserProfileUseCase
         self.resetCatalogue       = resetCatalogueUseCase
         self.hardReset            = hardResetUseCase
         self.signOutAccount       = signOutAccount
@@ -124,14 +94,14 @@ public final class SettingsViewModel {
         onSignedOut()
     }
 
-    // MARK: - Derived state (reads observable repos directly)
+    // MARK: - Derived state (passthrough to the stores so views observe)
 
-    public var theme:        AppTheme    { getThemeUseCase.execute() }
-    public var language:     Language    { getLanguageUseCase.execute() }
-    public var currency:     Currency    { getCurrencyUseCase.execute() }
-    public var reduceMotion: Bool        { getReduceMotionUC.execute() }
-    public var faceIDLock:   Bool        { getFaceIDLockUseCase.execute() }
-    public var profile:      UserProfile { getProfileUseCase.execute() }
+    public var theme:        AppTheme    { sessionRepository.theme }
+    public var language:     Language    { sessionRepository.language }
+    public var currency:     Currency    { sessionRepository.currency }
+    public var reduceMotion: Bool        { sessionRepository.reduceMotion }
+    public var faceIDLock:   Bool        { sessionRepository.faceIDLock }
+    public var profile:      UserProfile { userProfileRepo.profile }
 
     /// Owned-collection value formatted in the active display currency
     /// (FX-converted when a rate is available). `nil` until
@@ -181,27 +151,27 @@ public final class SettingsViewModel {
     // MARK: - Preference intents
 
     public func setTheme(_ theme: AppTheme) {
-        setThemeUseCase.execute(theme)
+        sessionRepository.saveTheme(theme)
     }
 
     public func setLanguage(_ language: Language) {
-        setLanguageUseCase.execute(language)
+        sessionRepository.saveLanguage(language)
     }
 
     public func setCurrency(_ currency: Currency) {
-        setCurrencyUseCase.execute(currency)
+        sessionRepository.saveCurrency(currency)
     }
 
     public func setReduceMotion(_ value: Bool) {
-        setReduceMotionUC.execute(value)
+        sessionRepository.saveReduceMotion(value)
     }
 
     public func setFaceIDLock(_ value: Bool) {
-        setFaceIDLockUseCase.execute(value)
+        sessionRepository.saveFaceIDLock(value)
     }
 
     public func updateProfile(_ profile: UserProfile) {
-        updateProfileUseCase.execute(profile)
+        userProfileRepo.save(profile)
     }
 
     // MARK: - Data intents

@@ -176,58 +176,6 @@ public final class DependencyContainer {
         SignOutAccountUseCase(accountRepository: accountRepository)
     }
 
-    // MARK: - Use case factories — preferences
-
-    public func makeGetThemeUseCase() -> GetThemeUseCase {
-        GetThemeUseCase(sessionRepository: sessionRepository)
-    }
-
-    public func makeSetThemeUseCase() -> SetThemeUseCase {
-        SetThemeUseCase(sessionRepository: sessionRepository)
-    }
-
-    public func makeGetPreferredLanguageUseCase() -> GetPreferredLanguageUseCase {
-        GetPreferredLanguageUseCase(sessionRepository: sessionRepository)
-    }
-
-    public func makeSetPreferredLanguageUseCase() -> SetPreferredLanguageUseCase {
-        SetPreferredLanguageUseCase(sessionRepository: sessionRepository)
-    }
-
-    public func makeGetCurrencyUseCase() -> GetCurrencyUseCase {
-        GetCurrencyUseCase(sessionRepository: sessionRepository)
-    }
-
-    public func makeSetCurrencyUseCase() -> SetCurrencyUseCase {
-        SetCurrencyUseCase(sessionRepository: sessionRepository)
-    }
-
-    public func makeGetReduceMotionUseCase() -> GetReduceMotionUseCase {
-        GetReduceMotionUseCase(sessionRepository: sessionRepository)
-    }
-
-    public func makeSetReduceMotionUseCase() -> SetReduceMotionUseCase {
-        SetReduceMotionUseCase(sessionRepository: sessionRepository)
-    }
-
-    public func makeGetFaceIDLockUseCase() -> GetFaceIDLockUseCase {
-        GetFaceIDLockUseCase(sessionRepository: sessionRepository)
-    }
-
-    public func makeSetFaceIDLockUseCase() -> SetFaceIDLockUseCase {
-        SetFaceIDLockUseCase(sessionRepository: sessionRepository)
-    }
-
-    // MARK: - Use case factories — profile
-
-    public func makeGetUserProfileUseCase() -> GetUserProfileUseCase {
-        GetUserProfileUseCase(userProfileRepository: userProfileRepository)
-    }
-
-    public func makeUpdateUserProfileUseCase() -> UpdateUserProfileUseCase {
-        UpdateUserProfileUseCase(userProfileRepository: userProfileRepository)
-    }
-
     // MARK: - Use case factories — catalogue
 
     public func makeResetCatalogueUseCase() -> ResetCatalogueUseCase {
@@ -246,15 +194,7 @@ public final class DependencyContainer {
         )
     }
 
-    // MARK: - Use case factories — pricing prefs
-
-    public func makeGetManualARSRateUseCase() -> GetManualARSRateUseCase {
-        GetManualARSRateUseCase(sessionRepository: sessionRepository)
-    }
-
-    public func makeSetManualARSRateUseCase() -> SetManualARSRateUseCase {
-        SetManualARSRateUseCase(sessionRepository: sessionRepository)
-    }
+    // MARK: - Use case factories — pricing
 
     public func makeLatestPriceUseCase() -> LatestPriceUseCase {
         LatestPriceUseCase(priceRepository: priceRepository)
@@ -441,18 +381,6 @@ public final class DependencyContainer {
             dashboardRepository:         dashboardRepository,
             stackRepository:             stackRepository,
             exchangeRateRepository:      exchangeRateRepository,
-            getThemeUseCase:             makeGetThemeUseCase(),
-            setThemeUseCase:             makeSetThemeUseCase(),
-            getPreferredLanguageUseCase: makeGetPreferredLanguageUseCase(),
-            setPreferredLanguageUseCase: makeSetPreferredLanguageUseCase(),
-            getCurrencyUseCase:          makeGetCurrencyUseCase(),
-            setCurrencyUseCase:          makeSetCurrencyUseCase(),
-            getReduceMotionUseCase:      makeGetReduceMotionUseCase(),
-            setReduceMotionUseCase:      makeSetReduceMotionUseCase(),
-            getFaceIDLockUseCase:        makeGetFaceIDLockUseCase(),
-            setFaceIDLockUseCase:        makeSetFaceIDLockUseCase(),
-            getUserProfileUseCase:       makeGetUserProfileUseCase(),
-            updateUserProfileUseCase:    makeUpdateUserProfileUseCase(),
             resetCatalogueUseCase:       makeResetCatalogueUseCase(),
             hardResetUseCase:            makeHardResetCollectionUseCase(),
             signOutAccount:              makeSignOutAccountUseCase(),

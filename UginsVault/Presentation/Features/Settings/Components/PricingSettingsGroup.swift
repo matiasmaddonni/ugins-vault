@@ -15,8 +15,6 @@ public struct PricingSettingsGroup: View {
 
     private let sessionRepository: SessionStateStore
     private let exchangeRateRepository: ExchangeRateStore
-    private let getManualARSRate: GetManualARSRateUseCase
-    private let setManualARSRate: SetManualARSRateUseCase
 
     @State private var isPresentingSourcePicker: Bool = false
     @State private var isPresentingThresholdEditor: Bool = false
@@ -31,14 +29,10 @@ public struct PricingSettingsGroup: View {
 
     public init(
         sessionRepository: SessionStateStore,
-        exchangeRateRepository: ExchangeRateStore,
-        getManualARSRate: GetManualARSRateUseCase,
-        setManualARSRate: SetManualARSRateUseCase
+        exchangeRateRepository: ExchangeRateStore
     ) {
         self.sessionRepository = sessionRepository
         self.exchangeRateRepository = exchangeRateRepository
-        self.getManualARSRate = getManualARSRate
-        self.setManualARSRate = setManualARSRate
     }
 
     public var body: some View {
@@ -90,11 +84,11 @@ public struct PricingSettingsGroup: View {
                 input: $arsInput,
                 onSave: {
                     let normalized = arsInput.replacingOccurrences(of: ",", with: ".")
-                    setManualARSRate.execute(Decimal(string: normalized))
+                    sessionRepository.saveManualARSRate(Decimal(string: normalized))
                     isPresentingARSEditor = false
                 },
                 onClear: {
-                    setManualARSRate.execute(nil)
+                    sessionRepository.saveManualARSRate(nil)
                     arsInput = ""
                     isPresentingARSEditor = false
                 }
@@ -130,9 +124,9 @@ public struct PricingSettingsGroup: View {
         SettingsRow(
             icon: "argentinianpesosign.circle",
             title: "Manual USD → ARS",
-            value: getManualARSRate.execute().map(formatDecimal) ?? String(localized: "Auto")
+            value: sessionRepository.manualARSRate.map(formatDecimal) ?? String(localized: "Auto")
         ) {
-            arsInput = getManualARSRate.execute().map(formatDecimal) ?? ""
+            arsInput = sessionRepository.manualARSRate.map(formatDecimal) ?? ""
             isPresentingARSEditor = true
         }
     }
