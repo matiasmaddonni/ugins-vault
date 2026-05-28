@@ -59,7 +59,7 @@ public final class StackDetailViewModel {
     @ObservationIgnored private let cardRepository: CardRepository?
     @ObservationIgnored private let stackRepository: StackRepository?
     @ObservationIgnored private let sessionRepository: SessionStateStore
-    @ObservationIgnored private let exchangeRateRepository: ExchangeRateRepository?
+    @ObservationIgnored private let exchangeRateRepository: ExchangeRateStore?
     @ObservationIgnored private let priceRepository: PriceRepository?
     @ObservationIgnored private let importCoordinator: ImportCoordinator?
     @ObservationIgnored private let scryfallClient: (any ScryfallClientProtocol)?
@@ -72,7 +72,7 @@ public final class StackDetailViewModel {
         sessionRepository: SessionStateStore,
         cardRepository: CardRepository? = nil,
         stackRepository: StackRepository? = nil,
-        exchangeRateRepository: ExchangeRateRepository? = nil,
+        exchangeRateRepository: ExchangeRateStore? = nil,
         priceRepository: PriceRepository? = nil,
         importCoordinator: ImportCoordinator? = nil,
         scryfallClient: (any ScryfallClientProtocol)? = nil

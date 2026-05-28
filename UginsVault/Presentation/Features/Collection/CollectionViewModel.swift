@@ -39,7 +39,7 @@ public final class CollectionViewModel {
 
     @ObservationIgnored private let sessionRepository: SessionStateStore
     @ObservationIgnored private let cardRepository: CardRepository
-    @ObservationIgnored private let exchangeRateRepository: ExchangeRateRepository?
+    @ObservationIgnored private let exchangeRateRepository: ExchangeRateStore?
     @ObservationIgnored private let priceRepository: PriceRepository?
     @ObservationIgnored private let priceStatusSource: PriceStatusSource?
     @ObservationIgnored private let syncPrices: SyncPricesUseCase?
@@ -66,7 +66,7 @@ public final class CollectionViewModel {
     public init(
         sessionRepository: SessionStateStore,
         cardRepository: CardRepository,
-        exchangeRateRepository: ExchangeRateRepository? = nil,
+        exchangeRateRepository: ExchangeRateStore? = nil,
         priceRepository: PriceRepository? = nil,
         priceStatusSource: PriceStatusSource? = nil,
         syncPrices: SyncPricesUseCase? = nil,

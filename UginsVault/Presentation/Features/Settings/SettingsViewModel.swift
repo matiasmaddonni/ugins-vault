@@ -36,11 +36,11 @@ public final class SettingsViewModel {
     // MARK: - Dependencies
 
     @ObservationIgnored private let sessionRepository:    SessionStateStore
-    @ObservationIgnored private let userProfileRepo:      UserProfileRepository
+    @ObservationIgnored private let userProfileRepo:      UserProfileStore
     @ObservationIgnored private let cardRepository:       CardRepository
     @ObservationIgnored private let dashboardRepository:  DashboardRepository?
     @ObservationIgnored private let stackRepository:      StackRepository?
-    @ObservationIgnored private let exchangeRateRepository: ExchangeRateRepository?
+    @ObservationIgnored private let exchangeRateRepository: ExchangeRateStore?
 
     @ObservationIgnored private let getThemeUseCase:      GetThemeUseCase
     @ObservationIgnored private let setThemeUseCase:      SetThemeUseCase
@@ -64,11 +64,11 @@ public final class SettingsViewModel {
 
     public init(
         sessionRepository: SessionStateStore,
-        userProfileRepository: UserProfileRepository,
+        userProfileRepository: UserProfileStore,
         cardRepository: CardRepository,
         dashboardRepository: DashboardRepository? = nil,
         stackRepository: StackRepository? = nil,
-        exchangeRateRepository: ExchangeRateRepository? = nil,
+        exchangeRateRepository: ExchangeRateStore? = nil,
         getThemeUseCase: GetThemeUseCase,
         setThemeUseCase: SetThemeUseCase,
         getPreferredLanguageUseCase: GetPreferredLanguageUseCase,

@@ -42,7 +42,7 @@ public final class WishlistViewModel {
     @ObservationIgnored private let removeFromWishlist: RemoveFromWishlistUseCase
     @ObservationIgnored private let scryfallClient: any ScryfallClientProtocol
     @ObservationIgnored private let sessionRepository: SessionStateStore
-    @ObservationIgnored private let exchangeRateRepository: ExchangeRateRepository?
+    @ObservationIgnored private let exchangeRateRepository: ExchangeRateStore?
 
     @ObservationIgnored private var searchTask: Task<Void, Never>?
 
@@ -54,7 +54,7 @@ public final class WishlistViewModel {
         removeFromWishlist: RemoveFromWishlistUseCase,
         scryfallClient: any ScryfallClientProtocol,
         sessionRepository: SessionStateStore,
-        exchangeRateRepository: ExchangeRateRepository? = nil
+        exchangeRateRepository: ExchangeRateStore? = nil
     ) {
         self.getWishlist = getWishlist
         self.addToWishlist = addToWishlist

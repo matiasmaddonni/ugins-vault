@@ -12,8 +12,8 @@ struct UserProfileUseCasesTests {
 
     @Test("GetUserProfile reads the persisted profile")
     func getReadsPersistedProfile() {
-        let repo = MockUserProfileRepository()
-        repo.profile = UserProfile(name: "Tomás", monogramTint: .lavender, memberSince: 2019)
+        let repo = UserProfileStore(storage: MockSessionStorage())
+        repo.save(UserProfile(name: "Tomás", monogramTint: .lavender, memberSince: 2019))
         let sut = GetUserProfileUseCase(userProfileRepository: repo)
 
         let profile = sut.execute()
@@ -25,14 +25,13 @@ struct UserProfileUseCasesTests {
 
     @Test("UpdateUserProfile saves the new profile")
     func updateSavesNewProfile() {
-        let repo = MockUserProfileRepository()
+        let repo = UserProfileStore(storage: MockSessionStorage())
         let sut = UpdateUserProfileUseCase(userProfileRepository: repo)
 
         let next = UserProfile(name: "Matías", monogramTint: .verdant, memberSince: 2026)
         sut.execute(next)
 
-        #expect(repo.savedProfile == next)
-        #expect(repo.saveCallCount == 1)
+        #expect(repo.profile == next)
     }
 
     @Test("UserProfile.monogram returns the uppercased first letter")

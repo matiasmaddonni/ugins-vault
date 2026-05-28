@@ -1,19 +1,19 @@
 //
-//  UserDefaultsUserProfileRepositoryTests.swift
+//  UserProfileStoreTests.swift
 //  UginsVaultTests — Data
 //
 
 import Testing
 @testable import UginsVault
 
-@Suite("UserDefaultsUserProfileRepository")
+@Suite("UserProfileStore")
 @MainActor
-struct UserDefaultsUserProfileRepositoryTests {
+struct UserProfileStoreTests {
 
     @Test("load returns the default profile when storage is empty")
     func loadDefaultsWhenEmpty() {
         let storage = MockSessionStorage()
-        let sut = UserDefaultsUserProfileRepository(storage: storage)
+        let sut = UserProfileStore(storage: storage)
 
         let profile = sut.profile
 
@@ -23,7 +23,7 @@ struct UserDefaultsUserProfileRepositoryTests {
     @Test("save then load round-trips the profile")
     func saveLoadRoundTrips() {
         let storage = MockSessionStorage()
-        let sut = UserDefaultsUserProfileRepository(storage: storage)
+        let sut = UserProfileStore(storage: storage)
 
         let next = UserProfile(name: "Tomás", monogramTint: .lavender, memberSince: 2019)
         sut.save(next)
@@ -35,7 +35,7 @@ struct UserDefaultsUserProfileRepositoryTests {
     func malformedFallsBack() {
         let storage = MockSessionStorage()
         storage.set("not json", forKey: "uv.profile")
-        let sut = UserDefaultsUserProfileRepository(storage: storage)
+        let sut = UserProfileStore(storage: storage)
 
         #expect(sut.profile == .default)
     }

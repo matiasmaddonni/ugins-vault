@@ -1,16 +1,23 @@
 //
-//  UserDefaultsUserProfileRepository.swift
+//  UserProfileStore.swift
 //  UginsVault — Data layer
 //
-//  Persists `UserProfile` as a JSON blob in `UserDefaults`. Swapping to
-//  Keychain or SwiftData later only touches this file.
+//  Concrete state store for the local user's identity (name, monogram
+//  tint, member-since year). Same `@MainActor @Observable` pattern as
+//  `SessionStateStore` — no protocol because there's exactly one impl
+//  and `MockSessionStorage` already provides test-side persistence.
+//
+//  Persists `UserProfile` as a JSON blob in `UserDefaults` via
+//  `SessionStorageDataSource`. Swapping to Keychain or SwiftData only
+//  touches this file.
 //
 
 import Foundation
 import Observation
 
+@MainActor
 @Observable
-public final class UserDefaultsUserProfileRepository: UserProfileRepository {
+public final class UserProfileStore {
 
     private enum Key {
         static let profile = "uv.profile"

@@ -1,16 +1,17 @@
 //
-//  RemoteExchangeRateRepository.swift
+//  ExchangeRateStore.swift
 //  UginsVault — Data layer
 //
-//  `ExchangeRateRepository` backed by `DolarAPIClient` (USD→ARS) +
-//  `FrankfurterClient` (USD→EUR). Caches the latest rates in memory
-//  + persists the last-refresh stamp via `SessionStorageDataSource`
-//  so we can show "Rates updated 12m ago" in Settings.
+//  Concrete state store for the FX cache. Same `@MainActor @Observable`
+//  pattern as `SessionStateStore` — no protocol because there's exactly
+//  one impl. Backed by `DolarAPIClient` (USD→ARS blue) +
+//  `FrankfurterClient` (USD→EUR) and persists the last-refresh stamp
+//  via `SessionStorageDataSource`.
 //
-//  Manual override behaviour: when `SessionStateStore.manualARSRate`
-//  is non-nil, the ARS rate is served from that value with source
-//  `.manual` and dolarapi is skipped. Refresh still hits Frankfurter
-//  so EUR stays current.
+//  Manual override: when `SessionStateStore.manualARSRate` is non-nil
+//  the ARS rate is served from that value with source `.manual` and
+//  dolarapi is skipped. Refresh still hits Frankfurter so EUR stays
+//  current.
 //
 
 import Foundation
@@ -18,7 +19,7 @@ import Observation
 
 @MainActor
 @Observable
-public final class RemoteExchangeRateRepository: ExchangeRateRepository {
+public final class ExchangeRateStore {
 
     public private(set) var lastRefreshedAt: Date?
 

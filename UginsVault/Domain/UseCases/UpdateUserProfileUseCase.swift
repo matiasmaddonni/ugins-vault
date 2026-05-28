@@ -8,9 +8,9 @@ import Foundation
 @MainActor
 public final class UpdateUserProfileUseCase {
 
-    private let userProfileRepository: UserProfileRepository
+    private let userProfileRepository: UserProfileStore
 
-    public init(userProfileRepository: UserProfileRepository) {
+    public init(userProfileRepository: UserProfileStore) {
         self.userProfileRepository = userProfileRepository
     }
 

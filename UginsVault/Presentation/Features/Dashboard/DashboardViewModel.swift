@@ -47,7 +47,7 @@ public final class DashboardViewModel {
     @ObservationIgnored private let sessionRepository: SessionStateStore
     @ObservationIgnored private let syncPrices: SyncPricesUseCase?
     @ObservationIgnored private let reachability: NetworkReachability?
-    @ObservationIgnored private let exchangeRateRepository: ExchangeRateRepository?
+    @ObservationIgnored private let exchangeRateRepository: ExchangeRateStore?
     @ObservationIgnored private let signOutAccount: SignOutAccountUseCase?
     @ObservationIgnored private let onRequireSignIn: () -> Void
 
@@ -60,7 +60,7 @@ public final class DashboardViewModel {
         sessionRepository: SessionStateStore,
         syncPrices: SyncPricesUseCase? = nil,
         reachability: NetworkReachability? = nil,
-        exchangeRateRepository: ExchangeRateRepository? = nil,
+        exchangeRateRepository: ExchangeRateStore? = nil,
         signOutAccount: SignOutAccountUseCase? = nil,
         onRequireSignIn: @escaping () -> Void = {}
     ) {

@@ -14,7 +14,7 @@ import SwiftUI
 public struct PricingSettingsGroup: View {
 
     private let sessionRepository: SessionStateStore
-    private let exchangeRateRepository: ExchangeRateRepository
+    private let exchangeRateRepository: ExchangeRateStore
     private let getManualARSRate: GetManualARSRateUseCase
     private let setManualARSRate: SetManualARSRateUseCase
 
@@ -31,7 +31,7 @@ public struct PricingSettingsGroup: View {
 
     public init(
         sessionRepository: SessionStateStore,
-        exchangeRateRepository: ExchangeRateRepository,
+        exchangeRateRepository: ExchangeRateStore,
         getManualARSRate: GetManualARSRateUseCase,
         setManualARSRate: SetManualARSRateUseCase
     ) {

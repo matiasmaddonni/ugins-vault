@@ -37,7 +37,7 @@ public final class DependencyContainer {
 
     public lazy var authRepository:        AuthRepository        = LocalAuthRepository(biometrics: biometricsDataSource)
     public lazy var sessionRepository:     SessionStateStore     = SessionStateStore(storage: sessionStorage)
-    public lazy var userProfileRepository: UserProfileRepository = UserDefaultsUserProfileRepository(storage: sessionStorage)
+    public lazy var userProfileRepository: UserProfileStore = UserProfileStore(storage: sessionStorage)
 
     /// One Supabase-backed instance, exposed under two protocol views: the
     /// Domain identity API (`AccountRepository`) and the Data-layer token seam
@@ -133,7 +133,7 @@ public final class DependencyContainer {
 
     public lazy var dolarAPIClient: DolarAPIClient = DolarAPIClient()
     public lazy var frankfurterClient: FrankfurterClient = FrankfurterClient()
-    public lazy var exchangeRateRepository: ExchangeRateRepository = RemoteExchangeRateRepository(
+    public lazy var exchangeRateRepository: ExchangeRateStore = ExchangeRateStore(
         dolarClient: dolarAPIClient,
         frankfurterClient: frankfurterClient,
         sessionRepository: sessionRepository,
