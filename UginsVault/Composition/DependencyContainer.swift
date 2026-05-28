@@ -36,7 +36,7 @@ public final class DependencyContainer {
     // MARK: - Repositories
 
     public lazy var authRepository:        AuthRepository        = LocalAuthRepository(biometrics: biometricsDataSource)
-    public lazy var sessionRepository:     SessionRepository     = UserDefaultsSessionRepository(storage: sessionStorage)
+    public lazy var sessionRepository:     SessionStateStore     = SessionStateStore(storage: sessionStorage)
     public lazy var userProfileRepository: UserProfileRepository = UserDefaultsUserProfileRepository(storage: sessionStorage)
 
     /// One Supabase-backed instance, exposed under two protocol views: the

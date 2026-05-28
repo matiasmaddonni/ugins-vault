@@ -51,7 +51,6 @@
 		2C1FCC2B55F672AD0318D4BA /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29FE62A06758BFD04C2FFBE1 /* SplashView.swift */; };
 		2D06F55FA32A90725CBC26F5 /* UginsVaultAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99D2D1F257365DA42BFF09D7 /* UginsVaultAPIClient.swift */; };
 		3052211A1ADAC60457D1D59F /* PriceSourceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = E52E8CB756823001C4B62E77 /* PriceSourceError.swift */; };
-		30D744219D96F9401D182A80 /* MockSessionRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB67F41E9C8D32886C0CFDC5 /* MockSessionRepository.swift */; };
 		31FF8332ED146FD022E0C5BD /* AddCardToStackUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C7B5E6AF9C56DF5D2B08E /* AddCardToStackUseCaseTests.swift */; };
 		32A290E025F75886F84434A6 /* PriceStatusSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A39CB165ED18C57ADD7FC7A /* PriceStatusSource.swift */; };
 		3373136A53DCB0F7E9CCB19C /* UserProfileUseCasesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C4E3587E66EFD5E5ABF1CC3 /* UserProfileUseCasesTests.swift */; };
@@ -98,7 +97,6 @@
 		6216043B61943C22E3726193 /* PriceStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AA123791A74E179C1EB29D6 /* PriceStatus.swift */; };
 		62E60E75D8E8DDD0EEADAEA1 /* CollectionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D81CAAA07CF4AF08E29E727 /* CollectionItem.swift */; };
 		63C627B5172769397E242907 /* GetCurrencyUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFCD2F4D0D0F3B216E4F4C50 /* GetCurrencyUseCase.swift */; };
-		6472BF826E63A166D491B256 /* SessionRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F7208EE9B001A1ACDBA7BFB /* SessionRepository.swift */; };
 		64A68ABAA1B1C1E18E64AF16 /* LoginViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97C174B1FAFA2DC33BB4EA56 /* LoginViewModelTests.swift */; };
 		65A0704C53BDC1ED1B508B0F /* FaceIDLockUseCasesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 808E807AB6AD0A579D3B0CFB /* FaceIDLockUseCasesTests.swift */; };
 		65BFEEA87CC395A21F7AF854 /* AcknowledgementsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473CC7CA6C563BEDC2F0E115 /* AcknowledgementsSheet.swift */; };
@@ -248,9 +246,9 @@
 		DD6FDAADD6085CFE408DA0D3 /* UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09F4AA64B7BACDA38D2A315E /* UserProfile.swift */; };
 		DDA3FE1ADA48090719A710E4 /* Mover.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C5C06841E7550F8A8A1E4F /* Mover.swift */; };
 		DE6F28FF1768E9551EADA717 /* ScryfallCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF65CD334620B8232EEEF644 /* ScryfallCollection.swift */; };
-		DEA29B9D77E1D02AB6F55772 /* UserDefaultsSessionRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3C7C2C422CCFA85708E2CF /* UserDefaultsSessionRepository.swift */; };
 		DEEA7CA6F7F580A2BF50ECF1 /* LocalAuthRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7140589A3B2F92B6620CD235 /* LocalAuthRepository.swift */; };
 		DF6DB6AD06B34417E2611787 /* CollectionViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D689BAAAA19A36422E5B78B /* CollectionViewModelTests.swift */; };
+		E066010C6D77883F53CC6A37 /* SessionStateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CCA15F129D8C83900F0F76 /* SessionStateStore.swift */; };
 		E0BF279F4B1621930E8FD6F3 /* RootViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2944A85044C1A10C3B0D836 /* RootViewModelTests.swift */; };
 		E123BC5CA47D06EBF6A7D146 /* ImportCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFAF4D866163EDD592E1F4BF /* ImportCoordinatorTests.swift */; };
 		E2DCFA5D543629549AB9A4E7 /* StackStatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC669CF17BBE3C3C3D3730B2 /* StackStatisticsView.swift */; };
@@ -387,12 +385,10 @@
 		561406F4D85343AE2D7569A7 /* MockAuthRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAuthRepository.swift; sourceTree = "<group>"; };
 		573BCA1AC5BFAE9E4BC99792 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		57AA7C00F9C9814A8240307E /* MockURLProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockURLProtocol.swift; sourceTree = "<group>"; };
-		5A3C7C2C422CCFA85708E2CF /* UserDefaultsSessionRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsSessionRepository.swift; sourceTree = "<group>"; };
 		5A812C8D0F2B95C538D9544C /* SignInUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInUseCase.swift; sourceTree = "<group>"; };
 		5D7F0721756300FF3E518EE8 /* AccountAuthError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountAuthError.swift; sourceTree = "<group>"; };
 		5DFD17621EB1C7D129C82E59 /* QuickStatCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickStatCard.swift; sourceTree = "<group>"; };
 		5F27B50E82C116C87C1C6E4B /* Stack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stack.swift; sourceTree = "<group>"; };
-		5F7208EE9B001A1ACDBA7BFB /* SessionRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRepository.swift; sourceTree = "<group>"; };
 		5FE09B07A90CA1A2D7AE6ABC /* SetFaceIDLockUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetFaceIDLockUseCase.swift; sourceTree = "<group>"; };
 		601DE13989D920FF94F0297C /* HardResetCollectionUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HardResetCollectionUseCase.swift; sourceTree = "<group>"; };
 		63396DCC792ECBADE8E2E89F /* ScryfallList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScryfallList.swift; sourceTree = "<group>"; };
@@ -482,7 +478,6 @@
 		A7895D87271D049F9361F7C5 /* SettingsAccessibilityFields.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsAccessibilityFields.swift; sourceTree = "<group>"; };
 		A83E6756877D053D9F5C204C /* LatestPriceUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LatestPriceUseCase.swift; sourceTree = "<group>"; };
 		A90FDB23E4B11607C2E06A08 /* CreateStackSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateStackSheet.swift; sourceTree = "<group>"; };
-		AB67F41E9C8D32886C0CFDC5 /* MockSessionRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockSessionRepository.swift; sourceTree = "<group>"; };
 		ABDECBBDE85496EACB1C736D /* MoversCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoversCard.swift; sourceTree = "<group>"; };
 		AC0BCC75A0EFD4759095C557 /* Currency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Currency.swift; sourceTree = "<group>"; };
 		AC24792A4C63E1C2DE309121 /* StackDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackDetailView.swift; sourceTree = "<group>"; };
@@ -511,6 +506,7 @@
 		C661FB21BAE54FC3C60A4B27 /* DashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModel.swift; sourceTree = "<group>"; };
 		C773AFD4A060B2FAF65ED0D7 /* GetPreferredLanguageUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetPreferredLanguageUseCase.swift; sourceTree = "<group>"; };
 		C7853DA3EF1355FFFEC60FCB /* CollectionStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionStats.swift; sourceTree = "<group>"; };
+		C7CCA15F129D8C83900F0F76 /* SessionStateStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStateStore.swift; sourceTree = "<group>"; };
 		C85847DB0B39B77E5902CA34 /* AuthenticateUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticateUseCase.swift; sourceTree = "<group>"; };
 		C89422FCBF541CAF1284ECAB /* PriceSyncViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceSyncViewModel.swift; sourceTree = "<group>"; };
 		C8D8A6C250B91C27F4E42ECA /* AppPhase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPhase.swift; sourceTree = "<group>"; };
@@ -943,7 +939,6 @@
 				9E631F12D406DBA36EEA8266 /* PriceRepository.swift */,
 				9A39CB165ED18C57ADD7FC7A /* PriceStatusSource.swift */,
 				CB344B91598180FFF38369DE /* RemoteCollectionStore.swift */,
-				5F7208EE9B001A1ACDBA7BFB /* SessionRepository.swift */,
 				CB2C577B6836BBAB96E4166F /* StackRepository.swift */,
 				69ED47A041532F48D41D9C0E /* UserProfileRepository.swift */,
 				E6C964D15B22FAF23FE433DC /* WishlistRepository.swift */,
@@ -1312,7 +1307,6 @@
 				3DFF72C1E6643BC45E5C56DD /* MockPriceRepository.swift */,
 				9D4821EE377FF248F2AE9F54 /* MockRemoteCollectionStore.swift */,
 				8DC552B1996F3E53FE078D56 /* MockScryfallClient.swift */,
-				AB67F41E9C8D32886C0CFDC5 /* MockSessionRepository.swift */,
 				92FB0E89608EAA7D54FB9F57 /* MockSessionStorage.swift */,
 				2E1DE13E1B1316103380A480 /* MockUserProfileRepository.swift */,
 			);
@@ -1427,8 +1421,8 @@
 				403C5A92570B53073FFCB7B4 /* CollectionSyncingStackRepository.swift */,
 				7140589A3B2F92B6620CD235 /* LocalAuthRepository.swift */,
 				2FC489A173FA731F1F695F49 /* RemoteExchangeRateRepository.swift */,
+				C7CCA15F129D8C83900F0F76 /* SessionStateStore.swift */,
 				42B68DB52F6AF93154B5DE0D /* SupabaseAccountRepository.swift */,
-				5A3C7C2C422CCFA85708E2CF /* UserDefaultsSessionRepository.swift */,
 				BAEA17D6FEB580C3957F9EBD /* UserDefaultsUserProfileRepository.swift */,
 				E66532A3DD1209B36E5506D4 /* Dashboard */,
 				812369FE3B48A67170C1FFDB /* SwiftData */,
@@ -1576,7 +1570,6 @@
 				3FAAAB96439FC802763C07B7 /* MockPriceRepository.swift in Sources */,
 				8F3AD55368981F245106AEC7 /* MockRemoteCollectionStore.swift in Sources */,
 				F1AB3AF5D39C997EB70C8E70 /* MockScryfallClient.swift in Sources */,
-				30D744219D96F9401D182A80 /* MockSessionRepository.swift in Sources */,
 				98C957936BC1062C8D372933 /* MockSessionStorage.swift in Sources */,
 				DB2583067962632F2E7F44EE /* MockURLProtocol.swift in Sources */,
 				8DC62661088B629DEB01FEE7 /* MockUserProfileRepository.swift in Sources */,
@@ -1746,7 +1739,7 @@
 				579C0A834958619589AA3ED2 /* ScryfallError.swift in Sources */,
 				12FDF1B0AA37A026D7367386 /* ScryfallList.swift in Sources */,
 				5803A12B792761E600577817 /* SectionPanel.swift in Sources */,
-				6472BF826E63A166D491B256 /* SessionRepository.swift in Sources */,
+				E066010C6D77883F53CC6A37 /* SessionStateStore.swift in Sources */,
 				9696FF06410F01FA18F74CCA /* SessionStorageDataSource.swift in Sources */,
 				73D3B716501CA2C43DEDE094 /* SetBar.swift in Sources */,
 				9A5ADBF0F8854E6394A33003 /* SetCurrencyUseCase.swift in Sources */,
@@ -1813,7 +1806,6 @@
 				AE2C074E8A91FC496A8E8872 /* UginsVaultApp.swift in Sources */,
 				7531331B6E349A26AC84651D /* UndoToast.swift in Sources */,
 				199188E4A003CA3FBA8F2886 /* UpdateUserProfileUseCase.swift in Sources */,
-				DEA29B9D77E1D02AB6F55772 /* UserDefaultsSessionRepository.swift in Sources */,
 				A681B8B2E131810D14C9528A /* UserDefaultsSessionStorage.swift in Sources */,
 				04A5C37679102C3AA372E050 /* UserDefaultsUserProfileRepository.swift in Sources */,
 				DD6FDAADD6085CFE408DA0D3 /* UserProfile.swift in Sources */,

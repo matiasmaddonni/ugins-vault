@@ -4,7 +4,7 @@
 //
 //  Drives the Dashboard tab. Reads the latest `DashboardSnapshot` from
 //  the injected `DashboardRepository`, mirrors the active display
-//  currency from the `SessionRepository`, and exposes the loading /
+//  currency from the `SessionStateStore`, and exposes the loading /
 //  loaded / error transitions the view binds to.
 //
 
@@ -44,7 +44,7 @@ public final class DashboardViewModel {
     // MARK: - Dependencies
 
     @ObservationIgnored private let repository: DashboardRepository
-    @ObservationIgnored private let sessionRepository: SessionRepository
+    @ObservationIgnored private let sessionRepository: SessionStateStore
     @ObservationIgnored private let syncPrices: SyncPricesUseCase?
     @ObservationIgnored private let reachability: NetworkReachability?
     @ObservationIgnored private let exchangeRateRepository: ExchangeRateRepository?
@@ -57,7 +57,7 @@ public final class DashboardViewModel {
 
     public init(
         repository: DashboardRepository,
-        sessionRepository: SessionRepository,
+        sessionRepository: SessionStateStore,
         syncPrices: SyncPricesUseCase? = nil,
         reachability: NetworkReachability? = nil,
         exchangeRateRepository: ExchangeRateRepository? = nil,

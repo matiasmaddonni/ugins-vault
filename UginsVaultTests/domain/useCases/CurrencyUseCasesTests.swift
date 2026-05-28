@@ -12,8 +12,8 @@ struct CurrencyUseCasesTests {
 
     @Test("GetCurrency reads from the session repository")
     func getReadsFromSession() {
-        let session = MockSessionRepository()
-        session.currency = .eur
+        let session = SessionStateStore(storage: MockSessionStorage())
+        session.saveCurrency(.eur)
         let sut = GetCurrencyUseCase(sessionRepository: session)
 
         #expect(sut.execute() == .eur)
@@ -21,11 +21,11 @@ struct CurrencyUseCasesTests {
 
     @Test("SetCurrency writes to the session repository")
     func setWritesToSession() {
-        let session = MockSessionRepository()
+        let session = SessionStateStore(storage: MockSessionStorage())
         let sut = SetCurrencyUseCase(sessionRepository: session)
 
         sut.execute(.ars)
 
-        #expect(session.savedCurrency == .ars)
+        #expect(session.currency == .ars)
     }
 }

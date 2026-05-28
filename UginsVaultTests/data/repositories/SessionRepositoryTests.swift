@@ -1,19 +1,19 @@
 //
-//  SessionRepositoryTests.swift
+//  SessionStateStoreTests.swift
 //  UginsVaultTests — Data
 //
 
 import Testing
 @testable import UginsVault
 
-@Suite("SessionRepository")
+@Suite("SessionStateStore")
 @MainActor
-struct SessionRepositoryTests {
+struct SessionStateStoreTests {
 
     @Test("loadPhase defaults to .splash when storage is empty")
     func defaultPhase() {
         let storage = MockSessionStorage()
-        let sut = UserDefaultsSessionRepository(storage: storage)
+        let sut = SessionStateStore(storage: storage)
 
         #expect(sut.phase == .splash)
     }
@@ -21,7 +21,7 @@ struct SessionRepositoryTests {
     @Test("savePhase + loadPhase round-trips the value")
     func phaseRoundTrip() {
         let storage = MockSessionStorage()
-        let sut = UserDefaultsSessionRepository(storage: storage)
+        let sut = SessionStateStore(storage: storage)
 
         sut.savePhase(.home)
 
@@ -31,7 +31,7 @@ struct SessionRepositoryTests {
     @Test("loadTheme defaults to .dark when storage is empty")
     func defaultTheme() {
         let storage = MockSessionStorage()
-        let sut = UserDefaultsSessionRepository(storage: storage)
+        let sut = SessionStateStore(storage: storage)
 
         #expect(sut.theme == .dark)
     }
@@ -39,7 +39,7 @@ struct SessionRepositoryTests {
     @Test("saveTheme + loadTheme round-trips the value")
     func themeRoundTrip() {
         let storage = MockSessionStorage()
-        let sut = UserDefaultsSessionRepository(storage: storage)
+        let sut = SessionStateStore(storage: storage)
 
         sut.saveTheme(.light)
 
@@ -49,7 +49,7 @@ struct SessionRepositoryTests {
     @Test("loadCurrency defaults to .usd when storage is empty")
     func defaultCurrency() {
         let storage = MockSessionStorage()
-        let sut = UserDefaultsSessionRepository(storage: storage)
+        let sut = SessionStateStore(storage: storage)
 
         #expect(sut.currency == .usd)
     }
@@ -57,7 +57,7 @@ struct SessionRepositoryTests {
     @Test("saveCurrency + loadCurrency round-trips the value")
     func currencyRoundTrip() {
         let storage = MockSessionStorage()
-        let sut = UserDefaultsSessionRepository(storage: storage)
+        let sut = SessionStateStore(storage: storage)
 
         sut.saveCurrency(.ars)
 
@@ -71,7 +71,7 @@ struct SessionRepositoryTests {
         storage.set("???",                forKey: "uv.session.theme")
         storage.set("XYZ",                forKey: "uv.session.currency")
         storage.set("klingon",            forKey: "uv.session.language")
-        let sut = UserDefaultsSessionRepository(storage: storage)
+        let sut = SessionStateStore(storage: storage)
 
         #expect(sut.phase == .splash)
         #expect(sut.theme == .dark)
@@ -84,7 +84,7 @@ struct SessionRepositoryTests {
     @Test("loadLanguage defaults to .system when storage is empty")
     func defaultLanguage() {
         let storage = MockSessionStorage()
-        let sut = UserDefaultsSessionRepository(storage: storage)
+        let sut = SessionStateStore(storage: storage)
 
         #expect(sut.language == .system)
     }
@@ -92,7 +92,7 @@ struct SessionRepositoryTests {
     @Test("saveLanguage + loadLanguage round-trips the value")
     func languageRoundTrip() {
         let storage = MockSessionStorage()
-        let sut = UserDefaultsSessionRepository(storage: storage)
+        let sut = SessionStateStore(storage: storage)
 
         sut.saveLanguage(.spanish)
 
@@ -104,7 +104,7 @@ struct SessionRepositoryTests {
     @Test("loadReduceMotion defaults to false when storage is empty")
     func defaultReduceMotion() {
         let storage = MockSessionStorage()
-        let sut = UserDefaultsSessionRepository(storage: storage)
+        let sut = SessionStateStore(storage: storage)
 
         #expect(sut.reduceMotion == false)
     }
@@ -112,7 +112,7 @@ struct SessionRepositoryTests {
     @Test("saveReduceMotion + loadReduceMotion round-trips the value")
     func reduceMotionRoundTrip() {
         let storage = MockSessionStorage()
-        let sut = UserDefaultsSessionRepository(storage: storage)
+        let sut = SessionStateStore(storage: storage)
 
         sut.saveReduceMotion(true)
 
@@ -124,7 +124,7 @@ struct SessionRepositoryTests {
     @Test("loadFaceIDLock defaults to true when storage is empty")
     func defaultFaceIDLock() {
         let storage = MockSessionStorage()
-        let sut = UserDefaultsSessionRepository(storage: storage)
+        let sut = SessionStateStore(storage: storage)
 
         #expect(sut.faceIDLock == true)
     }
@@ -132,7 +132,7 @@ struct SessionRepositoryTests {
     @Test("saveFaceIDLock + loadFaceIDLock round-trips the value")
     func faceIDLockRoundTrip() {
         let storage = MockSessionStorage()
-        let sut = UserDefaultsSessionRepository(storage: storage)
+        let sut = SessionStateStore(storage: storage)
 
         sut.saveFaceIDLock(false)
 

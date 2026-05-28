@@ -7,7 +7,7 @@
 //  + persists the last-refresh stamp via `SessionStorageDataSource`
 //  so we can show "Rates updated 12m ago" in Settings.
 //
-//  Manual override behaviour: when `SessionRepository.manualARSRate`
+//  Manual override behaviour: when `SessionStateStore.manualARSRate`
 //  is non-nil, the ARS rate is served from that value with source
 //  `.manual` and dolarapi is skipped. Refresh still hits Frankfurter
 //  so EUR stays current.
@@ -24,7 +24,7 @@ public final class RemoteExchangeRateRepository: ExchangeRateRepository {
 
     @ObservationIgnored private let dolarClient: DolarAPIClient
     @ObservationIgnored private let frankfurterClient: FrankfurterClient
-    @ObservationIgnored private let sessionRepository: SessionRepository
+    @ObservationIgnored private let sessionRepository: SessionStateStore
     @ObservationIgnored private let storage: SessionStorageDataSource
     @ObservationIgnored private let lastRefreshedKey = "uv.fx.lastRefreshedAt"
 
@@ -33,7 +33,7 @@ public final class RemoteExchangeRateRepository: ExchangeRateRepository {
     public init(
         dolarClient: DolarAPIClient,
         frankfurterClient: FrankfurterClient,
-        sessionRepository: SessionRepository,
+        sessionRepository: SessionStateStore,
         storage: SessionStorageDataSource
     ) {
         self.dolarClient = dolarClient

@@ -1,17 +1,27 @@
 //
-//  UserDefaultsSessionRepository.swift
+//  SessionStateStore.swift
 //  UginsVault — Data layer
 //
-//  Stores the user's lightweight session state (phase, theme, currency,
-//  language, reduce-motion, Face ID lock) via a `SessionStorageDataSource`.
-//  SwiftData is reserved for the collection catalogue itself.
+//  Concrete state store for the user's lightweight session settings
+//  (phase, theme, currency, language, reduce-motion, Face ID lock,
+//  preferred price source, dashboard mover threshold, manual ARS rate).
+//
+//  Per `.claude/Architecture.md`: SwiftUI-observable state lives in a
+//  `@MainActor @Observable` state store rather than behind an Observable
+//  repository protocol — this kills the protocol-level `@MainActor` that
+//  used to force the entire dependency chain onto the main actor.
+//
+//  Persistence is `SessionStorageDataSource` (UserDefaults today —
+//  synchronous + microseconds, so no actor split needed). SwiftData
+//  is reserved for the collection catalogue itself.
 //
 
 import Foundation
 import Observation
 
+@MainActor
 @Observable
-public final class UserDefaultsSessionRepository: SessionRepository {
+public final class SessionStateStore {
 
     // MARK: - Keys
 

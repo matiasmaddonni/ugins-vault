@@ -13,11 +13,11 @@ import Foundation
 public final class AuthenticateUseCase {
 
     private let authRepository: AuthRepository
-    private let sessionRepository: SessionRepository
+    private let sessionRepository: SessionStateStore
 
     public init(
         authRepository: AuthRepository,
-        sessionRepository: SessionRepository
+        sessionRepository: SessionStateStore
     ) {
         self.authRepository = authRepository
         self.sessionRepository = sessionRepository

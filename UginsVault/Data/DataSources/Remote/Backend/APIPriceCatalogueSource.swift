@@ -5,7 +5,7 @@
 //  `PriceCatalogueSource` backed by the backend `GET /v1/prices`. The backend
 //  is the authoritative price source; each history point maps to a
 //  `PriceSnapshot` so `RealDashboardRepository.computeHistory` runs unchanged.
-//  The marketplace passed to the API is `SessionRepository.preferredPriceSource`
+//  The marketplace passed to the API is `SessionStateStore.preferredPriceSource`
 //  so on-device aggregations and backend numbers agree.
 //
 
@@ -15,13 +15,13 @@ import Foundation
 public final class APIPriceCatalogueSource: PriceCatalogueSource {
 
     private let client: UginsVaultAPIClient
-    private let sessionRepository: SessionRepository
+    private let sessionRepository: SessionStateStore
     private let defaultWindow: Int
     private let fullHistoryWindow: Int
 
     public init(
         client: UginsVaultAPIClient,
-        sessionRepository: SessionRepository,
+        sessionRepository: SessionStateStore,
         defaultWindow: Int = 35,
         fullHistoryWindow: Int = 90
     ) {

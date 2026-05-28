@@ -4,7 +4,7 @@
 //
 //  Self-contained Settings panel for the v0.5+ pricing prefs:
 //  preferred marketplace, Dashboard mover threshold, optional manual
-//  USD→ARS override. Marketplace + threshold read/write `SessionRepository`
+//  USD→ARS override. Marketplace + threshold read/write `SessionStateStore`
 //  directly so `SettingsViewModel` doesn't grow another 6 dependencies;
 //  the manual ARS override goes through its Get/Set use cases.
 //
@@ -13,7 +13,7 @@ import SwiftUI
 
 public struct PricingSettingsGroup: View {
 
-    private let sessionRepository: SessionRepository
+    private let sessionRepository: SessionStateStore
     private let exchangeRateRepository: ExchangeRateRepository
     private let getManualARSRate: GetManualARSRateUseCase
     private let setManualARSRate: SetManualARSRateUseCase
@@ -30,7 +30,7 @@ public struct PricingSettingsGroup: View {
     @State private var isRefreshingRates: Bool = false
 
     public init(
-        sessionRepository: SessionRepository,
+        sessionRepository: SessionStateStore,
         exchangeRateRepository: ExchangeRateRepository,
         getManualARSRate: GetManualARSRateUseCase,
         setManualARSRate: SetManualARSRateUseCase
@@ -42,7 +42,7 @@ public struct PricingSettingsGroup: View {
     }
 
     public var body: some View {
-        @Bindable var session = sessionRepository as! UserDefaultsSessionRepository
+        @Bindable var session = sessionRepository as! SessionStateStore
 
         SettingsGroup("Pricing") {
             sourceRow

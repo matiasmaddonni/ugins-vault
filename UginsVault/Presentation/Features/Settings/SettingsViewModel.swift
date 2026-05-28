@@ -35,7 +35,7 @@ public final class SettingsViewModel {
 
     // MARK: - Dependencies
 
-    @ObservationIgnored private let sessionRepository:    SessionRepository
+    @ObservationIgnored private let sessionRepository:    SessionStateStore
     @ObservationIgnored private let userProfileRepo:      UserProfileRepository
     @ObservationIgnored private let cardRepository:       CardRepository
     @ObservationIgnored private let dashboardRepository:  DashboardRepository?
@@ -63,7 +63,7 @@ public final class SettingsViewModel {
     // MARK: - Init
 
     public init(
-        sessionRepository: SessionRepository,
+        sessionRepository: SessionStateStore,
         userProfileRepository: UserProfileRepository,
         cardRepository: CardRepository,
         dashboardRepository: DashboardRepository? = nil,

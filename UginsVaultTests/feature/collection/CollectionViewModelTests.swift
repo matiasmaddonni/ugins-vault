@@ -48,9 +48,9 @@ struct CollectionViewModelTests {
 
     private func makeSUT(
         sessionCurrency: Currency = .usd
-    ) throws -> (CollectionViewModel, SwiftDataCardRepository, SwiftDataPriceRepository, MockSessionRepository) {
-        let session = MockSessionRepository()
-        session.currency = sessionCurrency
+    ) throws -> (CollectionViewModel, SwiftDataCardRepository, SwiftDataPriceRepository, SessionStateStore) {
+        let session = SessionStateStore(storage: MockSessionStorage())
+        session.saveCurrency(sessionCurrency)
         let (repo, priceRepo) = try makeRepos()
         let vm = CollectionViewModel(
             sessionRepository: session,
@@ -187,7 +187,7 @@ struct CollectionViewModelTests {
 
     @Test("loadMoreIfNeeded appends the next page until hasMore is false")
     func paginationLoadsMore() async throws {
-        let session = MockSessionRepository()
+        let session = SessionStateStore(storage: MockSessionStorage())
         let (repo, priceRepo) = try makeRepos()
         let cards = (0..<10).map { makeCard(name: String(format: "Card %02d", $0)) }
         try await repo.save(cards)
@@ -220,7 +220,7 @@ struct CollectionViewModelTests {
 
     @Test("polling marks unpriced, non-noData cards as fetching")
     func pollingMarksFetching() async throws {
-        let session = MockSessionRepository()
+        let session = SessionStateStore(storage: MockSessionStorage())
         let (repo, priceRepo) = try makeRepos()
         let a = makeCard(name: "A")
         let b = makeCard(name: "B")

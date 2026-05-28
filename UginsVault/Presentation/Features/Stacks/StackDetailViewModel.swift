@@ -58,7 +58,7 @@ public final class StackDetailViewModel {
     @ObservationIgnored private let itemRepository: CollectionItemRepository
     @ObservationIgnored private let cardRepository: CardRepository?
     @ObservationIgnored private let stackRepository: StackRepository?
-    @ObservationIgnored private let sessionRepository: SessionRepository
+    @ObservationIgnored private let sessionRepository: SessionStateStore
     @ObservationIgnored private let exchangeRateRepository: ExchangeRateRepository?
     @ObservationIgnored private let priceRepository: PriceRepository?
     @ObservationIgnored private let importCoordinator: ImportCoordinator?
@@ -69,7 +69,7 @@ public final class StackDetailViewModel {
     public init(
         stack: Stack,
         itemRepository: CollectionItemRepository,
-        sessionRepository: SessionRepository,
+        sessionRepository: SessionStateStore,
         cardRepository: CardRepository? = nil,
         stackRepository: StackRepository? = nil,
         exchangeRateRepository: ExchangeRateRepository? = nil,

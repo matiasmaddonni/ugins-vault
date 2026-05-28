@@ -37,7 +37,7 @@ public final class CollectionViewModel {
 
     // MARK: - Dependencies
 
-    @ObservationIgnored private let sessionRepository: SessionRepository
+    @ObservationIgnored private let sessionRepository: SessionStateStore
     @ObservationIgnored private let cardRepository: CardRepository
     @ObservationIgnored private let exchangeRateRepository: ExchangeRateRepository?
     @ObservationIgnored private let priceRepository: PriceRepository?
@@ -64,7 +64,7 @@ public final class CollectionViewModel {
     // MARK: - Init
 
     public init(
-        sessionRepository: SessionRepository,
+        sessionRepository: SessionStateStore,
         cardRepository: CardRepository,
         exchangeRateRepository: ExchangeRateRepository? = nil,
         priceRepository: PriceRepository? = nil,

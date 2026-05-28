@@ -12,8 +12,8 @@ struct ReduceMotionUseCasesTests {
 
     @Test("GetReduceMotion reads from the session repository")
     func getReadsFromSession() {
-        let session = MockSessionRepository()
-        session.reduceMotion = true
+        let session = SessionStateStore(storage: MockSessionStorage())
+        session.saveReduceMotion(true)
         let sut = GetReduceMotionUseCase(sessionRepository: session)
 
         #expect(sut.execute() == true)
@@ -21,11 +21,11 @@ struct ReduceMotionUseCasesTests {
 
     @Test("SetReduceMotion writes to the session repository")
     func setWritesToSession() {
-        let session = MockSessionRepository()
+        let session = SessionStateStore(storage: MockSessionStorage())
         let sut = SetReduceMotionUseCase(sessionRepository: session)
 
         sut.execute(true)
 
-        #expect(session.savedReduceMotion == true)
+        #expect(session.reduceMotion == true)
     }
 }

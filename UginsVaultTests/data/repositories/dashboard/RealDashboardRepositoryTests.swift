@@ -18,7 +18,7 @@ struct RealDashboardRepositoryTests {
         let stackRepo: SwiftDataStackRepository
         let priceRepo: SwiftDataPriceRepository
         let wishRepo: SwiftDataWishlistRepository
-        let session: MockSessionRepository
+        let session: SessionStateStore
         let sut: RealDashboardRepository
     }
 
@@ -34,7 +34,7 @@ struct RealDashboardRepositoryTests {
         let stackRepo = SwiftDataStackRepository(modelContainer: container)
         let priceRepo = SwiftDataPriceRepository(modelContainer: container, lastSyncStorage: MockSessionStorage())
         let wishRepo = SwiftDataWishlistRepository(modelContainer: container)
-        let session = MockSessionRepository() // preferredPriceSource = .cardkingdom
+        let session = SessionStateStore(storage: MockSessionStorage()) // preferredPriceSource = .cardkingdom
         let sut = RealDashboardRepository(
             cardRepository: cardRepo,
             collectionItemRepository: itemRepo,

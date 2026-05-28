@@ -12,8 +12,8 @@ struct LanguageUseCasesTests {
 
     @Test("GetPreferredLanguage reads from the session repository")
     func getReadsFromSession() {
-        let session = MockSessionRepository()
-        session.language = .spanish
+        let session = SessionStateStore(storage: MockSessionStorage())
+        session.saveLanguage(.spanish)
         let sut = GetPreferredLanguageUseCase(sessionRepository: session)
 
         #expect(sut.execute() == .spanish)
@@ -21,11 +21,11 @@ struct LanguageUseCasesTests {
 
     @Test("SetPreferredLanguage writes to the session repository")
     func setWritesToSession() {
-        let session = MockSessionRepository()
+        let session = SessionStateStore(storage: MockSessionStorage())
         let sut = SetPreferredLanguageUseCase(sessionRepository: session)
 
         sut.execute(.english)
 
-        #expect(session.savedLanguage == .english)
+        #expect(session.language == .english)
     }
 }

@@ -45,7 +45,7 @@ public final class CardDetailViewModel {
     public private(set) var priceHistory: [PriceSnapshot] = []
 
     /// Source the user picked in Settings — mirrored here so reads
-    /// are observable without a separate hop into SessionRepository.
+    /// are observable without a separate hop into SessionStateStore.
     public private(set) var preferredSource: PriceSource
 
     // MARK: - Dependencies
@@ -57,7 +57,7 @@ public final class CardDetailViewModel {
     @ObservationIgnored private let priceRepository: PriceRepository?
     @ObservationIgnored private let latestPriceUseCase: LatestPriceUseCase?
     @ObservationIgnored private let priceStatusSource: PriceStatusSource?
-    @ObservationIgnored private let sessionRepository: SessionRepository?
+    @ObservationIgnored private let sessionRepository: SessionStateStore?
 
     // MARK: - Init
 
@@ -71,7 +71,7 @@ public final class CardDetailViewModel {
         priceRepository: PriceRepository? = nil,
         latestPriceUseCase: LatestPriceUseCase? = nil,
         priceStatusSource: PriceStatusSource? = nil,
-        sessionRepository: SessionRepository? = nil
+        sessionRepository: SessionStateStore? = nil
     ) {
         self.card = card
         self.displayCurrency = displayCurrency

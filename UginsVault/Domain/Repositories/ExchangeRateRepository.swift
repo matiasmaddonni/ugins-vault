@@ -10,7 +10,7 @@
 //  v0.7 ships with two upstreams:
 //    - dolarapi.com.ar  — USD → ARS (blue dollar, default)
 //    - frankfurter.app  — USD → EUR (ECB rates)
-//  A manual user override on `SessionRepository.manualARSRate` short-
+//  A manual user override on `SessionStateStore.manualARSRate` short-
 //  circuits the dolarapi call entirely.
 //
 

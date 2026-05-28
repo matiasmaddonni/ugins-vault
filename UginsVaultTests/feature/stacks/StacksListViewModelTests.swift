@@ -26,12 +26,12 @@ struct StacksListViewModelTests {
         StacksListViewModel,
         SwiftDataStackRepository,
         SwiftDataCollectionItemRepository,
-        MockSessionRepository
+        SessionStateStore
     ) {
         let container = try makeContainer()
         let stackRepo = SwiftDataStackRepository(modelContainer: container)
         let itemRepo  = SwiftDataCollectionItemRepository(modelContainer: container)
-        let session   = MockSessionRepository()
+        let session   = SessionStateStore(storage: MockSessionStorage())
         let sut = StacksListViewModel(
             stackRepository: stackRepo,
             itemRepository: itemRepo,
@@ -141,7 +141,7 @@ struct StacksListViewModelTests {
     @Test("currency mirrors the session repository")
     func currencyMirrorsSession() throws {
         let (sut, _, _, session) = try makeSUT()
-        session.currency = .eur
+        session.saveCurrency(.eur)
         #expect(sut.currency == .eur)
     }
 
@@ -165,7 +165,7 @@ struct StacksListViewModelTests {
     @Test("formattedTotalValue uses session currency")
     func formattedTotalValueUsesSessionCurrency() async throws {
         let (sut, _, _, session) = try makeSUT()
-        session.currency = .usd
+        session.saveCurrency(.usd)
         await sut.refresh()
         let usdFormatted = sut.formattedTotalValue
         #expect(usdFormatted.contains("0"))

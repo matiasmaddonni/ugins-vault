@@ -11,7 +11,7 @@ import Testing
 struct SplashViewModelTests {
 
     private func makeUseCase(
-        session: MockSessionRepository,
+        session: SessionStateStore,
         signedIn: Bool
     ) -> AdvanceFromSplashUseCase {
         let account = MockAccountRepository()
@@ -21,7 +21,7 @@ struct SplashViewModelTests {
 
     @Test("start() flips didAppear and (after hold) advances a signed-in user to .login")
     func startAdvances() async throws {
-        let session = MockSessionRepository()
+        let session = SessionStateStore(storage: MockSessionStorage())
         let useCase = makeUseCase(session: session, signedIn: true)
 
         var advancedTo: AppPhase?
@@ -39,12 +39,12 @@ struct SplashViewModelTests {
         try await Task.sleep(for: .milliseconds(200))
 
         #expect(advancedTo == .login)
-        #expect(session.savedPhase == .login)
+        #expect(session.phase == .login)
     }
 
     @Test("start() advances a signed-out user to .accountLogin")
     func startAdvancesToAccountLogin() async throws {
-        let session = MockSessionRepository()
+        let session = SessionStateStore(storage: MockSessionStorage())
         let useCase = makeUseCase(session: session, signedIn: false)
 
         var advancedTo: AppPhase?
@@ -62,7 +62,7 @@ struct SplashViewModelTests {
 
     @Test("start() is idempotent — second call doesn't fire onAdvance twice")
     func startIsIdempotent() async throws {
-        let session = MockSessionRepository()
+        let session = SessionStateStore(storage: MockSessionStorage())
         let useCase = makeUseCase(session: session, signedIn: true)
 
         var advanceCount = 0

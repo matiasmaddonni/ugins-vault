@@ -54,8 +54,8 @@ struct DashboardViewModelTests {
     @Test("Defaults: idle, no snapshot, mirrors session currency")
     func defaultsReflectSession() throws {
         let repo = MockRepo()
-        let session = MockSessionRepository()
-        session.currency = .eur
+        let session = SessionStateStore(storage: MockSessionStorage())
+        session.saveCurrency(.eur)
         let sut = DashboardViewModel(repository: repo, sessionRepository: session)
 
         #expect(sut.snapshot == nil)
@@ -68,7 +68,7 @@ struct DashboardViewModelTests {
         let repo = MockRepo()
         let sut = DashboardViewModel(
             repository: repo,
-            sessionRepository: MockSessionRepository()
+            sessionRepository: SessionStateStore(storage: MockSessionStorage())
         )
 
         await sut.load()
@@ -84,7 +84,7 @@ struct DashboardViewModelTests {
         repo.queuedResult = .failure(DummyError())
         let sut = DashboardViewModel(
             repository: repo,
-            sessionRepository: MockSessionRepository()
+            sessionRepository: SessionStateStore(storage: MockSessionStorage())
         )
 
         await sut.load()
@@ -99,13 +99,13 @@ struct DashboardViewModelTests {
     @Test("Switching the session currency does NOT trigger a refetch")
     func currencyChangeDoesNotRefetch() async throws {
         let repo = MockRepo()
-        let session = MockSessionRepository()
+        let session = SessionStateStore(storage: MockSessionStorage())
         let sut = DashboardViewModel(repository: repo, sessionRepository: session)
 
         await sut.load()
         #expect(repo.fetchCallCount == 1)
 
-        session.currency = .eur
+        session.saveCurrency(.eur)
         sut.refreshCurrencyIfNeeded()
 
         #expect(sut.currency == .eur)
@@ -117,7 +117,7 @@ struct DashboardViewModelTests {
         let repo = MockRepo()
         let sut = DashboardViewModel(
             repository: repo,
-            sessionRepository: MockSessionRepository()
+            sessionRepository: SessionStateStore(storage: MockSessionStorage())
         )
         await sut.load()
         #expect(repo.fetchCallCount == 1)
@@ -132,7 +132,7 @@ struct DashboardViewModelTests {
         let repo = MockRepo()
         let sut = DashboardViewModel(
             repository: repo,
-            sessionRepository: MockSessionRepository()
+            sessionRepository: SessionStateStore(storage: MockSessionStorage())
         )
         await sut.load()
         let initialSnapshot = sut.snapshot
@@ -181,7 +181,7 @@ struct DashboardViewModelTests {
         let repo = MockRepo()
         let sut = DashboardViewModel(
             repository: repo,
-            sessionRepository: MockSessionRepository(),
+            sessionRepository: SessionStateStore(storage: MockSessionStorage()),
             syncPrices: sync,
             reachability: StubReach(),
             signOutAccount: SignOutAccountUseCase(accountRepository: MockAccountRepository()),

@@ -7,7 +7,7 @@
 //  bolts the mocked historical fields (sparkline / gainers / losers)
 //  on top via `DashboardSnapshot.assemble(realStats:mockedHistory:)`.
 //
-//  Pricing reads honour `SessionRepository.preferredPriceSource` with
+//  Pricing reads honour `SessionStateStore.preferredPriceSource` with
 //  the same fallback chain `LatestPriceUseCase` uses on Card detail.
 //  Anything we still mock is tagged `HISTORICAL_MOCK` so the swap-in
 //  point stays obvious when the FX + history backend land.
@@ -27,7 +27,7 @@ public final class RealDashboardRepository: DashboardRepository {
     @ObservationIgnored private let collectionItemRepository: CollectionItemRepository
     @ObservationIgnored private let stackRepository: StackRepository
     @ObservationIgnored private let priceRepository: PriceRepository
-    @ObservationIgnored private let sessionRepository: SessionRepository
+    @ObservationIgnored private let sessionRepository: SessionStateStore
     @ObservationIgnored private let wishlistRepository: WishlistRepository?
 
     public init(
@@ -35,7 +35,7 @@ public final class RealDashboardRepository: DashboardRepository {
         collectionItemRepository: CollectionItemRepository,
         stackRepository: StackRepository,
         priceRepository: PriceRepository,
-        sessionRepository: SessionRepository,
+        sessionRepository: SessionStateStore,
         wishlistRepository: WishlistRepository? = nil
     ) {
         self.cardRepository = cardRepository

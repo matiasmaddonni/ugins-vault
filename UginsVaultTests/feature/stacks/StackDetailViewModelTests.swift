@@ -25,11 +25,11 @@ struct StackDetailViewModelTests {
     private func makeSUT(stack: Stack) throws -> (
         StackDetailViewModel,
         SwiftDataCollectionItemRepository,
-        MockSessionRepository
+        SessionStateStore
     ) {
         let container = try makeContainer()
         let itemRepo  = SwiftDataCollectionItemRepository(modelContainer: container)
-        let session   = MockSessionRepository()
+        let session   = SessionStateStore(storage: MockSessionStorage())
         let sut = StackDetailViewModel(
             stack: stack,
             itemRepository: itemRepo,
@@ -46,7 +46,7 @@ struct StackDetailViewModelTests {
         let container = try makeContainer()
         let stackRepo = SwiftDataStackRepository(modelContainer: container)
         let itemRepo  = SwiftDataCollectionItemRepository(modelContainer: container)
-        let session   = MockSessionRepository()
+        let session   = SessionStateStore(storage: MockSessionStorage())
         let sut = StackDetailViewModel(
             stack: stack,
             itemRepository: itemRepo,
@@ -145,7 +145,7 @@ struct StackDetailViewModelTests {
     func currencyMirrorsSession() throws {
         let stack = makeDeck()
         let (sut, _, session) = try makeSUT(stack: stack)
-        session.currency = .ars
+        session.saveCurrency(.ars)
         #expect(sut.currency == .ars)
     }
 
@@ -153,7 +153,7 @@ struct StackDetailViewModelTests {
     func formattedTotalValueRespectsCurrency() throws {
         let stack = makeDeck()
         let (sut, _, session) = try makeSUT(stack: stack)
-        session.currency = .usd
+        session.saveCurrency(.usd)
         // With no hydrated cards, totalValue stays zero — should still
         // render in the active currency without crashing.
         let formatted = sut.formattedTotalValue
@@ -170,7 +170,7 @@ struct StackDetailViewModelTests {
         )
         let itemRepo = SwiftDataCollectionItemRepository(modelContainer: container)
         let priceRepo = SwiftDataPriceRepository(modelContainer: container, lastSyncStorage: MockSessionStorage())
-        let session = MockSessionRepository() // preferredPriceSource defaults to .cardkingdom
+        let session = SessionStateStore(storage: MockSessionStorage()) // preferredPriceSource defaults to .cardkingdom
         let stack = makeDeck()
 
         let cardA = UUID()

@@ -14,11 +14,11 @@ struct LoginViewModelTests {
         outcome: AuthOutcome,
         biometryAvailable: Bool = true,
         onAuthenticated: @escaping () -> Void = {}
-    ) -> (LoginViewModel, MockAuthRepository, MockSessionRepository) {
+    ) -> (LoginViewModel, MockAuthRepository, SessionStateStore) {
         let auth = MockAuthRepository()
         auth.stubbedAuthenticateOutcome = outcome
         auth.stubbedIsBiometryAvailable = biometryAvailable
-        let session = MockSessionRepository()
+        let session = SessionStateStore(storage: MockSessionStorage())
         let useCase = AuthenticateUseCase(authRepository: auth, sessionRepository: session)
         let vm = LoginViewModel(
             authenticateUseCase: useCase,
@@ -46,7 +46,7 @@ struct LoginViewModelTests {
 
         #expect(sut.phase == .success)
         #expect(callbackCount == 1)
-        #expect(session.savedPhase == .home)
+        #expect(session.phase == .home)
     }
 
     @Test("Cancellation returns to .idle and doesn't call the callback")
@@ -89,7 +89,7 @@ struct LoginViewModelTests {
     func reentryIgnoredWhileBusy() async {
         let auth = MockAuthRepository()
         auth.stubbedAuthenticateOutcome = .success
-        let session = MockSessionRepository()
+        let session = SessionStateStore(storage: MockSessionStorage())
         let useCase = AuthenticateUseCase(authRepository: auth, sessionRepository: session)
         let sut = LoginViewModel(
             authenticateUseCase: useCase,

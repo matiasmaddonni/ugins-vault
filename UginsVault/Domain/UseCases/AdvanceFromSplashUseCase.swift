@@ -15,11 +15,11 @@ import Foundation
 @MainActor
 public final class AdvanceFromSplashUseCase {
 
-    private let sessionRepository: SessionRepository
+    private let sessionRepository: SessionStateStore
     private let accountRepository: AccountRepository
 
     public init(
-        sessionRepository: SessionRepository,
+        sessionRepository: SessionStateStore,
         accountRepository: AccountRepository
     ) {
         self.sessionRepository = sessionRepository

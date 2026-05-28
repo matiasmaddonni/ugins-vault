@@ -12,9 +12,9 @@ import Foundation
 @MainActor
 public final class GetManualARSRateUseCase {
 
-    private let sessionRepository: SessionRepository
+    private let sessionRepository: SessionStateStore
 
-    public init(sessionRepository: SessionRepository) {
+    public init(sessionRepository: SessionStateStore) {
         self.sessionRepository = sessionRepository
     }
 
@@ -26,9 +26,9 @@ public final class GetManualARSRateUseCase {
 @MainActor
 public final class SetManualARSRateUseCase {
 
-    private let sessionRepository: SessionRepository
+    private let sessionRepository: SessionStateStore
 
-    public init(sessionRepository: SessionRepository) {
+    public init(sessionRepository: SessionStateStore) {
         self.sessionRepository = sessionRepository
     }
 

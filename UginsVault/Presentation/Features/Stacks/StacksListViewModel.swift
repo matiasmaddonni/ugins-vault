@@ -67,7 +67,7 @@ public final class StacksListViewModel {
 
     @ObservationIgnored private let stackRepository: StackRepository
     @ObservationIgnored private let itemRepository: CollectionItemRepository
-    @ObservationIgnored private let sessionRepository: SessionRepository
+    @ObservationIgnored private let sessionRepository: SessionStateStore
     @ObservationIgnored private let cardRepository: CardRepository?
 
     // MARK: - Init
@@ -75,7 +75,7 @@ public final class StacksListViewModel {
     public init(
         stackRepository: StackRepository,
         itemRepository: CollectionItemRepository,
-        sessionRepository: SessionRepository,
+        sessionRepository: SessionStateStore,
         cardRepository: CardRepository? = nil
     ) {
         self.stackRepository = stackRepository

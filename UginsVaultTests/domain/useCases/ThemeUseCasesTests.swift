@@ -12,8 +12,8 @@ struct ThemeUseCasesTests {
 
     @Test("GetTheme reads from the session repository")
     func getThemeReadsFromSession() {
-        let session = MockSessionRepository()
-        session.theme = .light
+        let session = SessionStateStore(storage: MockSessionStorage())
+        session.saveTheme(.light)
         let sut = GetThemeUseCase(sessionRepository: session)
 
         #expect(sut.execute() == .light)
@@ -21,11 +21,11 @@ struct ThemeUseCasesTests {
 
     @Test("SetTheme writes to the session repository")
     func setThemeWritesToSession() {
-        let session = MockSessionRepository()
+        let session = SessionStateStore(storage: MockSessionStorage())
         let sut = SetThemeUseCase(sessionRepository: session)
 
         sut.execute(.system)
 
-        #expect(session.savedTheme == .system)
+        #expect(session.theme == .system)
     }
 }

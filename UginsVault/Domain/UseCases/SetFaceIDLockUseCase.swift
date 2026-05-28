@@ -8,9 +8,9 @@ import Foundation
 @MainActor
 public final class SetFaceIDLockUseCase {
 
-    private let sessionRepository: SessionRepository
+    private let sessionRepository: SessionStateStore
 
-    public init(sessionRepository: SessionRepository) {
+    public init(sessionRepository: SessionStateStore) {
         self.sessionRepository = sessionRepository
     }
 

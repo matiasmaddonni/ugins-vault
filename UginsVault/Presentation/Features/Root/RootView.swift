@@ -3,7 +3,7 @@
 //  UginsVault — Presentation: Root
 //
 //  Phase router. Cross-fades between Splash / Login / Home and applies the
-//  app-wide preferences (theme + language) from `SessionRepository`.
+//  app-wide preferences (theme + language) from `SessionStateStore`.
 //
 
 import SwiftUI
