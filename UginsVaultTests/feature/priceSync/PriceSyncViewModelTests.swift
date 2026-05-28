@@ -117,7 +117,7 @@ struct PriceSyncViewModelTests {
             Issue.record("Expected .finished, got \(sut.status)")
         }
         #expect(try await priceRepo.latest(cardID: cardID, source: .cardkingdom) != nil)
-        #expect(priceRepo.lastSyncedAt != nil)
+        #expect(try await priceRepo.lastSyncedAt() != nil)
     }
 
     @Test("Backend failure → status .failed, no timestamp stamped")
@@ -136,6 +136,6 @@ struct PriceSyncViewModelTests {
         } else {
             Issue.record("Expected .failed, got \(sut.status)")
         }
-        #expect(priceRepo.lastSyncedAt == nil)
+        #expect(try await priceRepo.lastSyncedAt() == nil)
     }
 }

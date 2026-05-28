@@ -101,6 +101,10 @@ Rules are automatically loaded based on the context of the file being edited. Th
 | `testing.md` | `UginsVaultTests/**/*.swift` | Swift Testing, mocks, coverage ≥ 90%, per-layer strategy |
 | `git-workflow.md` | Always | Branches, commits, pre-commit, pre-PR |
 
+### Cross-cutting
+
+- [.claude/Architecture.md](.claude/Architecture.md) — Concurrency & isolation rules (`@MainActor` / `actor` / `nonisolated`), the Observable-state-store pattern, and the phased "P-Big" refactor plan. Read this before adding `@MainActor` or `actor` to any new file.
+
 ## Automatic Hooks
 
 Configured in `.claude/settings.json`:

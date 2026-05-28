@@ -8,20 +8,12 @@
 //
 
 import Foundation
-import Observation
 
-@MainActor
-public protocol PriceRepository: AnyObject, Observable {
+public protocol PriceRepository: AnyObject, Sendable {
 
-    // MARK: - Observable state
-
-    /// Timestamp of the last completed sync. `nil` before the first
-    /// run. Settings → Data renders it as "Last synced: …".
-    var lastSyncedAt: Date? { get }
-
-    /// `true` while a write batch is in flight. UI uses it to disable
-    /// the manual refresh button.
-    var isWriting: Bool { get }
+    /// Timestamp of the last completed sync. `nil` before the first run.
+    /// Settings → Data renders it as "Last synced: …".
+    func lastSyncedAt() async throws -> Date?
 
     // MARK: - Reads
 

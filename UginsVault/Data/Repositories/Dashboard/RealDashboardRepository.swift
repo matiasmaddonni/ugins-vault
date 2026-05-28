@@ -87,8 +87,7 @@ public final class RealDashboardRepository: DashboardRepository {
         // Real wishlist count replaces the mocked teaser numbers. Simple
         // mode has no buy-target, so "ready to buy" is always 0.
         if let wishlistRepository {
-            let count = (try? await wishlistRepository.refresh())?.count
-                ?? wishlistRepository.items.count
+            let count = (try? await wishlistRepository.refresh())?.count ?? 0
             real.wishlistTrackedCount = count
             real.wishlistReadyToBuyCount = 0
         }

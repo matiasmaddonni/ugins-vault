@@ -7,17 +7,13 @@
 //
 
 import Foundation
-import Observation
 import SwiftData
 
 @MainActor
-@Observable
 public final class SwiftDataCollectionItemRepository: CollectionItemRepository {
 
-    public private(set) var isWriting: Bool = false
-
-    @ObservationIgnored private let modelContainer: ModelContainer
-    @ObservationIgnored private var context: ModelContext { modelContainer.mainContext }
+    private let modelContainer: ModelContainer
+    private var context: ModelContext { modelContainer.mainContext }
 
     public init(modelContainer: ModelContainer) {
         self.modelContainer = modelContainer
@@ -62,8 +58,6 @@ public final class SwiftDataCollectionItemRepository: CollectionItemRepository {
     // MARK: - Writes
 
     public func save(_ item: CollectionItem) async throws {
-        isWriting = true
-        defer { isWriting = false }
 
         let itemID = item.id
         var descriptor = FetchDescriptor<SwiftDataCollectionItem>(
@@ -81,8 +75,6 @@ public final class SwiftDataCollectionItemRepository: CollectionItemRepository {
 
     public func save(_ items: [CollectionItem]) async throws {
         guard !items.isEmpty else { return }
-        isWriting = true
-        defer { isWriting = false }
 
         // ONE fetch of the existing rows up front (keyed by id) instead of a
         // fetch-per-item — a per-item descriptor in the loop turns a fresh
@@ -104,8 +96,6 @@ public final class SwiftDataCollectionItemRepository: CollectionItemRepository {
     }
 
     public func delete(id: UUID) async throws {
-        isWriting = true
-        defer { isWriting = false }
 
         var descriptor = FetchDescriptor<SwiftDataCollectionItem>(
             predicate: #Predicate<SwiftDataCollectionItem> { $0.id == id }
@@ -119,8 +109,6 @@ public final class SwiftDataCollectionItemRepository: CollectionItemRepository {
     }
 
     public func deleteAll(in stackID: UUID) async throws {
-        isWriting = true
-        defer { isWriting = false }
 
         try context.delete(
             model: SwiftDataCollectionItem.self,
@@ -130,8 +118,6 @@ public final class SwiftDataCollectionItemRepository: CollectionItemRepository {
     }
 
     public func deleteAll() async throws {
-        isWriting = true
-        defer { isWriting = false }
 
         try context.delete(model: SwiftDataCollectionItem.self)
         try context.save()

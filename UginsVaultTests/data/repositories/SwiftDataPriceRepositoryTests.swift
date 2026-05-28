@@ -111,17 +111,17 @@ struct SwiftDataPriceRepositoryTests {
     @Test("markSyncCompleted persists across re-instantiation")
     func syncTimestampSurvivesRestart() async throws {
         let (repo, storage) = try makeRepo()
-        #expect(repo.lastSyncedAt == nil)
+        #expect(try await repo.lastSyncedAt() == nil)
 
         let stamp = Date(timeIntervalSince1970: 1_700_000_000)
         try await repo.markSyncCompleted(at: stamp)
-        #expect(repo.lastSyncedAt == stamp)
+        #expect(try await repo.lastSyncedAt() == stamp)
 
         // Build a fresh repo over the same storage — should rehydrate.
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
         let container = try ModelContainer(for: SwiftDataPriceSnapshot.self, configurations: config)
         let restarted = SwiftDataPriceRepository(modelContainer: container, lastSyncStorage: storage)
-        #expect(restarted.lastSyncedAt == stamp)
+        #expect(try await restarted.lastSyncedAt() == stamp)
     }
 
     @Test("deleteAll wipes data + clears the sync timestamp")
@@ -136,7 +136,7 @@ struct SwiftDataPriceRepositoryTests {
 
         try await repo.deleteAll()
 
-        #expect(repo.lastSyncedAt == nil)
+        #expect(try await repo.lastSyncedAt() == nil)
         #expect(try await repo.latest(cardID: card, source: .cardkingdom) == nil)
     }
 }

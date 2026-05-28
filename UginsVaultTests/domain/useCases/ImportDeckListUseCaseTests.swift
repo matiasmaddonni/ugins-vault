@@ -119,12 +119,18 @@ struct ImportDeckListUseCaseTests {
     func progressCompletes() async throws {
         let (sut, cardRepo, _) = try makeSUT()
         try await cardRepo.save([cardWithImage("Lightning Bolt")])
-        var last: (Int, Int) = (-1, -1)
+        let box = ProgressBox()
 
         _ = try await sut.execute(source: "1 Lightning Bolt", stackID: UUID()) { current, total in
-            last = (current, total)
+            box.value = (current, total)
         }
 
-        #expect(last == (1, 1))
+        #expect(box.value == (1, 1))
     }
+}
+
+/// Sendable box for capturing the last progress tuple from a `@Sendable`
+/// callback — the test mutates it serially, so unchecked Sendable is fine.
+private final class ProgressBox: @unchecked Sendable {
+    var value: (Int, Int) = (-1, -1)
 }

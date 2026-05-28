@@ -43,7 +43,7 @@ public struct RootView: View {
                             // (see AdvanceFromSplashUseCase), not a second gate
                             // right after an explicit sign-in. Stays toggleable
                             // in Settings.
-                            viewModel.transition(to: appEntryPhase())
+                            Task { viewModel.transition(to: await appEntryPhase()) }
                         }
                     )
                 )
@@ -55,7 +55,7 @@ public struct RootView: View {
                         onAuthenticated: {
                             // First launch (no prior sync) routes through
                             // PriceSyncView. Returning users skip to home.
-                            viewModel.transition(to: appEntryPhase())
+                            Task { viewModel.transition(to: await appEntryPhase()) }
                         }
                     )
                 )
@@ -88,8 +88,9 @@ public struct RootView: View {
 
     /// First launch (no prior sync) routes through PriceSync; returning users
     /// skip straight to home.
-    private func appEntryPhase() -> AppPhase {
-        container.priceRepository.lastSyncedAt == nil ? .priceSync : .home
+    private func appEntryPhase() async -> AppPhase {
+        let stamp: Date? = (try? await container.priceRepository.lastSyncedAt()) ?? nil
+        return stamp == nil ? .priceSync : .home
     }
 }
 

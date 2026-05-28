@@ -14,8 +14,7 @@
 
 import Foundation
 
-@MainActor
-public final class RestoreCollectionUseCase {
+public final class RestoreCollectionUseCase: Sendable {
 
     // MARK: - Dependencies
 

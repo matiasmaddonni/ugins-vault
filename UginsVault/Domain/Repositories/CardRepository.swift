@@ -8,20 +8,8 @@
 //
 
 import Foundation
-import Observation
 
-@MainActor
-public protocol CardRepository: AnyObject, Observable {
-
-    // MARK: - Observable state
-
-    /// Most recent slice of cards loaded into memory. Bumped by `refresh(_:)`.
-    /// Views observe this property to re-render.
-    var cards: [Card] { get }
-
-    /// `true` while a write batch is in flight. Surfaces in Settings /
-    /// Splash for a "Seeding…" spinner.
-    var isWriting: Bool { get }
+public protocol CardRepository: AnyObject, Sendable {
 
     // MARK: - Reads
 

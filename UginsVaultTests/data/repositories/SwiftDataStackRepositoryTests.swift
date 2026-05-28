@@ -91,7 +91,6 @@ struct SwiftDataStackRepositoryTests {
         try await repo.deleteAll()
 
         #expect(try await repo.totalCount() == 0)
-        #expect(repo.stacks.isEmpty)
     }
 
     @Test("refresh sorts by sortOrder ascending then createdAt")

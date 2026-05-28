@@ -7,21 +7,13 @@
 //
 
 import Foundation
-import Observation
 import SwiftData
 
 @MainActor
-@Observable
 public final class SwiftDataWishlistRepository: WishlistRepository {
 
-    // MARK: - Observable state
-
-    public private(set) var items: [WishlistItem] = []
-
-    // MARK: - Dependencies
-
-    @ObservationIgnored private let modelContainer: ModelContainer
-    @ObservationIgnored private var context: ModelContext { modelContainer.mainContext }
+    private let modelContainer: ModelContainer
+    private var context: ModelContext { modelContainer.mainContext }
 
     public init(modelContainer: ModelContainer) {
         self.modelContainer = modelContainer
@@ -34,9 +26,7 @@ public final class SwiftDataWishlistRepository: WishlistRepository {
         let descriptor = FetchDescriptor<SwiftDataWishlistItem>(
             sortBy: [SortDescriptor(\.addedAt, order: .reverse)]
         )
-        let loaded = try context.fetch(descriptor).map(WishlistItem.init(from:))
-        items = loaded
-        return loaded
+        return try context.fetch(descriptor).map(WishlistItem.init(from:))
     }
 
     public func contains(id: UUID) async throws -> Bool {
@@ -62,7 +52,6 @@ public final class SwiftDataWishlistRepository: WishlistRepository {
             context.insert(SwiftDataWishlistItem(from: item))
         }
         try context.save()
-        try await refresh()
     }
 
     public func remove(id: UUID) async throws {
@@ -74,7 +63,6 @@ public final class SwiftDataWishlistRepository: WishlistRepository {
         if let existing = try context.fetch(descriptor).first {
             context.delete(existing)
             try context.save()
-            items.removeAll { $0.id == id }
         }
     }
 }

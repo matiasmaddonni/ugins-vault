@@ -9,25 +9,21 @@
 //  Best-effort; the next launch's restore reconciles. `deleteAll()` is
 //  local-only (used by restore, which writes the base repo).
 //
-//  `stacks` / `isWriting` are plain pass-throughs: view models read the value
-//  returned by `refresh()`, not the observable property, so no reactive
-//  forwarding is needed.
+//  No observable state — view models read what `refresh()` returns.
 //
 
 import Foundation
-import Observation
 
 @MainActor
-@Observable
 public final class CollectionSyncingStackRepository: StackRepository {
 
-    @ObservationIgnored private let wrapped: StackRepository
-    @ObservationIgnored private let remote: RemoteCollectionStore
-    @ObservationIgnored private let debounce: Duration
+    private let wrapped: StackRepository
+    private let remote: RemoteCollectionStore
+    private let debounce: Duration
 
-    @ObservationIgnored private var pendingUpsertIDs: Set<UUID> = []
-    @ObservationIgnored private var pendingDeleteIDs: Set<UUID> = []
-    @ObservationIgnored private var flushTask: Task<Void, Never>?
+    private var pendingUpsertIDs: Set<UUID> = []
+    private var pendingDeleteIDs: Set<UUID> = []
+    private var flushTask: Task<Void, Never>?
 
     public init(
         wrapped: StackRepository,
@@ -38,9 +34,6 @@ public final class CollectionSyncingStackRepository: StackRepository {
         self.remote = remote
         self.debounce = debounce
     }
-
-    public var stacks: [Stack] { wrapped.stacks }
-    public var isWriting: Bool { wrapped.isWriting }
 
     // MARK: - Reads (delegate)
 

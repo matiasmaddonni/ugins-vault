@@ -9,24 +9,19 @@
 //
 
 import Foundation
-import Observation
 import SwiftData
 
 @MainActor
-@Observable
 public final class SwiftDataPriceRepository: PriceRepository {
 
-    public private(set) var lastSyncedAt: Date?
-    public private(set) var isWriting: Bool = false
-
-    @ObservationIgnored private let modelContainer: ModelContainer
-    @ObservationIgnored private var context: ModelContext { modelContainer.mainContext }
-    @ObservationIgnored private let lastSyncStorage: SessionStorageDataSource
+    private let modelContainer: ModelContainer
+    private var context: ModelContext { modelContainer.mainContext }
+    private let lastSyncStorage: SessionStorageDataSource
 
     /// UserDefaults key — survives app relaunches separately from the
     /// SwiftData store. Wiping the SwiftData store doesn't clear it
     /// automatically; `deleteAll()` does.
-    @ObservationIgnored private let lastSyncedKey = "uv.priceRepository.lastSyncedAt"
+    private let lastSyncedKey = "uv.priceRepository.lastSyncedAt"
 
     public init(
         modelContainer: ModelContainer,
@@ -34,12 +29,12 @@ public final class SwiftDataPriceRepository: PriceRepository {
     ) {
         self.modelContainer = modelContainer
         self.lastSyncStorage = lastSyncStorage
-        if let raw = lastSyncStorage.string(forKey: lastSyncedKey),
-           let interval = TimeInterval(raw) {
-            self.lastSyncedAt = Date(timeIntervalSince1970: interval)
-        } else {
-            self.lastSyncedAt = nil
-        }
+    }
+
+    public func lastSyncedAt() async throws -> Date? {
+        guard let raw = lastSyncStorage.string(forKey: lastSyncedKey),
+              let interval = TimeInterval(raw) else { return nil }
+        return Date(timeIntervalSince1970: interval)
     }
 
     // MARK: - Reads
@@ -104,9 +99,6 @@ public final class SwiftDataPriceRepository: PriceRepository {
         _ snapshots: [PriceSnapshot],
         keepingSince: Date
     ) async throws {
-        isWriting = true
-        defer { isWriting = false }
-
         // Collapse incoming dupes on the logical (cardID, source, day)
         // key — last one wins.
         var dedup: [String: PriceSnapshot] = [:]
@@ -147,16 +139,12 @@ public final class SwiftDataPriceRepository: PriceRepository {
     }
 
     public func markSyncCompleted(at date: Date) async throws {
-        lastSyncedAt = date
         lastSyncStorage.set(String(date.timeIntervalSince1970), forKey: lastSyncedKey)
     }
 
     public func deleteAll() async throws {
-        isWriting = true
-        defer { isWriting = false }
         try context.delete(model: SwiftDataPriceSnapshot.self)
         try context.save()
-        lastSyncedAt = nil
         lastSyncStorage.set(nil, forKey: lastSyncedKey)
     }
 }

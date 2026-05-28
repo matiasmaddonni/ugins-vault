@@ -8,8 +8,7 @@
 
 import Foundation
 
-@MainActor
-public final class ResetCatalogueUseCase {
+public final class ResetCatalogueUseCase: Sendable {
 
     private let cardRepository: CardRepository
 

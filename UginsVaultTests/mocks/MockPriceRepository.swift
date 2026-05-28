@@ -4,22 +4,21 @@
 //
 
 import Foundation
-import Observation
 @testable import UginsVault
 
-@Observable
 @MainActor
 final class MockPriceRepository: PriceRepository {
 
-    var lastSyncedAt: Date?
-    var isWriting: Bool = false
+    private var _lastSyncedAt: Date?
 
     // Spies
-    @ObservationIgnored private(set) var upserts: [[PriceSnapshot]] = []
+    private(set) var upserts: [[PriceSnapshot]] = []
 
     // Stubs
-    @ObservationIgnored var stubLatest: PriceSnapshot?
-    @ObservationIgnored var latestBySource: [PriceSource: PriceSnapshot] = [:]
+    var stubLatest: PriceSnapshot?
+    var latestBySource: [PriceSource: PriceSnapshot] = [:]
+
+    func lastSyncedAt() async throws -> Date? { _lastSyncedAt }
 
     func latest(cardID: UUID, source: PriceSource) async throws -> PriceSnapshot? {
         latestBySource[source] ?? stubLatest
@@ -34,11 +33,11 @@ final class MockPriceRepository: PriceRepository {
     }
 
     func markSyncCompleted(at date: Date) async throws {
-        lastSyncedAt = date
+        _lastSyncedAt = date
     }
 
     func deleteAll() async throws {
         upserts.removeAll()
-        lastSyncedAt = nil
+        _lastSyncedAt = nil
     }
 }

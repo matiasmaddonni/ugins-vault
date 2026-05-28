@@ -21,8 +21,7 @@
 
 import Foundation
 
-@MainActor
-public final class HardResetCollectionUseCase {
+public final class HardResetCollectionUseCase: Sendable {
 
     private let remote: RemoteCollectionStore
     private let itemRepository: CollectionItemRepository

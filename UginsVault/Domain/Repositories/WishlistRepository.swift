@@ -3,20 +3,14 @@
 //  UginsVault — Domain layer
 //
 //  Persistence boundary for the user's wishlist. Concrete implementation
-//  (`SwiftDataWishlistRepository`) lives in the Data layer. `@Observable`
-//  so views can read `items` reactively without a manual refresh hop.
+//  (`SwiftDataWishlistRepository`) lives in the Data layer.
 //
 
 import Foundation
-import Observation
 
-@MainActor
-public protocol WishlistRepository: AnyObject, Observable {
+public protocol WishlistRepository: AnyObject, Sendable {
 
-    /// Cached wishlist, newest first. Mirrors the last `refresh()`.
-    var items: [WishlistItem] { get }
-
-    /// Reloads from storage and returns the result (newest first).
+    /// Loads the wishlist from storage, newest first.
     @discardableResult
     func refresh() async throws -> [WishlistItem]
 

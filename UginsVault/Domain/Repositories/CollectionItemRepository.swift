@@ -9,15 +9,8 @@
 //
 
 import Foundation
-import Observation
 
-@MainActor
-public protocol CollectionItemRepository: AnyObject, Observable {
-
-    // MARK: - Observable state
-
-    /// `true` while a write batch is in flight.
-    var isWriting: Bool { get }
+public protocol CollectionItemRepository: AnyObject, Sendable {
 
     // MARK: - Reads
 

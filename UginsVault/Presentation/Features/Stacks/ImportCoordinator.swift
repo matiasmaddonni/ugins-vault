@@ -71,9 +71,11 @@ public final class ImportCoordinator {
         task = Task { @MainActor [weak self] in
             guard let self else { return }
             do {
-                let result = try await useCase.execute(source: source, stackID: stackID) { [weak self] current, total in
-                    self?.current = current
-                    self?.total = total
+                let result = try await useCase.execute(source: source, stackID: stackID) { current, total in
+                    Task { @MainActor [weak self] in
+                        self?.current = current
+                        self?.total = total
+                    }
                 }
                 self.result = result
                 self.phase = .finished

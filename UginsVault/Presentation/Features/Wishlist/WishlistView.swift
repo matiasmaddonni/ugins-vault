@@ -139,13 +139,13 @@ public struct WishlistView: View {
     }
 
     private var loadingPanel: some View {
-        VStack(spacing: Spacing.md) {
-            ProgressView().tint(Color.uv.gold)
-            Text("Loading…")
-                .font(.uv.body(13))
-                .foregroundStyle(Color.uv.muted)
+        ScrollView {
+            ListSkeleton(
+                thumbWidth: Layout.collectionRowThumbWidth,
+                thumbHeight: Layout.collectionRowThumbHeight
+            )
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .scrollDisabled(true)
     }
 
     private func errorPanel(message: String) -> some View {

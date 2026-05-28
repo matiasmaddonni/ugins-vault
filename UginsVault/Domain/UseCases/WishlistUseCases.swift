@@ -10,8 +10,7 @@
 import Foundation
 
 /// Loads the wishlist (newest first).
-@MainActor
-public struct GetWishlistUseCase {
+public struct GetWishlistUseCase: Sendable {
     private let repository: WishlistRepository
     public init(repository: WishlistRepository) { self.repository = repository }
 
@@ -22,8 +21,7 @@ public struct GetWishlistUseCase {
 }
 
 /// Adds a card to the wishlist. No-op when it's already tracked.
-@MainActor
-public struct AddToWishlistUseCase {
+public struct AddToWishlistUseCase: Sendable {
     private let repository: WishlistRepository
     public init(repository: WishlistRepository) { self.repository = repository }
 
@@ -34,8 +32,7 @@ public struct AddToWishlistUseCase {
 }
 
 /// Removes a card from the wishlist by its id.
-@MainActor
-public struct RemoveFromWishlistUseCase {
+public struct RemoveFromWishlistUseCase: Sendable {
     private let repository: WishlistRepository
     public init(repository: WishlistRepository) { self.repository = repository }
 

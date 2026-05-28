@@ -17,19 +17,17 @@
 //
 
 import Foundation
-import Observation
 
 @MainActor
-@Observable
 public final class CollectionSyncingItemRepository: CollectionItemRepository {
 
-    @ObservationIgnored private let wrapped: CollectionItemRepository
-    @ObservationIgnored private let remote: RemoteCollectionStore
-    @ObservationIgnored private let debounce: Duration
+    private let wrapped: CollectionItemRepository
+    private let remote: RemoteCollectionStore
+    private let debounce: Duration
 
-    @ObservationIgnored private var pendingUpsertIDs: Set<UUID> = []
-    @ObservationIgnored private var pendingDeleteIDs: Set<UUID> = []
-    @ObservationIgnored private var flushTask: Task<Void, Never>?
+    private var pendingUpsertIDs: Set<UUID> = []
+    private var pendingDeleteIDs: Set<UUID> = []
+    private var flushTask: Task<Void, Never>?
 
     public init(
         wrapped: CollectionItemRepository,
@@ -40,8 +38,6 @@ public final class CollectionSyncingItemRepository: CollectionItemRepository {
         self.remote = remote
         self.debounce = debounce
     }
-
-    public var isWriting: Bool { wrapped.isWriting }
 
     // MARK: - Reads (delegate)
 

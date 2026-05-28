@@ -10,8 +10,7 @@
 
 import Foundation
 
-@MainActor
-public final class AddCardToStackUseCase {
+public final class AddCardToStackUseCase: Sendable {
 
     private let itemRepository: CollectionItemRepository
 

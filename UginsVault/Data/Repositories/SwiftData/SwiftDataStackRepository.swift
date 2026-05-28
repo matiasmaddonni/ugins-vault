@@ -7,22 +7,13 @@
 //
 
 import Foundation
-import Observation
 import SwiftData
 
 @MainActor
-@Observable
 public final class SwiftDataStackRepository: StackRepository {
 
-    // MARK: - Observable state
-
-    public private(set) var stacks: [Stack] = []
-    public private(set) var isWriting: Bool = false
-
-    // MARK: - Dependencies
-
-    @ObservationIgnored private let modelContainer: ModelContainer
-    @ObservationIgnored private var context: ModelContext { modelContainer.mainContext }
+    private let modelContainer: ModelContainer
+    private var context: ModelContext { modelContainer.mainContext }
 
     public init(modelContainer: ModelContainer) {
         self.modelContainer = modelContainer
@@ -38,9 +29,7 @@ public final class SwiftDataStackRepository: StackRepository {
                 SortDescriptor(\.createdAt, order: .forward)
             ]
         )
-        let loaded = try context.fetch(descriptor).map(Stack.init(from:))
-        stacks = loaded
-        return loaded
+        return try context.fetch(descriptor).map(Stack.init(from:))
     }
 
     public func totalCount() async throws -> Int {
@@ -59,9 +48,6 @@ public final class SwiftDataStackRepository: StackRepository {
     // MARK: - Writes
 
     public func save(_ stack: Stack) async throws {
-        isWriting = true
-        defer { isWriting = false }
-
         let stackID = stack.id
         var descriptor = FetchDescriptor<SwiftDataStack>(
             predicate: #Predicate<SwiftDataStack> { $0.id == stackID }
@@ -77,9 +63,6 @@ public final class SwiftDataStackRepository: StackRepository {
     }
 
     public func delete(id: UUID) async throws {
-        isWriting = true
-        defer { isWriting = false }
-
         var descriptor = FetchDescriptor<SwiftDataStack>(
             predicate: #Predicate<SwiftDataStack> { $0.id == id }
         )
@@ -88,16 +71,11 @@ public final class SwiftDataStackRepository: StackRepository {
         if let existing = try context.fetch(descriptor).first {
             context.delete(existing)
             try context.save()
-            stacks.removeAll { $0.id == id }
         }
     }
 
     public func deleteAll() async throws {
-        isWriting = true
-        defer { isWriting = false }
-
         try context.delete(model: SwiftDataStack.self)
         try context.save()
-        stacks = []
     }
 }

@@ -3,8 +3,8 @@
 //  UginsVault — Presentation: Settings
 //
 //  Settings → Data → "Refresh prices". Self-contained: owns the
-//  modal sheet that re-uses `PriceSyncView`, and reads the last-sync
-//  timestamp straight off `PriceRepository`.
+//  modal sheet that re-uses `PriceSyncView`, and loads the last-sync
+//  timestamp from `PriceRepository` on appear.
 //
 
 import SwiftUI
@@ -15,6 +15,7 @@ public struct SettingsPriceSyncRow: View {
     private let makeSyncViewModel: () -> PriceSyncViewModel
 
     @State private var isPresentingSync: Bool = false
+    @State private var lastSyncedAt: Date?
 
     public init(
         priceRepository: PriceRepository,
@@ -36,6 +37,11 @@ public struct SettingsPriceSyncRow: View {
                 .foregroundStyle(Color.uv.muted)
         }
         .accessibilityIdentifier(PriceSyncAccessibilityFields.settingsRefresh)
+        .task { await reloadStamp() }
+        .onChange(of: isPresentingSync) { _, presenting in
+            // Sheet just closed — sync may have stamped a new value.
+            if !presenting { Task { await reloadStamp() } }
+        }
         .sheet(isPresented: $isPresentingSync) {
             PriceSyncView(
                 viewModel: makeSyncViewModel(),
@@ -45,7 +51,7 @@ public struct SettingsPriceSyncRow: View {
     }
 
     private var subtitleCopy: String {
-        guard let stamp = priceRepository.lastSyncedAt else {
+        guard let stamp = lastSyncedAt else {
             return String(localized: "Never synced")
         }
         let formatter = RelativeDateTimeFormatter()
@@ -53,5 +59,9 @@ public struct SettingsPriceSyncRow: View {
         return String(
             localized: "Last synced \(formatter.localizedString(for: stamp, relativeTo: Date()))"
         )
+    }
+
+    private func reloadStamp() async {
+        lastSyncedAt = (try? await priceRepository.lastSyncedAt()) ?? nil
     }
 }

@@ -34,8 +34,6 @@ struct CollectionSyncingStackRepositoryTests {
         #expect(try await sut.refresh().count == 1)
         #expect(try await sut.totalCount() == 1)
         #expect(try await sut.stack(id: stack.id)?.id == stack.id)
-        #expect(sut.stacks.count == 1)
-        _ = sut.isWriting
     }
 
     @Test("save persists locally + pushes a debounced upsert")

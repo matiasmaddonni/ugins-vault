@@ -9,22 +9,15 @@
 //
 
 import Foundation
-import Observation
 import SwiftData
 
 @MainActor
-@Observable
 public final class SwiftDataCardRepository: CardRepository {
-
-    // MARK: - Observable state
-
-    public private(set) var cards: [Card] = []
-    public private(set) var isWriting: Bool = false
 
     // MARK: - Dependencies
 
-    @ObservationIgnored private let modelContainer: ModelContainer
-    @ObservationIgnored private var context: ModelContext { modelContainer.mainContext }
+    private let modelContainer: ModelContainer
+    private var context: ModelContext { modelContainer.mainContext }
 
     // MARK: - Init
 
@@ -52,9 +45,7 @@ public final class SwiftDataCardRepository: CardRepository {
 
     @discardableResult
     public func refresh(_ query: CardQuery) async throws -> [Card] {
-        let loaded = try fetch(query: query, applyPagination: true)
-        self.cards = loaded
-        return loaded
+        try fetch(query: query, applyPagination: true)
     }
 
     public func card(id: UUID) async throws -> Card? {
@@ -105,9 +96,6 @@ public final class SwiftDataCardRepository: CardRepository {
 
     public func save(_ cards: [Card]) async throws {
         guard !cards.isEmpty else { return }
-        isWriting = true
-        defer { isWriting = false }
-
         for card in cards {
             let cardID = card.id
             var descriptor = FetchDescriptor<SwiftDataCard>(
@@ -126,9 +114,6 @@ public final class SwiftDataCardRepository: CardRepository {
     }
 
     public func delete(id: UUID) async throws {
-        isWriting = true
-        defer { isWriting = false }
-
         var descriptor = FetchDescriptor<SwiftDataCard>(
             predicate: #Predicate<SwiftDataCard> { $0.id == id }
         )
@@ -137,17 +122,12 @@ public final class SwiftDataCardRepository: CardRepository {
         if let existing = try context.fetch(descriptor).first {
             context.delete(existing)
             try context.save()
-            cards.removeAll { $0.id == id }
         }
     }
 
     public func deleteAll() async throws {
-        isWriting = true
-        defer { isWriting = false }
-
         try context.delete(model: SwiftDataCard.self)
         try context.save()
-        cards = []
     }
 
     // MARK: - Private

@@ -40,7 +40,6 @@ struct SwiftDataWishlistRepositoryTests {
     func emptyStart() async throws {
         let repo = try makeRepository()
         #expect(try await repo.refresh().isEmpty)
-        #expect(repo.items.isEmpty)
     }
 
     @Test("add inserts + refresh exposes the row")

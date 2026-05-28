@@ -20,8 +20,7 @@
 
 import Foundation
 
-@MainActor
-public final class ImportDeckListUseCase {
+public final class ImportDeckListUseCase: Sendable {
 
     public struct ImportResult: Sendable, Equatable {
         public var importedLines: Int      // lines successfully resolved
@@ -71,7 +70,7 @@ public final class ImportDeckListUseCase {
     public func execute(
         source: String,
         stackID: UUID,
-        progress: ((Int, Int) -> Void)? = nil
+        progress: (@Sendable (Int, Int) -> Void)? = nil
     ) async throws -> ImportResult {
 
         let lines = DeckListParser.parse(source)

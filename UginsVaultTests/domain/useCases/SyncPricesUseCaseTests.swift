@@ -69,7 +69,7 @@ struct SyncPricesUseCaseTests {
         #expect(backend.received == [card])
         #expect(price.upserts.count == 1)
         #expect(price.upserts.first?.count == 1)
-        #expect(price.lastSyncedAt != nil)
+        #expect(try await price.lastSyncedAt() != nil)
     }
 
     @Test("backend failure → SyncError, no timestamp")
@@ -86,6 +86,6 @@ struct SyncPricesUseCaseTests {
         await #expect(throws: SyncPricesUseCase.SyncError.self) {
             try await sut.execute()
         }
-        #expect(price.lastSyncedAt == nil)
+        #expect(try await price.lastSyncedAt() == nil)
     }
 }

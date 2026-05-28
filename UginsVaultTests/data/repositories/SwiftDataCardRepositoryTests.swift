@@ -58,7 +58,6 @@ struct SwiftDataCardRepositoryTests {
 
         #expect(try await repo.totalCount() == 1)
         #expect(loaded.first?.name == "Lightning Bolt")
-        #expect(repo.cards.count == 1)
     }
 
     @Test("save is idempotent by id (updates existing row instead of duplicating)")
@@ -133,7 +132,6 @@ struct SwiftDataCardRepositoryTests {
         try await repo.deleteAll()
 
         #expect(try await repo.totalCount() == 0)
-        #expect(repo.cards.isEmpty)
     }
 
     // MARK: - Sort + filter + pagination

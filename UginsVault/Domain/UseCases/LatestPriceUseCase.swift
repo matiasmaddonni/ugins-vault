@@ -10,8 +10,7 @@
 
 import Foundation
 
-@MainActor
-public final class LatestPriceUseCase {
+public final class LatestPriceUseCase: Sendable {
 
     public struct Resolved: Equatable, Sendable {
         public let amount: Decimal

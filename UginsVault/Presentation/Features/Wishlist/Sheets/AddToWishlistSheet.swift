@@ -84,7 +84,17 @@ struct AddToWishlistSheet: View {
     @ViewBuilder
     private var results: some View {
         if viewModel.searchResults.isEmpty {
-            hintPanel
+            if viewModel.isSearching {
+                ScrollView {
+                    ListSkeleton(
+                        thumbWidth: Layout.stackDetailRowThumbWidth,
+                        thumbHeight: Layout.stackDetailRowThumbHeight
+                    )
+                }
+                .scrollDisabled(true)
+            } else {
+                hintPanel
+            }
         } else {
             List {
                 ForEach(Array(viewModel.searchResults.enumerated()), id: \.element.id) { index, card in

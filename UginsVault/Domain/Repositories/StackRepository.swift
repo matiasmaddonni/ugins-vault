@@ -8,25 +8,13 @@
 //
 
 import Foundation
-import Observation
 
-@MainActor
-public protocol StackRepository: AnyObject, Observable {
-
-    // MARK: - Observable state
-
-    /// Most recent slice of stacks loaded into memory, sorted by
-    /// `sortOrder` ascending. Views observe this property to re-render.
-    var stacks: [Stack] { get }
-
-    /// `true` while a write batch is in flight.
-    var isWriting: Bool { get }
+public protocol StackRepository: AnyObject, Sendable {
 
     // MARK: - Reads
 
-    /// Pulls the current list of stacks from storage and updates
-    /// `stacks`. Returns the loaded slice for callers that want to react
-    /// directly.
+    /// Pulls the current list of stacks from storage, sorted by
+    /// `sortOrder` ascending.
     @discardableResult
     func refresh() async throws -> [Stack]
 
