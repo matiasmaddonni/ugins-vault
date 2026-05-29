@@ -205,15 +205,30 @@ public final class StackDetailViewModel {
         CurrencyFormatter.format(totalValue, currency: currency, rate: exchangeRate)
     }
 
-    /// Per-stack analytics for the Statistics screen, computed from the
-    /// already-loaded rows / cards / prices — no extra fetch.
-    public var statistics: StackStatistics {
-        StackStatistics.make(
+    /// Per-stack analytics for the Statistics screen. Cached: recomputed
+    /// at the end of `refresh()` and after commander changes / image
+    /// backfills. Reading `statistics` from a view body was recomputing
+    /// the whole map+sort on every re-eval.
+    public private(set) var statistics: StackStatistics = .empty
+
+    /// Items sorted by name (when joined) for the commander-picker UI.
+    /// Cached: recomputed at the end of `refresh()` and after image
+    /// backfills. Reading `pickerCandidates` from the sheet's closure was
+    /// re-sorting every time SwiftUI re-evaluated the parent.
+    public private(set) var pickerCandidates: [CollectionItem] = []
+
+    private func recomputeDerived() {
+        self.statistics = StackStatistics.make(
             items: items,
             cardsByID: cardsByID,
             priceMap: priceMap,
             commanderCardID: stack.commanderCardID
         )
+        self.pickerCandidates = items.sorted { lhs, rhs in
+            let lname = cardsByID[lhs.cardID]?.name ?? ""
+            let rname = cardsByID[rhs.cardID]?.name ?? ""
+            return lname.localizedCaseInsensitiveCompare(rname) == .orderedAscending
+        }
     }
 
     /// Kind-aware action labels rendered in `StackActionBar`.
@@ -281,6 +296,7 @@ public final class StackDetailViewModel {
                 await hydrateCards(for: loaded)
                 await loadPrices()
                 await autoDetectCommanderIfNeeded()
+                self.recomputeDerived()
                 self.status = .idle
             } catch {
                 self.status = .error(message: error.localizedDescription)
@@ -411,6 +427,7 @@ public final class StackDetailViewModel {
         do {
             try await stackRepository.save(updated)
             self.stack = updated
+            self.recomputeDerived()
             dismissCommanderPicker()
         } catch {
             status = .error(message: error.localizedDescription)
@@ -426,18 +443,10 @@ public final class StackDetailViewModel {
         do {
             try await stackRepository.save(updated)
             self.stack = updated
+            self.recomputeDerived()
             dismissCommanderPicker()
         } catch {
             status = .error(message: error.localizedDescription)
-        }
-    }
-
-    /// Items sorted by name (when joined) for the commander-picker UI.
-    public var pickerCandidates: [CollectionItem] {
-        items.sorted { lhs, rhs in
-            let lname = cardsByID[lhs.cardID]?.name ?? ""
-            let rname = cardsByID[rhs.cardID]?.name ?? ""
-            return lname.localizedCaseInsensitiveCompare(rname) == .orderedAscending
         }
     }
 
