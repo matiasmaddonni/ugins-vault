@@ -167,6 +167,10 @@ public enum Layout {
     /// Default number of placeholder rows in a list skeleton.
     public static let skeletonRowCount: Int = 8
 
+    /// Height of the always-visible global loading bar at the top of the
+    /// root view.
+    public static let globalLoadingBarHeight: CGFloat = 2
+
     /// Max scrollable height of the unresolved-names list inside
     /// `ImportResultToast`.
     public static let importToastUnresolvedMaxHeight: CGFloat = 180

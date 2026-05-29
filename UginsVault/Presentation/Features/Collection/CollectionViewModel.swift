@@ -152,14 +152,15 @@ public final class CollectionViewModel {
     /// imports cards (import persists each resolved card here).
     public func loadOrSeed() async {
         status = .loading
-
-        do {
-            try await refreshFirstPage()
-            availableSetCodes = try await cardRepository.availableSetCodes()
-            await loadPrices()
-            status = .idle
-        } catch {
-            status = .error(message: error.localizedDescription)
+        await trackLoading("Collection.loadOrSeed") {
+            do {
+                try await refreshFirstPage()
+                availableSetCodes = try await cardRepository.availableSetCodes()
+                await loadPrices()
+                status = .idle
+            } catch {
+                status = .error(message: error.localizedDescription)
+            }
         }
     }
 

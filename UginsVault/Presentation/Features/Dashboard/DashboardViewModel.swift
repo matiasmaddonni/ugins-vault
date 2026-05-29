@@ -111,12 +111,14 @@ public final class DashboardViewModel {
 
     public func load() async {
         status = .loading
-        do {
-            let result = try await repository.fetch()
-            self.snapshot = result
-            self.status = .loaded
-        } catch {
-            self.status = .error(message: error.localizedDescription)
+        await trackLoading("Dashboard.load") {
+            do {
+                let result = try await repository.fetch()
+                self.snapshot = result
+                self.status = .loaded
+            } catch {
+                self.status = .error(message: error.localizedDescription)
+            }
         }
     }
 

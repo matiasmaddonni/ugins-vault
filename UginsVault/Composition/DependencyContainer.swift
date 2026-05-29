@@ -319,6 +319,12 @@ public final class DependencyContainer {
         makeUseCase: { [unowned self] in self.makeImportDeckListUseCase() }
     )
 
+    /// App-scoped counter of in-flight long-running work. Drives the global
+    /// loading bar at the top of the root view so the user always sees that
+    /// something is happening, even when the main actor is being held by a
+    /// slow SwiftData read.
+    public lazy var loadingCoordinator: LoadingCoordinator = LoadingCoordinator()
+
     @MainActor public func makeCollectionViewModel() -> CollectionViewModel {
         CollectionViewModel(
             sessionRepository: sessionRepository,

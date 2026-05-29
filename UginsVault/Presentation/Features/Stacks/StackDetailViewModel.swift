@@ -270,17 +270,19 @@ public final class StackDetailViewModel {
 
     public func refresh() async {
         status = .loading
-        do {
-            let loaded = try await itemRepository.items(in: stack.id)
-            self.items = loaded
-            self.cardCount   = try await itemRepository.cardCount(in: stack.id)
-            self.uniqueCount = try await itemRepository.uniqueCount(in: stack.id)
-            await hydrateCards(for: loaded)
-            await loadPrices()
-            await autoDetectCommanderIfNeeded()
-            self.status = .idle
-        } catch {
-            self.status = .error(message: error.localizedDescription)
+        await trackLoading("StackDetail.refresh") {
+            do {
+                let loaded = try await itemRepository.items(in: stack.id)
+                self.items = loaded
+                self.cardCount   = try await itemRepository.cardCount(in: stack.id)
+                self.uniqueCount = try await itemRepository.uniqueCount(in: stack.id)
+                await hydrateCards(for: loaded)
+                await loadPrices()
+                await autoDetectCommanderIfNeeded()
+                self.status = .idle
+            } catch {
+                self.status = .error(message: error.localizedDescription)
+            }
         }
     }
 

@@ -44,6 +44,7 @@
 		2A9326BBA4E823D5B72988AC /* WishlistAccessibilityFields.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D8C6F361E4167B5CE7B41E5 /* WishlistAccessibilityFields.swift */; };
 		2C1FCC2B55F672AD0318D4BA /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29FE62A06758BFD04C2FFBE1 /* SplashView.swift */; };
 		2D06F55FA32A90725CBC26F5 /* UginsVaultAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99D2D1F257365DA42BFF09D7 /* UginsVaultAPIClient.swift */; };
+		2D50601F80CD7F080EA73087 /* LoadingCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 255C21ABE88F8A845CDF1321 /* LoadingCoordinator.swift */; };
 		3052211A1ADAC60457D1D59F /* PriceSourceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = E52E8CB756823001C4B62E77 /* PriceSourceError.swift */; };
 		31FF8332ED146FD022E0C5BD /* AddCardToStackUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C7B5E6AF9C56DF5D2B08E /* AddCardToStackUseCaseTests.swift */; };
 		32A290E025F75886F84434A6 /* PriceStatusSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A39CB165ED18C57ADD7FC7A /* PriceStatusSource.swift */; };
@@ -72,6 +73,7 @@
 		4CC2E8D20CC584A14984E674 /* UVTypography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1EAF33F9FA817C0BA176C4 /* UVTypography.swift */; };
 		4CD6CCF66A8A799A67FB680E /* ImportCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D58FAD1153F4534B3563A13 /* ImportCoordinator.swift */; };
 		4D48C4803105E63691A1EFB3 /* SkeletonBlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48E4D2C458A5C01AD7912626 /* SkeletonBlock.swift */; };
+		4D983A6B0B2336D8BD3DF13C /* GlobalLoadingBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C773B1934B26E07D303C0F28 /* GlobalLoadingBar.swift */; };
 		4E9B785E1FCB1A896D1D1012 /* SettingsPriceSyncRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72D9D8A3C23DA8436E6708EA /* SettingsPriceSyncRow.swift */; };
 		508E0014DF0E9D2E05EA3F47 /* UVColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C33F74A36AF89DA5A2AD6AA /* UVColors.swift */; };
 		524054B3A6BE2A904B13136E /* CardImages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 992C5BC04B97F7EEE386EEE2 /* CardImages.swift */; };
@@ -315,6 +317,7 @@
 		21D516D1F6F1F155C0EDF425 /* SwiftDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataStack.swift; sourceTree = "<group>"; };
 		22964B2B8B14EEA3FF50E2F1 /* DolarAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DolarAPIClient.swift; sourceTree = "<group>"; };
 		2459A3C0C451E7A0044F2DB1 /* WishlistView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WishlistView.swift; sourceTree = "<group>"; };
+		255C21ABE88F8A845CDF1321 /* LoadingCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingCoordinator.swift; sourceTree = "<group>"; };
 		27087B654392F98285302639 /* PriceSnapshotMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceSnapshotMapper.swift; sourceTree = "<group>"; };
 		29FE62A06758BFD04C2FFBE1 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		2AA123791A74E179C1EB29D6 /* PriceStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceStatus.swift; sourceTree = "<group>"; };
@@ -467,6 +470,7 @@
 		C4E272177F7A1B6089632120 /* AccountLoginViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountLoginViewModelTests.swift; sourceTree = "<group>"; };
 		C500078D3638AF3DDBAA10C9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C661FB21BAE54FC3C60A4B27 /* DashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModel.swift; sourceTree = "<group>"; };
+		C773B1934B26E07D303C0F28 /* GlobalLoadingBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalLoadingBar.swift; sourceTree = "<group>"; };
 		C7853DA3EF1355FFFEC60FCB /* CollectionStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionStats.swift; sourceTree = "<group>"; };
 		C7CCA15F129D8C83900F0F76 /* SessionStateStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStateStore.swift; sourceTree = "<group>"; };
 		C85847DB0B39B77E5902CA34 /* AuthenticateUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticateUseCase.swift; sourceTree = "<group>"; };
@@ -738,6 +742,7 @@
 				D1BB5CE19F066384AED952B2 /* AvatarPicker.swift */,
 				96A6C38703CFDE5FBF758D99 /* DonutChartView.swift */,
 				DC119CF6E9136B295E5EB842 /* FoilSheen.swift */,
+				C773B1934B26E07D303C0F28 /* GlobalLoadingBar.swift */,
 				3418F3559454B63F863E3D8D /* ListSkeleton.swift */,
 				F5F6E816E686E9EC593DB842 /* ManaPipsView.swift */,
 				D2E8D2C0B18B27EC9C82E601 /* ManaSymbolText.swift */,
@@ -1204,6 +1209,7 @@
 			isa = PBXGroup;
 			children = (
 				E53902A1BA13EF9708B53E04 /* CurrencyFormatter.swift */,
+				255C21ABE88F8A845CDF1321 /* LoadingCoordinator.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -1602,6 +1608,7 @@
 				D5A3BECD8767FC5F7F82AE1E /* Format.swift in Sources */,
 				E8EE48F834CDA2A1491A27C8 /* FormatSlice.swift in Sources */,
 				FFA5307978BF7D17B272AD6A /* FrankfurterClient.swift in Sources */,
+				4D983A6B0B2336D8BD3DF13C /* GlobalLoadingBar.swift in Sources */,
 				CC93C3AC225A2AD709C20EF9 /* HardResetCollectionUseCase.swift in Sources */,
 				4CD6CCF66A8A799A67FB680E /* ImportCoordinator.swift in Sources */,
 				D3799019B105ADEF44DBCD67 /* ImportDeckListSheet.swift in Sources */,
@@ -1612,6 +1619,7 @@
 				CE7E45DD605E0986C926CE31 /* Layout.swift in Sources */,
 				CF967B49ED9646FCB37BEB5F /* ListSkeleton.swift in Sources */,
 				D604FFC734F7977860010195 /* LiveSupabaseAuthGateway.swift in Sources */,
+				2D50601F80CD7F080EA73087 /* LoadingCoordinator.swift in Sources */,
 				DEEA7CA6F7F580A2BF50ECF1 /* LocalAuthRepository.swift in Sources */,
 				2948646C1824D2B5CCD402AD /* LocalBiometricsDataSource.swift in Sources */,
 				CB4BE24F3E43D79D79F60B1C /* LoginAccessibilityFields.swift in Sources */,

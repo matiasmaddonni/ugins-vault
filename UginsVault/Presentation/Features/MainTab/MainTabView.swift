@@ -41,6 +41,9 @@ public struct MainTabView: View {
             }
         }
         .overlay(alignment: .bottom) { importPill }
+        .overlay(alignment: .top) {
+            GlobalLoadingBar(coordinator: container.loadingCoordinator)
+        }
         .animation(.spring(response: 0.4, dampingFraction: 0.85), value: container.importCoordinator.phase)
         .task { await runBootstrap() }
     }
@@ -103,7 +106,9 @@ public struct MainTabView: View {
     private func runBootstrap() async {
         guard bootstrap == .loading else { return }
         bootstrap = .ready
-        _ = try? await container.makeRestoreCollectionUseCase().execute()
+        _ = try? await container.loadingCoordinator.track("Restore.execute") {
+            try await container.makeRestoreCollectionUseCase().execute()
+        }
     }
 }
 
