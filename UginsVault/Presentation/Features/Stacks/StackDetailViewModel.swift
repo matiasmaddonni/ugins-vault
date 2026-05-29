@@ -274,8 +274,10 @@ public final class StackDetailViewModel {
             do {
                 let loaded = try await itemRepository.items(in: stack.id)
                 self.items = loaded
-                self.cardCount   = try await itemRepository.cardCount(in: stack.id)
-                self.uniqueCount = try await itemRepository.uniqueCount(in: stack.id)
+                // Derive counts client-side instead of 2 extra SwiftData fetches
+                // (each is sync on main — same shape, no need to round-trip).
+                self.cardCount   = loaded.reduce(0) { $0 + $1.quantity }
+                self.uniqueCount = loaded.count
                 await hydrateCards(for: loaded)
                 await loadPrices()
                 await autoDetectCommanderIfNeeded()

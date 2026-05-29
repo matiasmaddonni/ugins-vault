@@ -55,14 +55,12 @@ public final class RealDashboardRepository: DashboardRepository {
         let stacks = try await stackRepository.refresh()
         let stackByID = Dictionary(uniqueKeysWithValues: stacks.map { ($0.id, $0) })
 
-        // Hydrate cards + per-(card,source) latest snapshots.
-        let cardIDs = Set(items.map(\.cardID))
-        var cardsByID: [UUID: Card] = [:]
-        for id in cardIDs {
-            if let card = try? await cardRepository.card(id: id) {
-                cardsByID[id] = card
-            }
-        }
+        // Hydrate cards in ONE batched fetch instead of N sequential
+        // `card(id:)` round-trips (each is sync on the main actor and dominated
+        // dashboard latency on real-sized collections).
+        let cardIDs = Array(Set(items.map(\.cardID)))
+        let cardsArray = (try? await cardRepository.cards(ids: cardIDs)) ?? []
+        let cardsByID = Dictionary(uniqueKeysWithValues: cardsArray.map { ($0.id, $0) })
 
         let preferred = sessionRepository.preferredPriceSource
         let preferredLatest = (try? await priceRepository.latestByCard(source: preferred)) ?? [:]
