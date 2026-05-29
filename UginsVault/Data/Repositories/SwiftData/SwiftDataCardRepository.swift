@@ -2,34 +2,22 @@
 //  SwiftDataCardRepository.swift
 //  UginsVault — Data layer / SwiftData
 //
-//  `CardRepository` backed by SwiftData. Holds a `ModelContainer` and
-//  works exclusively on its `mainContext` — appropriate because the
-//  protocol is `@MainActor`. Background writes that need their own
-//  context will go through `ModelActor` in a future iteration.
+//  `CardRepository` backed by SwiftData via `@ModelActor`. Owns its
+//  own background `ModelContext` so catalogue reads/writes don't queue
+//  on the main actor.
 //
 
 import Foundation
 import SwiftData
 
-@MainActor
-public final class SwiftDataCardRepository: CardRepository {
-
-    // MARK: - Dependencies
-
-    private let modelContainer: ModelContainer
-    private var context: ModelContext { modelContainer.mainContext }
-
-    // MARK: - Init
-
-    public init(modelContainer: ModelContainer) {
-        self.modelContainer = modelContainer
-    }
+@ModelActor
+public actor SwiftDataCardRepository: CardRepository {
 
     // MARK: - Reads
 
     public func totalCount() async throws -> Int {
         let descriptor = FetchDescriptor<SwiftDataCard>()
-        return try context.fetchCount(descriptor)
+        return try modelContext.fetchCount(descriptor)
     }
 
     public func count(matching query: CardQuery) async throws -> Int {
@@ -38,7 +26,7 @@ public final class SwiftDataCardRepository: CardRepository {
                 predicate: Self.makePredicate(for: query)
             )
             descriptor.fetchLimit = Int.max
-            return try context.fetchCount(descriptor)
+            return try modelContext.fetchCount(descriptor)
         }
         return try fetch(query: query, applyPagination: false).count
     }
@@ -53,7 +41,7 @@ public final class SwiftDataCardRepository: CardRepository {
             predicate: #Predicate<SwiftDataCard> { $0.id == id }
         )
         descriptor.fetchLimit = 1
-        return try context.fetch(descriptor).first.map(Card.init(from:))
+        return try modelContext.fetch(descriptor).first.map(Card.init(from:))
     }
 
     public func cards(ids: [UUID]) async throws -> [Card] {
@@ -61,7 +49,7 @@ public final class SwiftDataCardRepository: CardRepository {
         let descriptor = FetchDescriptor<SwiftDataCard>(
             predicate: #Predicate<SwiftDataCard> { ids.contains($0.id) }
         )
-        return try context.fetch(descriptor).map(Card.init(from:))
+        return try modelContext.fetch(descriptor).map(Card.init(from:))
     }
 
     public func findOne(name: String, setCode: String?) async throws -> Card? {
@@ -79,7 +67,7 @@ public final class SwiftDataCardRepository: CardRepository {
             )
         }
         descriptor.fetchLimit = 1
-        return try context.fetch(descriptor).first.map(Card.init(from:))
+        return try modelContext.fetch(descriptor).first.map(Card.init(from:))
     }
 
     /// Distinct lowercase set codes currently in the catalogue, sorted.
@@ -88,7 +76,7 @@ public final class SwiftDataCardRepository: CardRepository {
         let descriptor = FetchDescriptor<SwiftDataCard>(
             sortBy: [SortDescriptor(\.setCode, order: .forward)]
         )
-        let codes = try context.fetch(descriptor).map(\.setCode)
+        let codes = try modelContext.fetch(descriptor).map(\.setCode)
         return Array(Set(codes)).sorted()
     }
 
@@ -103,14 +91,14 @@ public final class SwiftDataCardRepository: CardRepository {
             )
             descriptor.fetchLimit = 1
 
-            if let existing = try context.fetch(descriptor).first {
+            if let existing = try modelContext.fetch(descriptor).first {
                 existing.apply(card)
             } else {
-                context.insert(SwiftDataCard(from: card))
+                modelContext.insert(SwiftDataCard(from: card))
             }
         }
 
-        try context.save()
+        try modelContext.save()
     }
 
     public func delete(id: UUID) async throws {
@@ -119,15 +107,15 @@ public final class SwiftDataCardRepository: CardRepository {
         )
         descriptor.fetchLimit = 1
 
-        if let existing = try context.fetch(descriptor).first {
-            context.delete(existing)
-            try context.save()
+        if let existing = try modelContext.fetch(descriptor).first {
+            modelContext.delete(existing)
+            try modelContext.save()
         }
     }
 
     public func deleteAll() async throws {
-        try context.delete(model: SwiftDataCard.self)
-        try context.save()
+        try modelContext.delete(model: SwiftDataCard.self)
+        try modelContext.save()
     }
 
     // MARK: - Private
@@ -145,11 +133,11 @@ public final class SwiftDataCardRepository: CardRepository {
         if applyPagination, query.filter.colors.isEmpty {
             descriptor.fetchOffset = max(0, query.offset)
             descriptor.fetchLimit = max(1, query.limit)
-            return try context.fetch(descriptor).map(Card.init(from:))
+            return try modelContext.fetch(descriptor).map(Card.init(from:))
         }
 
         descriptor.fetchLimit = Int.max
-        let allMatching = try context.fetch(descriptor).map(Card.init(from:))
+        let allMatching = try modelContext.fetch(descriptor).map(Card.init(from:))
         let colourFiltered = query.filter.colors.isEmpty
             ? allMatching
             : allMatching.filter { query.filter.colors.isSubset(of: $0.colors) }

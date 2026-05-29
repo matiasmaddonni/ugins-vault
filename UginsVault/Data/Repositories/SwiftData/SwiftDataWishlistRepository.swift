@@ -2,22 +2,15 @@
 //  SwiftDataWishlistRepository.swift
 //  UginsVault — Data layer / SwiftData
 //
-//  `WishlistRepository` backed by SwiftData on the shared
-//  `ModelContainer`'s `mainContext`. Mirrors `SwiftDataStackRepository`.
+//  `WishlistRepository` backed by SwiftData via `@ModelActor`. Owns
+//  its own background `ModelContext`.
 //
 
 import Foundation
 import SwiftData
 
-@MainActor
-public final class SwiftDataWishlistRepository: WishlistRepository {
-
-    private let modelContainer: ModelContainer
-    private var context: ModelContext { modelContainer.mainContext }
-
-    public init(modelContainer: ModelContainer) {
-        self.modelContainer = modelContainer
-    }
+@ModelActor
+public actor SwiftDataWishlistRepository: WishlistRepository {
 
     // MARK: - Reads
 
@@ -26,7 +19,7 @@ public final class SwiftDataWishlistRepository: WishlistRepository {
         let descriptor = FetchDescriptor<SwiftDataWishlistItem>(
             sortBy: [SortDescriptor(\.addedAt, order: .reverse)]
         )
-        return try context.fetch(descriptor).map(WishlistItem.init(from:))
+        return try modelContext.fetch(descriptor).map(WishlistItem.init(from:))
     }
 
     public func contains(id: UUID) async throws -> Bool {
@@ -34,7 +27,7 @@ public final class SwiftDataWishlistRepository: WishlistRepository {
             predicate: #Predicate<SwiftDataWishlistItem> { $0.id == id }
         )
         descriptor.fetchLimit = 1
-        return try context.fetchCount(descriptor) > 0
+        return try modelContext.fetchCount(descriptor) > 0
     }
 
     // MARK: - Writes
@@ -46,12 +39,12 @@ public final class SwiftDataWishlistRepository: WishlistRepository {
         )
         descriptor.fetchLimit = 1
 
-        if let existing = try context.fetch(descriptor).first {
+        if let existing = try modelContext.fetch(descriptor).first {
             existing.apply(item)
         } else {
-            context.insert(SwiftDataWishlistItem(from: item))
+            modelContext.insert(SwiftDataWishlistItem(from: item))
         }
-        try context.save()
+        try modelContext.save()
     }
 
     public func remove(id: UUID) async throws {
@@ -60,9 +53,9 @@ public final class SwiftDataWishlistRepository: WishlistRepository {
         )
         descriptor.fetchLimit = 1
 
-        if let existing = try context.fetch(descriptor).first {
-            context.delete(existing)
-            try context.save()
+        if let existing = try modelContext.fetch(descriptor).first {
+            modelContext.delete(existing)
+            try modelContext.save()
         }
     }
 }

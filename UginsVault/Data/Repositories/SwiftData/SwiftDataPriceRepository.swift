@@ -2,20 +2,20 @@
 //  SwiftDataPriceRepository.swift
 //  UginsVault — Data layer / SwiftData
 //
-//  `PriceRepository` backed by SwiftData. The unique key on the
-//  storage shape is the snapshot UUID, but the *logical* key is
-//  (cardID, source, calendarDay) — `upsert(_:keepingSince:)` collapses
-//  duplicates on that triple before writing.
+//  `PriceRepository` backed by SwiftData via `@ModelActor`. Owns its
+//  own background `ModelContext`. Custom init wires an extra
+//  `SessionStorageDataSource` for the last-sync stamp (UserDefaults
+//  alongside the SwiftData snapshot store).
 //
 
 import Foundation
 import SwiftData
 
-@MainActor
-public final class SwiftDataPriceRepository: PriceRepository {
+public actor SwiftDataPriceRepository: PriceRepository, ModelActor {
 
-    private let modelContainer: ModelContainer
-    private var context: ModelContext { modelContainer.mainContext }
+    public nonisolated let modelExecutor: any ModelExecutor
+    public nonisolated let modelContainer: ModelContainer
+
     private let lastSyncStorage: SessionStorageDataSource
 
     /// UserDefaults key — survives app relaunches separately from the
@@ -27,6 +27,8 @@ public final class SwiftDataPriceRepository: PriceRepository {
         modelContainer: ModelContainer,
         lastSyncStorage: SessionStorageDataSource
     ) {
+        let modelContext = ModelContext(modelContainer)
+        self.modelExecutor = DefaultSerialModelExecutor(modelContext: modelContext)
         self.modelContainer = modelContainer
         self.lastSyncStorage = lastSyncStorage
     }
@@ -48,7 +50,7 @@ public final class SwiftDataPriceRepository: PriceRepository {
             sortBy: [SortDescriptor(\.date, order: .reverse)]
         )
         descriptor.fetchLimit = 1
-        return try context.fetch(descriptor).first.flatMap(PriceSnapshot.init(from:))
+        return try modelContext.fetch(descriptor).first.flatMap(PriceSnapshot.init(from:))
     }
 
     public func history(
@@ -65,7 +67,7 @@ public final class SwiftDataPriceRepository: PriceRepository {
             },
             sortBy: [SortDescriptor(\.date, order: .forward)]
         )
-        return try context.fetch(descriptor).compactMap(PriceSnapshot.init(from:))
+        return try modelContext.fetch(descriptor).compactMap(PriceSnapshot.init(from:))
     }
 
     public func latestByCard(source: PriceSource) async throws -> [UUID: PriceSnapshot] {
@@ -74,7 +76,7 @@ public final class SwiftDataPriceRepository: PriceRepository {
             predicate: #Predicate<SwiftDataPriceSnapshot> { $0.sourceRaw == sourceRaw },
             sortBy: [SortDescriptor(\.date, order: .reverse)]
         )
-        let rows = try context.fetch(descriptor).compactMap(PriceSnapshot.init(from:))
+        let rows = try modelContext.fetch(descriptor).compactMap(PriceSnapshot.init(from:))
         var map: [UUID: PriceSnapshot] = [:]
         for row in rows where map[row.cardID] == nil {
             map[row.cardID] = row
@@ -90,7 +92,7 @@ public final class SwiftDataPriceRepository: PriceRepository {
             },
             sortBy: [SortDescriptor(\.date, order: .forward)]
         )
-        return try context.fetch(descriptor).compactMap(PriceSnapshot.init(from:))
+        return try modelContext.fetch(descriptor).compactMap(PriceSnapshot.init(from:))
     }
 
     // MARK: - Writes
@@ -110,7 +112,7 @@ public final class SwiftDataPriceRepository: PriceRepository {
         // Pull every row for the affected (cardID, source, day) tuples
         // in one fetch to avoid N round-trips.
         let cardIDs = Set(dedup.values.map(\.cardID))
-        let existing = try context.fetch(
+        let existing = try modelContext.fetch(
             FetchDescriptor<SwiftDataPriceSnapshot>(
                 predicate: #Predicate<SwiftDataPriceSnapshot> { cardIDs.contains($0.cardID) }
             )
@@ -125,17 +127,17 @@ public final class SwiftDataPriceRepository: PriceRepository {
             if let row = existingByKey[key] {
                 row.apply(snapshot)
             } else {
-                context.insert(SwiftDataPriceSnapshot(from: snapshot))
+                modelContext.insert(SwiftDataPriceSnapshot(from: snapshot))
             }
         }
 
         // Prune anything older than the rolling window.
-        try context.delete(
+        try modelContext.delete(
             model: SwiftDataPriceSnapshot.self,
             where: #Predicate<SwiftDataPriceSnapshot> { $0.date < keepingSince }
         )
 
-        try context.save()
+        try modelContext.save()
     }
 
     public func markSyncCompleted(at date: Date) async throws {
@@ -143,8 +145,8 @@ public final class SwiftDataPriceRepository: PriceRepository {
     }
 
     public func deleteAll() async throws {
-        try context.delete(model: SwiftDataPriceSnapshot.self)
-        try context.save()
+        try modelContext.delete(model: SwiftDataPriceSnapshot.self)
+        try modelContext.save()
         lastSyncStorage.set(nil, forKey: lastSyncedKey)
     }
 }

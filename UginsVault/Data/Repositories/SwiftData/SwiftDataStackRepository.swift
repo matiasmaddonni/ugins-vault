@@ -2,22 +2,16 @@
 //  SwiftDataStackRepository.swift
 //  UginsVault — Data layer / SwiftData
 //
-//  `StackRepository` backed by SwiftData. Operates on the shared
-//  `ModelContainer`'s `mainContext`.
+//  `StackRepository` backed by SwiftData via `@ModelActor`. Owns its
+//  own background `ModelContext` so reads/writes don't queue on the
+//  main actor.
 //
 
 import Foundation
 import SwiftData
 
-@MainActor
-public final class SwiftDataStackRepository: StackRepository {
-
-    private let modelContainer: ModelContainer
-    private var context: ModelContext { modelContainer.mainContext }
-
-    public init(modelContainer: ModelContainer) {
-        self.modelContainer = modelContainer
-    }
+@ModelActor
+public actor SwiftDataStackRepository: StackRepository {
 
     // MARK: - Reads
 
@@ -29,12 +23,12 @@ public final class SwiftDataStackRepository: StackRepository {
                 SortDescriptor(\.createdAt, order: .forward)
             ]
         )
-        return try context.fetch(descriptor).map(Stack.init(from:))
+        return try modelContext.fetch(descriptor).map(Stack.init(from:))
     }
 
     public func totalCount() async throws -> Int {
         let descriptor = FetchDescriptor<SwiftDataStack>()
-        return try context.fetchCount(descriptor)
+        return try modelContext.fetchCount(descriptor)
     }
 
     public func stack(id: UUID) async throws -> Stack? {
@@ -42,7 +36,7 @@ public final class SwiftDataStackRepository: StackRepository {
             predicate: #Predicate<SwiftDataStack> { $0.id == id }
         )
         descriptor.fetchLimit = 1
-        return try context.fetch(descriptor).first.map(Stack.init(from:))
+        return try modelContext.fetch(descriptor).first.map(Stack.init(from:))
     }
 
     // MARK: - Writes
@@ -54,12 +48,12 @@ public final class SwiftDataStackRepository: StackRepository {
         )
         descriptor.fetchLimit = 1
 
-        if let existing = try context.fetch(descriptor).first {
+        if let existing = try modelContext.fetch(descriptor).first {
             existing.apply(stack)
         } else {
-            context.insert(SwiftDataStack(from: stack))
+            modelContext.insert(SwiftDataStack(from: stack))
         }
-        try context.save()
+        try modelContext.save()
     }
 
     public func delete(id: UUID) async throws {
@@ -68,14 +62,14 @@ public final class SwiftDataStackRepository: StackRepository {
         )
         descriptor.fetchLimit = 1
 
-        if let existing = try context.fetch(descriptor).first {
-            context.delete(existing)
-            try context.save()
+        if let existing = try modelContext.fetch(descriptor).first {
+            modelContext.delete(existing)
+            try modelContext.save()
         }
     }
 
     public func deleteAll() async throws {
-        try context.delete(model: SwiftDataStack.self)
-        try context.save()
+        try modelContext.delete(model: SwiftDataStack.self)
+        try modelContext.save()
     }
 }

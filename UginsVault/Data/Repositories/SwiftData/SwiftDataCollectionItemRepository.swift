@@ -2,22 +2,21 @@
 //  SwiftDataCollectionItemRepository.swift
 //  UginsVault — Data layer / SwiftData
 //
-//  `CollectionItemRepository` backed by SwiftData. Mainactor-isolated;
-//  works on the shared container's `mainContext`.
+//  `CollectionItemRepository` backed by SwiftData via `@ModelActor`.
+//  Owns its own background `ModelContext` (per Architecture.md's "actor
+//  only for shared mutable state" rule — SwiftData's `ModelContext` is
+//  exactly that). All fetches + saves run off the main actor; the actor
+//  serialises access to the context.
+//
+//  Domain entities (`CollectionItem`) are `Sendable` value types, so no
+//  `@Model`-bound references leak across the actor boundary.
 //
 
 import Foundation
 import SwiftData
 
-@MainActor
-public final class SwiftDataCollectionItemRepository: CollectionItemRepository {
-
-    private let modelContainer: ModelContainer
-    private var context: ModelContext { modelContainer.mainContext }
-
-    public init(modelContainer: ModelContainer) {
-        self.modelContainer = modelContainer
-    }
+@ModelActor
+public actor SwiftDataCollectionItemRepository: CollectionItemRepository {
 
     // MARK: - Reads
 
@@ -26,7 +25,7 @@ public final class SwiftDataCollectionItemRepository: CollectionItemRepository {
             predicate: #Predicate<SwiftDataCollectionItem> { $0.stackID == stackID },
             sortBy: [SortDescriptor(\.acquiredAt, order: .reverse)]
         )
-        return try context.fetch(descriptor).map(CollectionItem.init(from:))
+        return try modelContext.fetch(descriptor).map(CollectionItem.init(from:))
     }
 
     public func cardCount(in stackID: UUID) async throws -> Int {
@@ -37,7 +36,7 @@ public final class SwiftDataCollectionItemRepository: CollectionItemRepository {
         let descriptor = FetchDescriptor<SwiftDataCollectionItem>(
             predicate: #Predicate<SwiftDataCollectionItem> { $0.stackID == stackID }
         )
-        return try context.fetchCount(descriptor)
+        return try modelContext.fetchCount(descriptor)
     }
 
     public func item(id: UUID) async throws -> CollectionItem? {
@@ -45,32 +44,31 @@ public final class SwiftDataCollectionItemRepository: CollectionItemRepository {
             predicate: #Predicate<SwiftDataCollectionItem> { $0.id == id }
         )
         descriptor.fetchLimit = 1
-        return try context.fetch(descriptor).first.map(CollectionItem.init(from:))
+        return try modelContext.fetch(descriptor).first.map(CollectionItem.init(from:))
     }
 
     public func allItems() async throws -> [CollectionItem] {
         let descriptor = FetchDescriptor<SwiftDataCollectionItem>(
             sortBy: [SortDescriptor(\.acquiredAt, order: .reverse)]
         )
-        return try context.fetch(descriptor).map(CollectionItem.init(from:))
+        return try modelContext.fetch(descriptor).map(CollectionItem.init(from:))
     }
 
     // MARK: - Writes
 
     public func save(_ item: CollectionItem) async throws {
-
         let itemID = item.id
         var descriptor = FetchDescriptor<SwiftDataCollectionItem>(
             predicate: #Predicate<SwiftDataCollectionItem> { $0.id == itemID }
         )
         descriptor.fetchLimit = 1
 
-        if let existing = try context.fetch(descriptor).first {
+        if let existing = try modelContext.fetch(descriptor).first {
             existing.apply(item)
         } else {
-            context.insert(SwiftDataCollectionItem(from: item))
+            modelContext.insert(SwiftDataCollectionItem(from: item))
         }
-        try context.save()
+        try modelContext.save()
     }
 
     public func save(_ items: [CollectionItem]) async throws {
@@ -78,9 +76,9 @@ public final class SwiftDataCollectionItemRepository: CollectionItemRepository {
 
         // ONE fetch of the existing rows up front (keyed by id) instead of a
         // fetch-per-item — a per-item descriptor in the loop turns a fresh
-        // restore into hundreds of synchronous main-actor round trips and
-        // freezes the app on launch.
-        let existing = try context.fetch(FetchDescriptor<SwiftDataCollectionItem>())
+        // restore into hundreds of synchronous round trips and freezes the
+        // app on launch.
+        let existing = try modelContext.fetch(FetchDescriptor<SwiftDataCollectionItem>())
         var byID = Dictionary(existing.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
 
         for item in items {
@@ -88,38 +86,35 @@ public final class SwiftDataCollectionItemRepository: CollectionItemRepository {
                 row.apply(item)
             } else {
                 let row = SwiftDataCollectionItem(from: item)
-                context.insert(row)
+                modelContext.insert(row)
                 byID[item.id] = row
             }
         }
-        try context.save()   // one write for the whole batch
+        try modelContext.save()   // one write for the whole batch
     }
 
     public func delete(id: UUID) async throws {
-
         var descriptor = FetchDescriptor<SwiftDataCollectionItem>(
             predicate: #Predicate<SwiftDataCollectionItem> { $0.id == id }
         )
         descriptor.fetchLimit = 1
 
-        if let existing = try context.fetch(descriptor).first {
-            context.delete(existing)
-            try context.save()
+        if let existing = try modelContext.fetch(descriptor).first {
+            modelContext.delete(existing)
+            try modelContext.save()
         }
     }
 
     public func deleteAll(in stackID: UUID) async throws {
-
-        try context.delete(
+        try modelContext.delete(
             model: SwiftDataCollectionItem.self,
             where: #Predicate<SwiftDataCollectionItem> { $0.stackID == stackID }
         )
-        try context.save()
+        try modelContext.save()
     }
 
     public func deleteAll() async throws {
-
-        try context.delete(model: SwiftDataCollectionItem.self)
-        try context.save()
+        try modelContext.delete(model: SwiftDataCollectionItem.self)
+        try modelContext.save()
     }
 }
