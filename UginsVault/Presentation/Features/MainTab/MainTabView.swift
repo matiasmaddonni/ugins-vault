@@ -106,6 +106,10 @@ public struct MainTabView: View {
     private func runBootstrap() async {
         guard bootstrap == .loading else { return }
         bootstrap = .ready
+        // Tabs are on screen — pre-warm the iOS keyboard subsystem so the
+        // first `.searchable` tap (Collection / commander picker / …)
+        // doesn't sit through the 1–2 s cold-init pause on the main thread.
+        KeyboardWarmup.prepare()
         _ = try? await container.loadingCoordinator.track("Restore.execute") {
             try await container.makeRestoreCollectionUseCase().execute()
         }
