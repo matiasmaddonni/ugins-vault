@@ -7,10 +7,8 @@
 //
 
 import Foundation
-import Observation
 
-@MainActor
-public protocol AuthRepository: AnyObject, Observable {
+public protocol AuthRepository: AnyObject, Sendable {
 
     /// Whether the device has biometry enrolled and available *right now*.
     var isBiometryAvailable: Bool { get }

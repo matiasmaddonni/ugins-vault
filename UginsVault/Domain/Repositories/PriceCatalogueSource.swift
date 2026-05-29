@@ -8,8 +8,7 @@
 
 import Foundation
 
-@MainActor
-public protocol PriceCatalogueSource: AnyObject {
+public protocol PriceCatalogueSource: AnyObject, Sendable {
 
     /// Streams a batch of snapshots for the given card-id allow-list.
     /// Implementations are free to filter on-the-fly to keep memory

@@ -8,12 +8,10 @@
 //
 
 import Foundation
-import Observation
 
-@Observable
 public final class LocalAuthRepository: AuthRepository {
 
-    @ObservationIgnored private let biometrics: BiometricsDataSource
+    private let biometrics: BiometricsDataSource
 
     public init(biometrics: BiometricsDataSource) {
         self.biometrics = biometrics

@@ -11,7 +11,6 @@
 import Foundation
 import UIKit
 
-@MainActor
 public protocol AvatarStorage: AnyObject, Sendable {
 
     /// Writes JPEG data to Documents and returns the file name (no path).
@@ -25,8 +24,7 @@ public protocol AvatarStorage: AnyObject, Sendable {
     func deleteImage(filename: String)
 }
 
-@MainActor
-public final class FileAvatarStorage: AvatarStorage {
+public final class FileAvatarStorage: AvatarStorage, @unchecked Sendable {
 
     private let fileManager: FileManager
     private let jpegQuality: CGFloat

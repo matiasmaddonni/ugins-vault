@@ -7,8 +7,7 @@
 
 import Foundation
 
-@MainActor
-public final class SignInUseCase {
+public final class SignInUseCase: Sendable {
 
     private let accountRepository: AccountRepository
 

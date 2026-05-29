@@ -8,8 +8,7 @@
 
 import Foundation
 
-@MainActor
-public final class SignOutAccountUseCase {
+public final class SignOutAccountUseCase: Sendable {
 
     private let accountRepository: AccountRepository
 

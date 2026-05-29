@@ -64,8 +64,8 @@ public final class PriceSyncViewModel {
         }
 
         do {
-            let progressHandler: (SyncPricesUseCase.Progress) -> Void = { [weak self] progress in
-                self?.applyProgress(progress)
+            let progressHandler: @Sendable (SyncPricesUseCase.Progress) -> Void = { progress in
+                Task { @MainActor [weak self] in self?.applyProgress(progress) }
             }
             let count = fullHistory
                 ? try await useCase.executeFullHistory(progress: progressHandler)

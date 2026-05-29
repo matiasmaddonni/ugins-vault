@@ -15,7 +15,7 @@ import Foundation
 import Observation
 
 @MainActor
-public protocol AccountRepository: AnyObject, Observable {
+public protocol AccountRepository: AnyObject, Observable, Sendable {
 
     /// Whether a valid (restorable) session currently exists.
     var isSignedIn: Bool { get }

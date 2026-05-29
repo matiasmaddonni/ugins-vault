@@ -15,8 +15,7 @@
 
 import Foundation
 
-@MainActor
-public final class SyncPricesUseCase {
+public final class SyncPricesUseCase: Sendable {
 
     public struct Progress: Sendable, Equatable {
         public let phase: Phase
@@ -71,20 +70,20 @@ public final class SyncPricesUseCase {
 
     /// Light refresh — current window from the backend.
     @discardableResult
-    public func execute(progress: ((Progress) -> Void)? = nil) async throws -> Int {
+    public func execute(progress: (@Sendable (Progress) -> Void)? = nil) async throws -> Int {
         try await run(fullHistory: false, progress: progress)
     }
 
     /// First-launch bootstrap — wider backend window so the Dashboard has real
     /// history immediately.
     @discardableResult
-    public func executeFullHistory(progress: ((Progress) -> Void)? = nil) async throws -> Int {
+    public func executeFullHistory(progress: (@Sendable (Progress) -> Void)? = nil) async throws -> Int {
         try await run(fullHistory: true, progress: progress)
     }
 
     // MARK: - Orchestration
 
-    private func run(fullHistory: Bool, progress: ((Progress) -> Void)?) async throws -> Int {
+    private func run(fullHistory: Bool, progress: (@Sendable (Progress) -> Void)?) async throws -> Int {
         let owned = try await ownedCardIDs()
         guard !owned.isEmpty else { throw SyncError.noOwnedCards }
 
