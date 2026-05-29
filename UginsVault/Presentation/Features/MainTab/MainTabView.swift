@@ -106,10 +106,10 @@ public struct MainTabView: View {
     private func runBootstrap() async {
         guard bootstrap == .loading else { return }
         bootstrap = .ready
-        // Tabs are on screen — pre-warm the iOS keyboard subsystem so the
-        // first `.searchable` tap (Collection / commander picker / …)
-        // doesn't sit through the 1–2 s cold-init pause on the main thread.
-        KeyboardWarmup.prepare()
+        // NB: the iOS keyboard subsystem first-init takes ~1 s on the main
+        // thread the first time a `.searchable` field is focused. Pre-warming
+        // it from here works but flashes the keyboard on the home screen,
+        // which is worse than the first-tap pause. Left as-is.
         _ = try? await container.loadingCoordinator.track("Restore.execute") {
             try await container.makeRestoreCollectionUseCase().execute()
         }
