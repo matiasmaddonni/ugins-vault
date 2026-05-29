@@ -177,3 +177,54 @@ new actor in the data layer.
 - New actors: ~1–2 SwiftData write coordinators + a handful of
   persistence/service actors (Account, FX, Avatar). Nothing else. Per
   Rule 2.
+
+---
+
+## What landed (P-A → P-F-rest)
+
+Done over 4 commits in one session:
+
+| Commit | Phase | Files | Hits |
+|---|---|---|---|
+| Start | — | 114 | 146 |
+| `91a6a06` | **P-A** strip Observable+@MainActor from 5 data-repo protocols (Card/CollectionItem/Stack/Price/Wishlist); collapse `isWriting` / `cards` / `stacks` / `items` sync props. **P-F partial** deisolate 7 use cases (Add/HardReset/Import/LatestPrice/ResetCatalogue/Restore/Wishlist) + add explicit `Sendable`. | 102 | 133 |
+| `5c5e952` | **P-B** delete `SessionRepository` protocol + `UserDefaultsSessionRepository` concrete + `MockSessionRepository`; new `SessionStateStore` (concrete `@MainActor @Observable`). | 102 | 135 |
+| `b077c8c` | **P-C-mini + P-D** same collapse for `UserProfileRepository` → `UserProfileStore` and `ExchangeRateRepository` → `ExchangeRateStore`. | 101 | 136 |
+| `a337db7` | **P-F-rest** delete 13 trivial Get/Set session/profile use cases (incl. `ManualARSRateUseCases`); VMs read/write the stores directly. Drop 14 DI factories + 14 SettingsViewModel init params. | **82** | **116** |
+
+Net: **−32 files (−28 %), −30 hits (−21 %)**, 260 tests green throughout, no on-device regressions caught yet.
+
+### Lessons learned, codified
+
+1. **Inline trivial Get/Set use cases against a state store** — the
+   architecture rule from CLAUDE.md says "views never access DataSources
+   directly — always through Use Cases." That stands. But a one-line
+   wrapper over a `@MainActor @Observable` *state store* is not a use
+   case in the Clean-Architecture sense; it's a typing tax that drags
+   `@MainActor` across the whole graph. Keep use cases for **business
+   operations** (clear catalogue, sign in, import deck list). Reads /
+   writes of pure preferences go straight to the store from the VM.
+
+2. **Don't actor-ify just to leave the main thread** — for backings
+   like `UserDefaults` (synchronous, microseconds) the actor split adds
+   ceremony without perf. Per Rule 2: actor *only* for shared mutable
+   state that genuinely needs serialization (the SwiftData
+   `ModelContext` is the canonical example — see P-DB).
+
+3. **Keep protocols where the I/O is real, drop them where they were
+   just observability tax** — `AccountRepository` (Supabase) and
+   `AuthRepository` (LocalAuthentication) stay, because mocking those
+   gateways is the only sane way to test auth flows. `SessionRepository`
+   / `UserProfileRepository` / `ExchangeRateRepository` /
+   `CardRepository` / etc. existed mostly to expose Observable state —
+   collapsed.
+
+### Skipped
+
+- **P-C full (AccountStateStore + AccountService)**: real I/O seam,
+  heavy mock usage across 5+ tests — collapsing would be high churn for
+  marginal `@MainActor` reduction. Left as-is.
+- **P-E (DashboardRepository)**: user requested leave-as-is.
+- **P-DB (`@ModelActor`)**: deferred until on-device perf calls for it.
+  Triggers if SwiftData writes start hitching despite the P-A
+  batched-save fixes.
